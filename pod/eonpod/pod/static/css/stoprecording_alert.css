@@ -1,0 +1,108 @@
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: hidden;/* Prevent scrolling */
+}
+
+.confirm-stop-record {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-body svg {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button#confirmBtn {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    font-size: x-large;
+}
+
+button#cancelBtn {
+    background-color: #f44336;
+    color: white;
+    font-weight: bold;
+    font-size: x-large;
+}
+
+
+/* Custom alert style */
+.mic-alert{
+    background-color: #fefefe;
+    margin: 8% auto;
+    color: white;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    text-align: center;
+    border-radius: 10px;
+}
+
+#closeAlertBtn {
+    margin-top: 10px;
+    padding: 10px;
+    /* background-color: ; */
+    color: black;
+    border: none;
+    font-weight: bold;
+    font-size: x-large;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+p{
+    font-size: x-large;
+    font-weight: bold;
+    color: black;
+}
+
+#digitek-image {
+    width: 200px;
+    /* Set the desired width */
+    height: auto;
+    /* Maintain the aspect ratio */
+    display: block;
+    /* Align the image */
+    margin: 20px auto;
+    /* Center the image with some margin */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Add a subtle shadow */
+    border-radius: 10px;
+    /* Rounded corners */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth transitions */
+}

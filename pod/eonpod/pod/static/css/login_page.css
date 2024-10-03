@@ -1,0 +1,148 @@
+/* Base styling (applies to all screen sizes) */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    overflow: hidden;
+}
+
+.container-fluid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    border-radius: 60px;
+}
+
+.home-screen {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive H1 */
+h1 {
+    font-size: 1.5rem;
+    /* Default size for smaller screens */
+}
+
+.rfid-image {
+    width: 200px;
+    /* Default image width */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.pin-input {
+    width: 80%;
+    padding: 10px;
+    font-size: 1rem;
+    text-align: center;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}
+
+.btn-primary {
+    font-size: 1rem;
+    padding: 10px 20px;
+}
+
+/* Error message styling */
+.error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+/* Media Queries for Responsive Design */
+@media (min-width: 576px) {
+
+    /* Small devices (≥576px) */
+    h1 {
+        font-size: 1.8rem;
+        /* Larger font for small devices */
+    }
+
+    .rfid-image {
+        width: 250px;
+        /* Larger image for small devices */
+    }
+
+    .pin-input {
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 768px) {
+
+    /* Medium devices (≥768px) */
+    h1 {
+        font-size: 2rem;
+        /* Adjust font for medium devices */
+    }
+
+    .rfid-image {
+        width: 300px;
+        /* Larger image for medium devices */
+    }
+
+    .pin-input {
+        font-size: 1.2rem;
+    }
+
+    .btn-primary {
+        font-size: 1.2rem;
+    }
+}
+
+@media (min-width: 992px) {
+
+    /* Large devices (≥992px) */
+    h1 {
+        font-size: 2.5rem;
+        /* Larger font for large devices */
+    }
+
+    .rfid-image {
+        width: 350px;
+        /* Larger image for large devices */
+    }
+
+    .pin-input {
+        font-size: 1.3rem;
+    }
+
+    .btn-primary {
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    /* Extra large devices (≥1200px) */
+    h1 {
+        font-size: 3rem;
+        /* Larger font for extra-large devices */
+    }
+
+    .rfid-image {
+        width: 400px;
+        /* Larger image for extra-large devices */
+    }
+
+    .pin-input {
+        font-size: 1.4rem;
+    }
+
+    .btn-primary {
+        font-size: 1.4rem;
+    }
+}

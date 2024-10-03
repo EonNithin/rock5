@@ -1,0 +1,584 @@
+body {
+    background: rgb(60, 59, 59);
+    /* Black background for container */
+    margin: 0;
+    gap: 0px;
+}
+
+/* Ensure the container is responsive */
+.container-fluid .home-screen {
+    background: #E7EBEF;
+    /* Light gray background for home screen */
+    min-height: 96vh;
+    /* Use min-height instead of height */
+    min-width: 100%;
+    gap: 0px;
+    margin-top: 8px;
+    border-radius: 60px;
+    /* Simplified border-radius */
+    opacity: 1;
+    /* Fixed opacity value */
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Logo styles */
+#logo img {
+    width: 30vw;
+    height: auto;
+    /* Adjust height as needed */
+    margin-left: 20px;
+}
+
+#fullscreenButton {
+    width: auto;
+    border: none;
+    background-color: #E7EBEF;
+    outline: none;
+    height: 8vh;
+    /* Adjust height as needed */
+    margin-right: 5px;
+}
+
+#fullscreenExitButton {
+    width: auto;
+    border: none;
+    background-color: #E7EBEF;
+    outline: none;
+    height: 8vh;
+    /* Adjust height as needed */
+    margin-right: 5px;
+}
+
+.btn-outline-secondary:focus{
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+.btn-outline-secondary:active{
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 500px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #logo {
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+
+    #gear-icon {
+        margin-right: 0;
+        margin-top: 10px;
+    }
+}
+
+/* Custom Dropdown styles */
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 98%;
+    margin-left: 3px;
+    font-size: 24px;
+    z-index: 1;
+    /* Ensure dropdown is above buttons */
+}
+
+.custom-dropdown-label {
+    background-color: #E1E4E7;
+    width: 100%;
+    max-width: 100%;
+    height: 70px;
+    border-radius: 20px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #E1E4E7;
+    width: 100%;
+    max-width: 98%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: black;
+    width: 100%;
+    height: auto;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: lightgray;
+}
+
+.show {
+    display: block;
+}
+
+/* Add this style to ensure dropdown content covers buttons */
+.dropdown-content.show {
+    top: calc(100% + 10px);
+    /* Position dropdown content below dropdown label */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 500px) {
+
+    .custom-dropdown-label,
+    .dropdown-content {
+        width: 100%;
+    }
+}
+
+.buttons-div {
+    position: relative;
+    /* Ensure z-index works properly */
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    /* Adjust as necessary */
+    margin: 0 auto;
+    /* Center align the buttons-div */
+    flex-wrap: wrap;
+    /* Allow buttons to wrap on smaller screens */
+    z-index: 0;
+    /* Ensure buttons are below dropdown content */
+    flex: 1 1 30%;
+}
+
+.btn-custom {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    /* Remove margin */
+}
+
+.circle-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.outer-circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Black box shadow */
+}
+
+.outer-circle>.progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    border: 10px solid transparent;
+    /* Set initial border color */
+    box-sizing: border-box;
+    animation: growColor 3s forwards;
+    /* Adjust animation duration as needed */
+}
+
+@keyframes growColor {
+    0% {
+        border-top-color: transparent;
+        /* Start transparent */
+        border-right-color: transparent;
+        /* Progress bar color (initial) */
+    }
+
+    100% {
+        border-top-color: #91cb6a;
+        /* End with green */
+        border-right-color: #91cb6a;
+        /* Progress bar color (initial) */
+    }
+}
+
+.middle-circle {
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    background-color: #F5F5F9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Black box shadow */
+}
+
+.inner-circle {
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    background-color: #e7ebefc5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Black box shadow */
+    z-index: 2;
+}
+
+.center-circle-record {
+    width: 55%;
+    height: 55%;
+    border-radius: 50%;
+    background-image: url('../images/Recording Icon.png');
+    /* Path to the image */
+    background-size: cover;
+    /* Ensure the image covers the entire element */
+    background-position: center;
+    /* Center the image within the element */
+    background-repeat: no-repeat;
+    /* Prevent the image from repeating */
+    z-index: 3;
+}
+
+.center-circle-stoprecord {
+    width: 55%;
+    height: 55%;
+    border-radius: 50%;
+    background-image: url('../images/Stop\ Record\ Icon.png');
+    /* Path to the image */
+    background-size: cover;
+    /* Ensure the image covers the entire element */
+    background-position: center;
+    /* Center the image within the element */
+    background-repeat: no-repeat;
+    /* Prevent the image from repeating */
+    z-index: 3;
+}
+
+.center-circle-logout {
+    width: 55%;
+    height: 55%;
+    border-radius: 30%;
+    background-image: url('../images/logout-icon.svg');
+    /* Path to the image */
+    background-size: cover;
+    /* Ensure the image covers the entire element */
+    background-position: center;
+    /* Center the image within the element */
+    background-repeat: no-repeat;
+    /* Prevent the image from repeating */
+    z-index: 3;
+}
+
+
+.button-text {
+    font-size: 24px;
+    color: #888888;
+    /* Adjust color as needed */
+    text-align: center;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 500px) {
+    .button-wrapper {
+        flex: 1 1 100%;
+        /* Ensure buttons take full width on small screens */
+    }
+}
+
+.buttons-row2 {
+    margin-left: 3px;
+}
+
+.buttons-row2 .btn-custom {
+    width: 60%;
+    height: auto;
+}
+
+.img-text {
+    font-size: 24px;
+    color: #888888;
+}
+
+.videoPlayer {
+    max-width: 100%;
+    /* Make the video player responsive */
+    margin: 10 auto;
+    /* Center the video player */
+}
+
+#videoPlayer {
+    width: 100%;
+    /* Make the video player fill its container */
+    height: 340px;
+    /* Automatically adjust height based on width */
+    margin-left: 10px;
+    object-fit: cover;
+}
+
+.new-circle-container {
+    position: relative;
+    width: 80px;
+    /* Adjust size as needed */
+    height: 80px;
+    /* Adjust size as needed */
+}
+
+.new-outer-circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #F5F5F9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.new-inner-circle {
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    background-color: #e7ebefc5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: insert 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.new-inner-circle img {
+    width: 60%;
+    /* Adjust size as needed */
+    height: 60%;
+    /* Adjust size as needed */
+}
+
+.gear-icon {
+    position: relative;
+}
+
+
+.tooltip-settings {
+    position: absolute;
+    top: 80%;
+    /* Adjust this value to place it correctly below the gear icon */
+    left: 0%;
+    transform: translateX(-50%);
+    background-color: #E7EBEF;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    border-radius: 4px;
+    padding: 10px;
+    width: max-content;
+}
+
+.list-group {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-group-item {
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+    border: 1px solid #ddd;
+    background-color: #E7EBEF;
+    margin-bottom: 2px;
+}
+
+.list-group-item:hover {
+    background-color: #E7EBEF;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.gear-icon {
+    position: relative;
+}
+
+.tooltip-settings {
+    position: absolute;
+    top: 100%;
+    /* Adjust this value to place it correctly below the gear icon */
+    left: 0px;
+    transform: translateX(-50%);
+    background-color: #E7EBEF;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    border-radius: 4px;
+    padding: 10px;
+    width: max-content;
+}
+
+.list-group {
+    list-style: none;
+    align-items: end;
+    padding: 0;
+    margin: 0;
+}
+
+.list-group-item {
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+    border: 1px solid #ddd;
+    background-color: #E7EBEF;
+    margin-bottom: 2px;
+}
+
+.list-group-item:hover {
+    background-color: #E7EBEF;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #30D158;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #30D158;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}

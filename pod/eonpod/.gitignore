@@ -1,0 +1,5 @@
+
+media/processed_files/*
+models/*
+pod/tests/testdata
+db.sqlite3
