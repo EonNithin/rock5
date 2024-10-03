@@ -5171,3 +5171,312 @@ DEBUG 2024-10-03 05:29:30,588 JsonBuilder fname, directory and parts: 03-10-2024
 ERROR 2024-10-03 05:29:30,589 FileProcessor MP4 file not found: /home/eon/Desktop/eonpod_latest/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-28-52/03-10-2024_05-28-52_recorded_video.mp4
 INFO 2024-10-03 05:29:30,589 ProcessingQueue File processed and removed from queue: 03-10-2024_05-28-38_recorded_video.mp4
 INFO 2024-10-03 05:29:30,589 ProcessingQueue File processed and removed from queue: 03-10-2024_05-28-52_recorded_video.mp4
+INFO 2024-10-03 10:21:44,520 Recorder Initialized Recorder 
+INFO 2024-10-03 10:21:44,750 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:21:44,750 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:21:44,835 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:21:44,835 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:21:44,835 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:21:44,906 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:21:44,906 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:21:44,906 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:21:44,906 Delete Deletion Job is set to run at 5 PM daily.
+INFO 2024-10-03 10:21:44,906 Delete Started background deletion thread.
+DEBUG 2024-10-03 10:21:44,906 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:21:44,907 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:21:45,043 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:21:45,043 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:21:45,043 CheckConnections Initialized CheckConnections 
+ERROR 2024-10-03 10:21:50,439 views Error stopping recording: Expecting value: line 1 column 1 (char 0)
+INFO 2024-10-03 10:21:53,296 views PIN entered: 8767
+INFO 2024-10-03 10:21:53,297 views Redirecting to eonpod page
+INFO 2024-10-03 10:21:53,445 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:21:53,445 CheckConnections Testing RTSP connection to rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101
+DEBUG 2024-10-03 10:21:54,728 CheckConnections RTSP connection successful!
+INFO 2024-10-03 10:21:54,731 CheckConnections Testing ALSA connection with device index 5
+ERROR 2024-10-03 10:21:54,918 CheckConnections Failed to connect to ALSA audio device: [Errno -9998] Invalid number of channels
+INFO 2024-10-03 10:21:54,918 CheckConnections Testing video device at /dev/video1
+ERROR 2024-10-03 10:21:54,973 CheckConnections Failed to connect to video device at /dev/video1. Check if the device path is correct and accessible.
+INFO 2024-10-03 10:21:54,973 views Camera status: True, Mic status: False, Screen capture status: False
+INFO 2024-10-03 10:21:56,072 views Started recording for subject: Social Science
+INFO 2024-10-03 10:21:56,073 Recorder Recording started: 03-10-2024_10-21-56_recorded_video.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Social Science/03-10-2024_10-21-56/03-10-2024_10-21-56_recorded_video.mp4
+INFO 2024-10-03 10:21:56,073 views Just after start recording and before start screen grab: 10:21:56.073564
+INFO 2024-10-03 10:21:56,074 Recorder Screen Grab started: 03-10-2024_10-21-56_screen_grab.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Social Science/03-10-2024_10-21-56/03-10-2024_10-21-56_screen_grab.mp4
+INFO 2024-10-03 10:21:56,074 views Just after start screen grab: 10:21:56.074399
+DEBUG 2024-10-03 10:21:56,078 views Data received: {'is_recording': True}
+INFO 2024-10-03 10:21:56,079 views Recording status inside update_recoridng_status updated: True
+INFO 2024-10-03 10:22:07,016 views Stopped recording for subject: Social Science
+WARNING 2024-10-03 10:22:07,016 Recorder No recording in progress.
+INFO 2024-10-03 10:22:07,017 views Just after stop recording and before stop screen grab: 10:22:07.017171
+WARNING 2024-10-03 10:22:07,017 Recorder No screen grab in progress.
+INFO 2024-10-03 10:22:07,017 views Just after stop screen grab: 10:22:07.017945
+DEBUG 2024-10-03 10:22:07,018 Recorder File Info Retrieved: filename=03-10-2024_10-21-56_recorded_video.mp4, filepath=/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Social Science/03-10-2024_10-21-56/03-10-2024_10-21-56_recorded_video.mp4
+INFO 2024-10-03 10:22:07,018 views File Info: {'filename': '03-10-2024_10-21-56_recorded_video.mp4', 'filepath': '/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Social Science/03-10-2024_10-21-56/03-10-2024_10-21-56_recorded_video.mp4'}
+INFO 2024-10-03 10:22:07,019 ProcessingQueue Added to queue: recorded files.mp4 with path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies_recorded_video.mp4, subject: Social Science
+DEBUG 2024-10-03 10:22:07,033 views Data received: {'is_recording': False}
+INFO 2024-10-03 10:22:07,034 views Recording status inside update_recoridng_status updated: False
+INFO 2024-10-03 10:23:24,534 ProcessingQueue Processing file: recorded files.mp4
+INFO 2024-10-03 10:23:24,534 FileProcessor Processing MP4 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies_recorded_video.mp4
+DEBUG 2024-10-03 10:23:24,535 JsonBuilder fname, directory and parts: pragyna Business Studies_recorded_video.mp4, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Science', '01-10-2024_06-36-51']
+INFO 2024-10-03 10:23:24,536 FileProcessor Converting MP4 to MP3 for file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies_recorded_video.mp4
+DEBUG 2024-10-03 10:23:24,537 FileProcessor Current timestamp: 2024-10-03 10:23:24.536982
+INFO 2024-10-03 10:23:32,576 FileProcessor MP3 file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies.mp3
+DEBUG 2024-10-03 10:23:32,576 FileProcessor Current timestamp: 2024-10-03 10:23:32.576818
+DEBUG 2024-10-03 10:23:32,576 FileProcessor Time taken: 8.039836 seconds
+DEBUG 2024-10-03 10:23:32,576 JsonBuilder fname, directory and parts: pragyna Business Studies.mp3, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Science', '01-10-2024_06-36-51']
+INFO 2024-10-03 10:23:32,577 FileProcessor Transcribing MP3 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies.mp3
+DEBUG 2024-10-03 10:23:32,577 FileProcessor Current timestamp: 2024-10-03 10:23:32.577412
+DEBUG 2024-10-03 10:23:32,577 FileProcessor mp3filepath received: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies.mp3
+DEBUG 2024-10-03 10:27:24,658 FileProcessor Got Transcript from Whisper: 
+INFO 2024-10-03 10:27:24,658 FileProcessor Text file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies_transcript.txt
+INFO 2024-10-03 10:27:24,658 FileProcessor Transcript file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51/pragyna Business Studies_transcript.txt
+DEBUG 2024-10-03 10:27:24,658 FileProcessor Current timestamp: 2024-10-03 10:27:24.658459
+DEBUG 2024-10-03 10:27:24,658 FileProcessor Time taken: 232.081047 seconds
+DEBUG 2024-10-03 10:27:24,658 JsonBuilder fname, directory and parts: pragyna Business Studies_transcript.txt, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/01-10-2024_06-36-51, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Science', '01-10-2024_06-36-51']
+INFO 2024-10-03 10:27:24,658 ProcessingQueue File processed and removed from queue: recorded files.mp4
+INFO 2024-10-03 10:31:06,905 Recorder Initialized Recorder 
+INFO 2024-10-03 10:31:07,125 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:31:07,126 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:31:07,210 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:31:07,210 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:31:07,210 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:31:07,287 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:31:07,287 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:31:07,287 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:31:07,287 Delete Deletion Job is set to run at 5 PM daily.
+INFO 2024-10-03 10:31:07,287 Delete Started background deletion thread.
+DEBUG 2024-10-03 10:31:07,288 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:31:07,288 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:31:07,436 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:31:07,436 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:31:07,436 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:32:27,382 Recorder Initialized Recorder 
+INFO 2024-10-03 10:32:27,630 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:27,630 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:27,721 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:32:27,721 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:32:27,721 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:27,794 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:32:27,794 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:27,794 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:32:27,794 Delete Deletion Job is set to run at 5 PM daily.
+INFO 2024-10-03 10:32:27,794 Delete Started background deletion thread.
+DEBUG 2024-10-03 10:32:27,794 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:32:27,794 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:27,943 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:32:27,943 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:32:27,943 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:32:33,522 Recorder Initialized Recorder 
+INFO 2024-10-03 10:32:33,770 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:33,770 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:33,863 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:32:33,863 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:32:33,863 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:33,945 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:32:33,945 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:33,945 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:32:33,945 Delete Deletion Job is set to run at 5 PM daily.
+DEBUG 2024-10-03 10:32:33,945 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:32:33,945 Delete Started background deletion thread.
+INFO 2024-10-03 10:32:33,946 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:32:34,094 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:32:34,094 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:32:34,094 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:32:41,639 views Started recording for subject: Science
+INFO 2024-10-03 10:32:41,640 Recorder Recording started: 03-10-2024_10-32-41_recorded_video.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-32-41/03-10-2024_10-32-41_recorded_video.mp4
+INFO 2024-10-03 10:32:41,640 views Just after start recording and before start screen grab: 10:32:41.640655
+INFO 2024-10-03 10:32:41,641 Recorder Screen Grab started: 03-10-2024_10-32-41_screen_grab.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-32-41/03-10-2024_10-32-41_screen_grab.mp4
+INFO 2024-10-03 10:32:41,641 views Just after start screen grab: 10:32:41.641697
+DEBUG 2024-10-03 10:32:41,647 views Data received: {'is_recording': True}
+INFO 2024-10-03 10:32:41,648 views Recording status inside update_recoridng_status updated: True
+INFO 2024-10-03 10:32:51,419 views Stopped recording for subject: Science
+WARNING 2024-10-03 10:32:51,419 Recorder No recording in progress.
+INFO 2024-10-03 10:32:51,419 views Just after stop recording and before stop screen grab: 10:32:51.419839
+WARNING 2024-10-03 10:32:51,420 Recorder No screen grab in progress.
+INFO 2024-10-03 10:32:51,420 views Just after stop screen grab: 10:32:51.420543
+DEBUG 2024-10-03 10:32:51,421 Recorder File Info Retrieved: filename=03-10-2024_10-32-41_recorded_video.mp4, filepath=/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-32-41/03-10-2024_10-32-41_recorded_video.mp4
+INFO 2024-10-03 10:32:51,421 views File Info: {'filename': '03-10-2024_10-32-41_recorded_video.mp4', 'filepath': '/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-32-41/03-10-2024_10-32-41_recorded_video.mp4'}
+INFO 2024-10-03 10:32:51,421 ProcessingQueue Added to queue: recordedfiles.mp4 with path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4, subject: Science
+DEBUG 2024-10-03 10:32:51,431 views Data received: {'is_recording': False}
+INFO 2024-10-03 10:32:51,431 views Recording status inside update_recoridng_status updated: False
+INFO 2024-10-03 10:34:13,622 ProcessingQueue Processing file: recordedfiles.mp4
+INFO 2024-10-03 10:34:13,622 FileProcessor Processing MP4 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4
+DEBUG 2024-10-03 10:34:13,622 JsonBuilder fname, directory and parts: Anu Mam Agriculture_recorded_video.mp4, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+INFO 2024-10-03 10:34:13,623 FileProcessor Converting MP4 to MP3 for file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4
+DEBUG 2024-10-03 10:34:13,623 FileProcessor Current timestamp: 2024-10-03 10:34:13.623549
+INFO 2024-10-03 10:34:17,841 FileProcessor MP3 file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+DEBUG 2024-10-03 10:34:17,841 FileProcessor Current timestamp: 2024-10-03 10:34:17.841778
+DEBUG 2024-10-03 10:34:17,841 FileProcessor Time taken: 4.218229 seconds
+DEBUG 2024-10-03 10:34:17,842 JsonBuilder fname, directory and parts: Anu Mam Agriculture.mp3, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+INFO 2024-10-03 10:34:17,842 JsonBuilder Folder metadata created at /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/folder_metadata.json for subject Science.
+INFO 2024-10-03 10:34:17,842 JsonBuilder Folder metadata generated for Mathematics at /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15.
+INFO 2024-10-03 10:34:17,842 FileProcessor Transcribing MP3 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+DEBUG 2024-10-03 10:34:17,843 FileProcessor Current timestamp: 2024-10-03 10:34:17.843040
+DEBUG 2024-10-03 10:34:17,843 FileProcessor mp3filepath received: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+DEBUG 2024-10-03 10:36:13,245 FileProcessor Got Transcript from Whisper: 
+INFO 2024-10-03 10:36:13,245 FileProcessor Text file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt
+INFO 2024-10-03 10:36:13,245 FileProcessor Transcript file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt
+DEBUG 2024-10-03 10:36:13,245 FileProcessor Current timestamp: 2024-10-03 10:36:13.245871
+DEBUG 2024-10-03 10:36:13,245 FileProcessor Time taken: 115.402831 seconds
+DEBUG 2024-10-03 10:36:13,245 JsonBuilder fname, directory and parts: Anu Mam Agriculture_transcript.txt, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+INFO 2024-10-03 10:36:13,246 ProcessingQueue File processed and removed from queue: recordedfiles.mp4
+INFO 2024-10-03 10:39:44,765 Recorder Initialized Recorder 
+INFO 2024-10-03 10:39:45,000 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:39:45,000 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:39:45,088 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:39:45,088 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:39:45,088 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:39:45,161 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:39:45,161 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:39:45,161 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:39:45,161 Delete Deletion Job is set to run at 5 PM daily.
+DEBUG 2024-10-03 10:39:45,161 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:39:45,161 Delete Started background deletion thread.
+INFO 2024-10-03 10:39:45,161 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:39:45,310 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:39:45,310 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:39:45,310 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:40:04,565 Recorder Initialized Recorder 
+INFO 2024-10-03 10:40:04,827 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:40:04,827 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:40:04,930 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:40:04,930 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:40:04,930 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:40:05,018 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:40:05,019 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:40:05,019 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:40:05,019 Delete Deletion Job is set to run at 5 PM daily.
+INFO 2024-10-03 10:40:05,019 Delete Started background deletion thread.
+DEBUG 2024-10-03 10:40:05,019 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:40:05,020 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:40:05,184 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:40:05,184 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:40:05,184 CheckConnections Initialized CheckConnections 
+ERROR 2024-10-03 10:40:07,362 views Error stopping recording: Expecting value: line 1 column 1 (char 0)
+INFO 2024-10-03 10:40:11,662 views PIN entered: 5455
+INFO 2024-10-03 10:40:11,663 views Redirecting to eonpod page
+INFO 2024-10-03 10:40:11,740 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:40:11,740 CheckConnections Testing RTSP connection to rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101
+ERROR 2024-10-03 10:40:14,435 CheckConnections Failed to connect to RTSP stream.
+INFO 2024-10-03 10:40:14,435 CheckConnections Testing ALSA connection with device index 5
+ERROR 2024-10-03 10:40:14,480 CheckConnections Failed to connect to ALSA audio device: [Errno -9998] Invalid number of channels
+INFO 2024-10-03 10:40:14,481 CheckConnections Testing video device at /dev/video1
+ERROR 2024-10-03 10:40:14,482 CheckConnections Failed to connect to video device at /dev/video1. Check if the device path is correct and accessible.
+INFO 2024-10-03 10:40:14,482 views Camera status: False, Mic status: False, Screen capture status: False
+INFO 2024-10-03 10:40:28,226 views Started recording for subject: Science
+INFO 2024-10-03 10:40:28,228 Recorder Recording started: 03-10-2024_10-40-28_recorded_video.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-40-28/03-10-2024_10-40-28_recorded_video.mp4
+INFO 2024-10-03 10:40:28,228 views Just after start recording and before start screen grab: 10:40:28.228557
+INFO 2024-10-03 10:40:28,229 Recorder Screen Grab started: 03-10-2024_10-40-28_screen_grab.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-40-28/03-10-2024_10-40-28_screen_grab.mp4
+INFO 2024-10-03 10:40:28,229 views Just after start screen grab: 10:40:28.229821
+DEBUG 2024-10-03 10:40:28,241 views Data received: {'is_recording': True}
+INFO 2024-10-03 10:40:28,242 views Recording status inside update_recoridng_status updated: True
+INFO 2024-10-03 10:40:37,778 views Stopped recording for subject: Science
+WARNING 2024-10-03 10:40:37,779 Recorder No recording in progress.
+INFO 2024-10-03 10:40:37,779 views Just after stop recording and before stop screen grab: 10:40:37.779156
+WARNING 2024-10-03 10:40:37,779 Recorder No screen grab in progress.
+INFO 2024-10-03 10:40:37,779 views Just after stop screen grab: 10:40:37.779487
+DEBUG 2024-10-03 10:40:37,779 Recorder File Info Retrieved: filename=03-10-2024_10-40-28_recorded_video.mp4, filepath=/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-40-28/03-10-2024_10-40-28_recorded_video.mp4
+INFO 2024-10-03 10:40:37,779 views File Info: {'filename': '03-10-2024_10-40-28_recorded_video.mp4', 'filepath': '/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-40-28/03-10-2024_10-40-28_recorded_video.mp4'}
+INFO 2024-10-03 10:40:37,779 ProcessingQueue Added to queue: recordedfiles.mp4 with path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4, subject: Science
+DEBUG 2024-10-03 10:40:37,786 views Data received: {'is_recording': False}
+INFO 2024-10-03 10:40:37,786 views Recording status inside update_recoridng_status updated: False
+INFO 2024-10-03 10:41:44,662 ProcessingQueue Processing file: recordedfiles.mp4
+INFO 2024-10-03 10:41:44,662 FileProcessor Processing MP4 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4
+DEBUG 2024-10-03 10:41:44,663 JsonBuilder fname, directory and parts: Anu Mam Agriculture_recorded_video.mp4, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+ERROR 2024-10-03 10:41:44,663 ProcessingQueue Error processing file recordedfiles.mp4: Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/home/eon/Desktop/rock5/pod/eonpod/pod/classes/ProcessingQueue.py", line 47, in process_queue
+    self.processor.process_mp4_files(file_path)
+  File "/home/eon/Desktop/rock5/pod/eonpod/pod/classes/FileProcessor.py", line 162, in process_mp4_files
+    self.json_builder.add_generated_files(mp4_filepath, timetaken = 1)
+  File "/home/eon/Desktop/rock5/pod/eonpod/pod/classes/JsonBuilder.py", line 63, in add_generated_files
+    data = self.fetch_json_from_date_folder(date=timestamp.split("_")[0])
+  File "/home/eon/Desktop/rock5/pod/eonpod/pod/classes/JsonBuilder.py", line 44, in fetch_json_from_date_folder
+    content = json.load(file)
+  File "/usr/lib/python3.10/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+  File "/usr/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+INFO 2024-10-03 10:42:43,612 Recorder Initialized Recorder 
+INFO 2024-10-03 10:42:43,835 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:42:43,835 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:42:43,942 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:42:43,942 FileProcessor Initialized FileProcessor 
+INFO 2024-10-03 10:42:43,942 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:42:44,018 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:42:44,018 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:42:44,018 Delete Initialized DeletionJob with base folder: /home/eon/Desktop/rock5/pod/eonpod/pod/classes/../../media/processed_files
+INFO 2024-10-03 10:42:44,018 Delete Deletion Job is set to run at 5 PM daily.
+INFO 2024-10-03 10:42:44,018 Delete Started background deletion thread.
+DEBUG 2024-10-03 10:42:44,019 Delete Not time for deletion job yet. Sleeping for an hour.
+INFO 2024-10-03 10:42:44,019 JsonBuilder Initialized JsonBuilder
+INFO 2024-10-03 10:42:44,161 S3Uploader Initialized processing_thread for S3Uploader 
+INFO 2024-10-03 10:42:44,162 ProcessingQueue Initialized ProcessingQueue
+INFO 2024-10-03 10:42:44,162 CheckConnections Initialized CheckConnections 
+ERROR 2024-10-03 10:43:00,238 views Error stopping recording: Expecting value: line 1 column 1 (char 0)
+INFO 2024-10-03 10:43:02,802 views PIN entered: 3454
+INFO 2024-10-03 10:43:02,802 views Redirecting to eonpod page
+INFO 2024-10-03 10:43:02,841 CheckConnections Initialized CheckConnections 
+INFO 2024-10-03 10:43:02,841 CheckConnections Testing RTSP connection to rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101
+ERROR 2024-10-03 10:43:04,451 CheckConnections Failed to connect to RTSP stream.
+INFO 2024-10-03 10:43:04,451 CheckConnections Testing ALSA connection with device index 5
+ERROR 2024-10-03 10:43:04,483 CheckConnections Failed to connect to ALSA audio device: [Errno -9998] Invalid number of channels
+INFO 2024-10-03 10:43:04,484 CheckConnections Testing video device at /dev/video1
+ERROR 2024-10-03 10:43:04,484 CheckConnections Failed to connect to video device at /dev/video1. Check if the device path is correct and accessible.
+INFO 2024-10-03 10:43:04,484 views Camera status: False, Mic status: False, Screen capture status: False
+INFO 2024-10-03 10:43:08,715 views Started recording for subject: Science
+INFO 2024-10-03 10:43:08,716 Recorder Recording started: 03-10-2024_10-43-08_recorded_video.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-43-08/03-10-2024_10-43-08_recorded_video.mp4
+INFO 2024-10-03 10:43:08,717 views Just after start recording and before start screen grab: 10:43:08.717154
+INFO 2024-10-03 10:43:08,718 Recorder Screen Grab started: 03-10-2024_10-43-08_screen_grab.mp4, File path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-43-08/03-10-2024_10-43-08_screen_grab.mp4
+INFO 2024-10-03 10:43:08,719 views Just after start screen grab: 10:43:08.719213
+DEBUG 2024-10-03 10:43:08,730 views Data received: {'is_recording': True}
+INFO 2024-10-03 10:43:08,731 views Recording status inside update_recoridng_status updated: True
+INFO 2024-10-03 10:43:20,006 views Stopped recording for subject: Science
+WARNING 2024-10-03 10:43:20,006 Recorder No recording in progress.
+INFO 2024-10-03 10:43:20,006 views Just after stop recording and before stop screen grab: 10:43:20.006854
+WARNING 2024-10-03 10:43:20,007 Recorder No screen grab in progress.
+INFO 2024-10-03 10:43:20,007 views Just after stop screen grab: 10:43:20.007444
+DEBUG 2024-10-03 10:43:20,007 Recorder File Info Retrieved: filename=03-10-2024_10-43-08_recorded_video.mp4, filepath=/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-43-08/03-10-2024_10-43-08_recorded_video.mp4
+INFO 2024-10-03 10:43:20,007 views File Info: {'filename': '03-10-2024_10-43-08_recorded_video.mp4', 'filepath': '/home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Science/03-10-2024_10-43-08/03-10-2024_10-43-08_recorded_video.mp4'}
+INFO 2024-10-03 10:43:20,008 ProcessingQueue Added to queue: recordedfiles.mp4 with path: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4, subject: Science
+DEBUG 2024-10-03 10:43:20,017 views Data received: {'is_recording': False}
+INFO 2024-10-03 10:43:20,018 views Recording status inside update_recoridng_status updated: False
+INFO 2024-10-03 10:44:23,710 ProcessingQueue Processing file: recordedfiles.mp4
+INFO 2024-10-03 10:44:23,710 FileProcessor Processing MP4 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4
+DEBUG 2024-10-03 10:44:23,711 JsonBuilder fname, directory and parts: Anu Mam Agriculture_recorded_video.mp4, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+INFO 2024-10-03 10:44:23,711 FileProcessor Converting MP4 to MP3 for file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4
+DEBUG 2024-10-03 10:44:23,711 FileProcessor Current timestamp: 2024-10-03 10:44:23.711757
+INFO 2024-10-03 10:44:27,981 FileProcessor MP3 file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+DEBUG 2024-10-03 10:44:27,981 FileProcessor Current timestamp: 2024-10-03 10:44:27.981292
+DEBUG 2024-10-03 10:44:27,981 FileProcessor Time taken: 4.269535 seconds
+DEBUG 2024-10-03 10:44:27,981 JsonBuilder fname, directory and parts: Anu Mam Agriculture.mp3, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+INFO 2024-10-03 10:44:27,981 FileProcessor Transcribing MP3 file: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+DEBUG 2024-10-03 10:44:27,982 FileProcessor Current timestamp: 2024-10-03 10:44:27.982070
+DEBUG 2024-10-03 10:44:27,982 FileProcessor mp3filepath received: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+DEBUG 2024-10-03 10:46:21,311 FileProcessor Got Transcript from Whisper: 
+INFO 2024-10-03 10:46:21,311 FileProcessor Text file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt
+INFO 2024-10-03 10:46:21,311 FileProcessor Transcript file saved at: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt
+DEBUG 2024-10-03 10:46:21,311 FileProcessor Current timestamp: 2024-10-03 10:46:21.311618
+DEBUG 2024-10-03 10:46:21,311 FileProcessor Time taken: 113.329548 seconds
+DEBUG 2024-10-03 10:46:21,311 JsonBuilder fname, directory and parts: Anu Mam Agriculture_transcript.txt, /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15, ['', 'home', 'eon', 'Desktop', 'rock5', 'pod', 'eonpod', 'media', 'processed_files', 'Mathematics', '03-10-2024_05-17-15']
+INFO 2024-10-03 10:46:21,312 JsonBuilder Folder metadata created at /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/folder_metadata.json for subject Science.
+INFO 2024-10-03 10:46:21,312 JsonBuilder Folder metadata generated for Mathematics at /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15.
+INFO 2024-10-03 10:48:14,210 S3Uploader Added to queue: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15 for Science
+INFO 2024-10-03 10:48:14,210 S3Uploader Starting S3 upload for /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15
+INFO 2024-10-03 10:48:14,211 ProcessingQueue File processed and removed from queue: recordedfiles.mp4
+INFO 2024-10-03 10:48:14,369 S3Uploader Folder 'eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15' created successfully in bucket 'eonpod-data'
+INFO 2024-10-03 10:51:49,336 S3Uploader Compressed video saved to: /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/{timestamp}_compressed_file.mp4
+INFO 2024-10-03 10:51:52,206 S3Uploader Uploaded /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/{timestamp}_compressed_file.mp4 to s3://eonpod-data/eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4
+INFO 2024-10-03 10:51:52,211 JsonBuilder Updated S3 metadata for timestamp 03-10-2024_05-17-15: path eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4.
+INFO 2024-10-03 10:51:52,719 S3Uploader Uploaded /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture.mp3 to s3://eonpod-data/eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/Anu Mam Agriculture.mp3
+INFO 2024-10-03 10:51:52,721 JsonBuilder Updated S3 metadata for timestamp 03-10-2024_05-17-15: path eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/Anu Mam Agriculture.mp3.
+INFO 2024-10-03 10:51:52,823 S3Uploader Uploaded /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt to s3://eonpod-data/eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt
+INFO 2024-10-03 10:51:52,824 JsonBuilder Updated S3 metadata for timestamp 03-10-2024_05-17-15: path eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/Anu Mam Agriculture_transcript.txt.
+INFO 2024-10-03 10:51:52,921 S3Uploader Uploaded /home/eon/Desktop/rock5/pod/eonpod/media/processed_files/Mathematics/03-10-2024_05-17-15/folder_metadata.json to s3://eonpod-data/eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/folder_metadata.json
+INFO 2024-10-03 10:51:52,922 JsonBuilder Updated S3 metadata for timestamp 03-10-2024_05-17-15: path eon-ThinkPad-X1-Carbon-6th/Science/03-10-2024_05-17-15/folder_metadata.json.
+INFO 2024-10-03 10:51:52,922 S3Uploader Finished uploading files

@@ -26,9 +26,6 @@ from django.shortcuts import render
 logger = logging.getLogger('pod')
 
 
-llm = Ollama(base_url='http://localhost:11434', model="mistral")
-
-
 # Define the base path for media files
 media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
 
@@ -82,7 +79,7 @@ def stop_recording_view(request):
             logger.info(f"File Info: {file_info}")
 
             processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject)
-            # processing_queue.add_to_queue('recorded files.mp4', os.path.join(media_folderpath, 'Mathematics/01-10-2024_07-00-39/Anu Mam Agriculture_recorded_video.mp4'))
+            # processing_queue.add_to_queue('recordedfiles.mp4', os.path.join(media_folderpath, 'Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4'), selected_subject)
 
 
             return JsonResponse({
