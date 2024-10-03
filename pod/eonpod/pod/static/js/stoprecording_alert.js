@@ -121,18 +121,15 @@ async function stopRecording() {
 
         let data = await response.json();
 
-        if (data.success) {
-            console.log(data.message);
-            sendRecordingStatus(false);
-            document.getElementById("startRecord").style.display = "block";
-            document.getElementById("stopRecord").style.display = "none";
-            document.getElementById("text-label-record").textContent = "Start Recording";
-            document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
-            document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
-            isRecording = false;
-        } else {
-            console.error("Error message in stop recording: " + data.error);
-        }
+        console.log(data.message);
+        sendRecordingStatus(false);
+        document.getElementById("startRecord").style.display = "block";
+        document.getElementById("stopRecord").style.display = "none";
+        document.getElementById("text-label-record").textContent = "Start Recording";
+        document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
+        document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
+        isRecording = false;
+        
     } catch (error) {
         console.error('Failed to stop recording:', error);
     }
