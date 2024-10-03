@@ -4,7 +4,6 @@ import json
 import os
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from langchain_community.llms import Ollama
 from whisper_cpp_python import whisper
 from django.conf import settings
 from eonpod import settings
