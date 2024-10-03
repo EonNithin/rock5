@@ -11,7 +11,7 @@ class CheckConnections:
     def __init__(self):
         self.rtsp_url = "rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101"
         self.audio_device_index = 5
-        self.video_device_path = "/dev/video0"
+        self.video_device_path = "/dev/video1"
         logger.info(f"Initialized CheckConnections ")
 
 
