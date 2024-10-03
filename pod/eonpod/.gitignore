@@ -5,4 +5,5 @@ pod/tests/testdata
 db.sqlite3
 pod/classes/S3Uploader.py
 pod/classes/__pycache__
+pod/eonpod/pod/__pycache__
 logs/*
