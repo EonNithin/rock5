@@ -5,7 +5,6 @@ from django.conf import settings
 from pod.classes.FileProcessor import FileProcessor
 from pod.classes.Delete import DeletionJob
 from pod.classes.S3Uploader import S3UploadQueue
-from pydantic.v1.schema import schema
 import logging
 
 
