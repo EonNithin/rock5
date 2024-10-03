@@ -3,3 +3,4 @@ media/processed_files/*
 models/*
 pod/tests/testdata
 db.sqlite3
+pod/classes/S3Uploader.py
