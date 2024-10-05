@@ -94,51 +94,6 @@ class FileProcessor:
             logger.error(f"Error transcribing MP3: {e}")
             return None
 
-    # def transcript_to_summary(self, transcript_filepath):
-    #     try:
-    #         logger.info(f"Generating summary for transcript: {transcript_filepath}")
-    #         start_time = self.getTimeStamp()
-    #         transcript = self.load_text_from_file(transcript_filepath)
-    #         summary = ''.join(self.bert_model(body=transcript, min_length=30))
-    #         logger.debug(f"Summary generated")
-    #         # Define the path to save the summary file in the same directory as the transcript file
-    #         summary_filepath = transcript_filepath.replace('_transcript.txt', '_summary.txt')
-    #         # Save the summary to a text file
-    #         self.save_text_as_file(summary, summary_filepath)
-    #         logger.info(f"Summary file saved at: {summary_filepath}")
-    #         end_time = self.getTimeStamp()
-    #         time_taken = self.calculate_time_taken(start_time, end_time)
-    #         # self.json_builder.add_generated_files(summary_filepath, time_taken)
-    #         # return self.summary_to_quiz(summary_filepath)
-    #         return True
-    #     except Exception as e:
-    #         logger.error(f"Error generating summary: {e}")
-    #         return None
-
-    # def summary_to_quiz(self, summary_filepath):
-    #     try:
-    #         logger.info(f"Generating quiz questions for summary: {summary_filepath}")
-    #         start_time = self.getTimeStamp()
-    #         summary = self.load_text_from_file(summary_filepath)
-    #         quiz_prompt = f"\nGenerate 3 Multiple Choice Quiz questions with answers for: {summary}\n"
-    #         quiz_questions = self.llm.invoke(quiz_prompt)
-    #         logger.debug(f"Quiz Questions generated")
-
-    #         # Define the path to save the quiz file in the same directory as the summary file
-    #         quiz_filepath = summary_filepath.replace('_summary.txt', '_quiz.txt')
-    #         # Save the quiz to a text file
-    #         self.save_text_as_file(quiz_questions, quiz_filepath)
-    #         end_time = self.getTimeStamp()
-    #         time_taken = self.calculate_time_taken(start_time, end_time)
-    #         # self.json_builder.add_generated_files(quiz_filepath, time_taken)
-    #         # print(f"\nQuiz file saved to: {quiz_filepath}\n")
-            
-    #         # self.s3.add_to_queue(school=settings.SCHOOL_NAME, subject="Science", local_directory= os.path.dirname(quiz_filepath))
-    #         # return quiz_questions.strip().split('\n\n')  # Assuming each question is separated by two newlines
-    #         return True
-    #     except Exception as e:
-    #         logger.error(f"Error generating quiz questions: {e}")
-    #         return [f"\nError generating questions: {e}\n"]
 
     def save_text_as_file(self, text, file_path):
         try:
@@ -155,6 +110,7 @@ class FileProcessor:
         except Exception as e:
             logger.error(f"Error loading text from file: {txt_filepath}: {e}")
             return ""
+        
         
     def process_mp4_files(self, mp4_filepath):
         print(f"Received MP4 file for processing: {mp4_filepath}")

@@ -50,6 +50,7 @@ def start_recording_view(request):
         try:
             data = json.loads(request.body)
             selected_subject = data.get('subject', '')  # Get the subject from the request
+            logger.info(f"selected subject is : {selected_subject}")
             logger.info(f"Started recording for subject: {selected_subject}")
             recorder.start_recording(selected_subject)
             logger.info(f"Just after start recording and before start screen grab: {datetime.now().time()}")

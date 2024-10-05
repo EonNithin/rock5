@@ -120,7 +120,6 @@ function getCookie(name) {
 }
 
 
-
 // Function to toggle recording state
 async function toggleRecording() {
     const startRecordButton = document.getElementById("startRecord");
@@ -135,39 +134,8 @@ async function toggleRecording() {
             // Show a confirm dialog instead of an alert
             // Call this function instead of using `confirm()`
             showConfirmDialog();
+            checkDeviceConnections();
             
-            // if(userConfirmed){
-            //     alert("place your Mic back in the eonpod")
-            //     let response = await fetch('/stop_recording_view/', {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //             'X-CSRFToken': getCookie('csrftoken')
-            //         }
-            //     });
-
-                
-            //     let data = await response.json();
-
-            //     if (data.success) {                
-            //         console.log(data.message);
-            //         sendRecordingStatus(false);
-            //         startRecordButton.style.display = "block";
-            //         stopRecordButton.style.display = "none";
-            //         textLabelRecord.textContent = "Start Recording";
-            //         progressBar.style.visibility = "hidden"; // Hide progress bar
-            //         progressBar.style.width = "0%"; // Reset progress bar
-            //         isRecording = false;
-                
-            //     } else {
-            //         console.error("error message in stop recording:"+ data.error);
-            //     }
-            // }
-            // else{
-            //     // If the user clicked "Cancel", do nothing
-            //     console.log('Recording continues.');
-            // }
-
         } catch (error) {
             console.error('Failed to stop recording:', error);            
         }
@@ -180,11 +148,7 @@ async function toggleRecording() {
 
         // Start recording
         try {
-            // Step 1: Check device connections
-            // Call checkDeviceConnections() and wait for it to complete
-            // checkDeviceConnections();
-            // console.log("DeviceConnections updated \n")
-
+            
             // Call your start recording function here
             let startRecordingResponse = await fetch('/start_recording_view/', {
                 method: 'POST',
@@ -196,9 +160,8 @@ async function toggleRecording() {
             });
 
             let startRecordingData = await startRecordingResponse.json();
-
             if (startRecordingData.success) {
-                console.log(startRecordingData.message);
+                console.log("start recording view response",startRecordingData.message);
                 sendRecordingStatus(true);
                 startRecordButton.style.display = "none";
                 stopRecordButton.style.display = "block";
@@ -207,7 +170,6 @@ async function toggleRecording() {
                 isRecording = true;
             } else {
                 console.error("Error starting recording: " + startRecordingData.error);
-                alert("Error: " + startRecordingData.error);
             }         
         } catch (error) {
             console.error('Failed to start recording:', error);
