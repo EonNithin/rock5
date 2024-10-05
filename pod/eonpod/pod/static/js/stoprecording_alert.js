@@ -122,6 +122,7 @@ async function stopRecording() {
         let data = await response.json();
 
         console.log(data.message);
+
         sendRecordingStatus(false);
         document.getElementById("startRecord").style.display = "block";
         document.getElementById("stopRecord").style.display = "none";
@@ -129,6 +130,8 @@ async function stopRecording() {
         document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
         document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
         isRecording = false;
+        
+        checkDeviceConnections();
         
     } catch (error) {
         console.error('Failed to stop recording:', error);

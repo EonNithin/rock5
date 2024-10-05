@@ -134,8 +134,6 @@ async function toggleRecording() {
             // Show a confirm dialog instead of an alert
             // Call this function instead of using `confirm()`
             showConfirmDialog();
-            checkDeviceConnections();
-            
         } catch (error) {
             console.error('Failed to stop recording:', error);            
         }
