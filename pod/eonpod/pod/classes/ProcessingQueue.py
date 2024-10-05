@@ -28,7 +28,7 @@ class ProcessingQueue:
 
     def add_to_queue(self, file_name, file_path, subject, is_language = False):
         with self.lock:
-            self.mp4_paths[file_name] = {"file_path": file_path, "status": "NotStarted", "is_language": is_language}
+            self.mp4_paths[file_name] = {"file_path": file_path, "status": "NotStarted", "is_language": is_language, "subject": subject }
         logger.info(f"Added to queue: {file_name} with path: {file_path}, subject: {subject}")
 
 
@@ -42,9 +42,10 @@ class ProcessingQueue:
                             logger.info(f"Processing file: {file_name}")
                             self.mp4_paths[file_name]["status"] = "InProgress"
                             file_path = data["file_path"]  # Retrieve the correct file path
+                            subject = data["subject"]  # Retrieve the subject
                             self.lock.release()  # Release the lock before processing
                             try:
-                                self.processor.process_mp4_files(file_path)
+                                self.processor.process_mp4_files(file_path, subject)
                                 with self.lock:
                                     files_to_delete.append(file_name)
                             except Exception as e:

@@ -37,7 +37,7 @@ class FileProcessor:
         return (total_seconds)  # Converting time difference to seconds
     
 
-    def mp4_to_mp3(self, mp4_filepath):
+    def mp4_to_mp3(self, mp4_filepath, subject):
         # Extract the directory from the MP4 file path
         directory = os.path.dirname(mp4_filepath)
         mp3_filepath = os.path.join(directory, os.path.basename(mp4_filepath).replace('_recorded_video.mp4', '.mp3'))
@@ -64,14 +64,14 @@ class FileProcessor:
             end_time = self.getTimeStamp()
             time_taken = self.calculate_time_taken(start_time, end_time)
             self.json_builder.add_generated_files(mp3_filepath, time_taken)
-            return self.mp3_to_transcript(mp3_filepath)
+            return self.mp3_to_transcript(mp3_filepath, subject)
             
         except Exception as e:
             logger.error(f"Error converting MP4 to MP3: {e}")
             return None
 
 
-    def mp3_to_transcript(self, mp3_filepath):
+    def mp3_to_transcript(self, mp3_filepath, subject):
         try:
             logger.info(f"Transcribing MP3 file: {mp3_filepath}")
             start_time = self.getTimeStamp()
@@ -88,7 +88,7 @@ class FileProcessor:
             time_taken = self.calculate_time_taken(start_time, end_time)
             self.json_builder.add_generated_files(transcript_filepath, time_taken)
             # return self.transcript_to_summary(transcript_filepath)
-            self.s3.add_to_queue(school=settings.SCHOOL_NAME, subject="Science", local_directory= os.path.dirname(transcript_filepath))
+            self.s3.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory= os.path.dirname(transcript_filepath))
             return True
         except Exception as e:
             logger.error(f"Error transcribing MP3: {e}")
@@ -112,14 +112,10 @@ class FileProcessor:
             return ""
         
         
-    def process_mp4_files(self, mp4_filepath):
-        print(f"Received MP4 file for processing: {mp4_filepath}")
-        logger.info(f"Processing MP4 file: {mp4_filepath}")
+    def process_mp4_files(self, mp4_filepath, subject):
+        logger.info(f"Processing MP4 file: {mp4_filepath} for subject: {subject}")
         self.json_builder.add_generated_files(mp4_filepath, timetaken = 1)
-        # try:
-        #     grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
-        #     if os.path.exists(grab_path):
-        #         self.json_builder.add_generated_files(grab_path)
-        # except:
-        #     print("No Screengrab found")
-        return self.mp4_to_mp3(mp4_filepath)
+        # grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
+        # if os.path.exists(grab_path):
+        #     self.json_builder.add_generated_files(grab_path)
+        return self.mp4_to_mp3(mp4_filepath, subject)
