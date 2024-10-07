@@ -4,6 +4,7 @@ from datetime import datetime
 from django.conf import settings
 import logging
 import re
+import pytz
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -15,6 +16,7 @@ class Recorder:
         self.grab_process = None
         self.stream_port = 8090  # You can choose a different port if needed
         self.timestamp = None
+        self.timezone = pytz.timezone('Asia/Kolkata') 
         self.subject = None
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.camera_url = 'rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101'
@@ -23,7 +25,7 @@ class Recorder:
 
 
     def update_timestamp(self):
-        self.timestamp = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        self.timestamp = datetime.now(self.timezone).strftime("%d-%m-%Y_%H-%M-%S")
 
 
     def get_audio_device_info(self):
