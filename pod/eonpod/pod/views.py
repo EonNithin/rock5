@@ -45,6 +45,30 @@ screen_capture_status = False
 
 
 @csrf_exempt
+@xframe_options_exempt
+def video_stream(request):
+    # Open the video capture (replace with your RTSP URL)
+    video_source = 'rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101'
+    cap = cv2.VideoCapture(video_source)
+
+    # Define a generator function to stream the video frames
+    def generate():
+        while True:
+            success, frame = cap.read()
+            if not success:
+                break
+            # Encode the frame as JPEG
+            _, buffer = cv2.imencode('.jpg', frame)
+            frame_data = buffer.tobytes()
+            # Yield the frame data in the correct format
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' +
+                   frame_data + b'\r\n')
+
+    return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+@csrf_exempt
 def start_recording_view(request):
     if request.method == "POST":
         try:
@@ -80,7 +104,7 @@ def stop_recording_view(request):
             logger.info(f"File Info: {file_info}")
 
             processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject)
-            # processing_queue.add_to_queue('recordedfiles.mp4', os.path.join(media_folderpath, 'Mathematics/03-10-2024_05-17-15/Anu Mam Agriculture_recorded_video.mp4'), selected_subject)
+            # processing_queue.add_to_queue('recordedfiles.mp4', os.path.join(media_folderpath, 'Mathematics/04-10-2024_08-57-20/16-09-2024_06-34-24_recorded_video.mp4'), selected_subject)
 
 
             return JsonResponse({
@@ -95,150 +119,6 @@ def stop_recording_view(request):
 
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
-
-
-@csrf_exempt
-@xframe_options_exempt
-def video_stream(request):
-    # Open the video capture (replace with your RTSP URL)
-    video_source = 'rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101'
-    cap = cv2.VideoCapture(video_source)
-
-    # Define a generator function to stream the video frames
-    def generate():
-        while True:
-            success, frame = cap.read()
-            if not success:
-                break
-            # Encode the frame as JPEG
-            _, buffer = cv2.imencode('.jpg', frame)
-            frame_data = buffer.tobytes()
-            # Yield the frame data in the correct format
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' +
-                   frame_data + b'\r\n')
-
-    return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
-
-
-
-def get_latest_mp4_filepath(request):
-    try:
-        # Step 1: List all folders in the media directory
-        # media_folderpath = settings.MEDIA_ROOT  # Ensure your MEDIA_ROOT is defined correctly
-        root_folders = [f for f in os.listdir(media_folderpath) if os.path.isdir(os.path.join(media_folderpath, f))]
-        
-        if not root_folders:
-            return JsonResponse({'error': 'No folders found in the media directory'}, status=404)
-        
-        # Step 2: Get the latest folder based on modification time
-        latest_root_folder = max(root_folders, key=lambda f: os.path.getmtime(os.path.join(media_folderpath, f)))
-        latest_root_folder_path = os.path.join(media_folderpath, latest_root_folder)
-        
-        # Step 3: List all subfolders inside the latest root folder
-        sub_folders = [f for f in os.listdir(latest_root_folder_path) if os.path.isdir(os.path.join(latest_root_folder_path, f))]
-        
-        if not sub_folders:
-            return JsonResponse({'error': 'No subfolders found in the latest root folder'}, status=404)
-        
-        # Step 4: Get the latest subfolder based on modification time
-        latest_sub_folder = max(sub_folders, key=lambda f: os.path.getmtime(os.path.join(latest_root_folder_path, f)))
-        latest_sub_folder_path = os.path.join(latest_root_folder_path, latest_sub_folder)
-        
-        # Step 5: Check for 'recorded_video.mp4' in the latest subfolder
-        recorded_video_path = os.path.join(latest_sub_folder_path, 'recorded_video.mp4')
-        
-        if not os.path.exists(recorded_video_path):
-            return JsonResponse({'error': 'recorded_video.mp4 not found in the latest subfolder'}, status=404)
-        
-        # Step 6: Construct the media URL for the recorded video file
-        media_url = os.path.join(settings.MEDIA_URL, 'processed_files', latest_root_folder, latest_sub_folder, 'recorded_video.mp4').replace("\\", "/")
-        print("\nMedia URL is:\n", media_url)
-        
-        return JsonResponse({'latest_file': media_url})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-
-conversation_history = []
-
-
-def ollama_generate_response(question):
-   try:
-       global conversation_history
-       # full_prompt = "\n".join(conversation_history)
-       response_text = llm.invoke(question)
-       # print("success invoking ollama mistral model")
-       #conversation_history.append(response_text)
-       print("Response:\n", response_text, "\n")
-       return response_text
-   except Exception as e:
-       return "error generating response: {e}"
-
-
-@csrf_exempt
-def generate_response(request):
-    if request.method == 'POST':
-        try:
-            question = request.POST.get('question', '')
-            if not question:
-                logger.warning("POST data is empty or question is not in POST data.")
-                logger.debug(f"Request body: {request.body.decode('utf-8')}")
-                logger.debug(f"Request POST: {request.POST}")
-            logger.info(f"Question: {question}")
-            print("Question is : \n", question)
-            response = ollama_generate_response(question)
-            logger.info(f"Response is: {response}")
-            return JsonResponse({'question': question, 'response': response})
-        except Exception as e:
-            logger.error(f"Error processing request: {str(e)}")
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-
-recording_status = False
-
-
-@csrf_exempt
-def update_recording_status(request):
-    global recording_status
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            logger.debug(f"Data received: {data}")
-            recording_status = data.get('is_recording')
-            logger.info(f"Recording status inside update_recoridng_status updated: {recording_status}")
-        except Exception as e:
-            logger.error(f"Error updating recording status: {str(e)}")
-            return JsonResponse({'status': 'failed'}, status=400)
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'}, status=400)
-
-
-streaming_status = False
-
-
-@csrf_exempt
-def update_streaming_status(request):
-    global streaming_status
-    
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            print("data:", data)
-            logger.debug(f"Data received: {data}")
-            streaming_status = data.get('is_streaming', False)
-            logger.info(f"Streaming status updated: {streaming_status}")
-            return JsonResponse({'status': 'success'})
-        except Exception as e:
-            logger.error(f"Error updating streaming status: {str(e)}")
-            return JsonResponse({'status': 'failed'}, status=400)
-    return JsonResponse({'status': 'failed'}, status=400)
-
-
-# def start_preview():
-#     recorder.start_preview()
 
 @csrf_exempt
 def check_device_connections(request):
@@ -302,13 +182,9 @@ def ai_chatpage(request):
 # @login_required
 def eonpod(request):
     # start_preview()
-    global recording_status, streaming_status
+    # global recording_status, streaming_status
     # Log the current recording and streaming status
-    logger.info(f"Recording status in eonpod view: {recording_status}")
-    logger.info(f"Streaming status in eonpod view: {streaming_status}")
-
-    return render(request, 'eonpod.html', {
-        'is_recording': recording_status,
-        'is_streaming': streaming_status
-    })
+    # logger.info(f"Streaming status in eonpod view: {streaming_status}")
+    # print(f"Recording status is : {recording_status}, Streaming status is : {streaming_status}")
+    return render(request, 'eonpod.html')
 
