@@ -127,7 +127,6 @@ async function toggleRecording() {
     const textLabelRecord = document.getElementById("text-label-record");
     const progressBar = document.getElementById("progress-bar1");
     
-    //    video.src = 'http://127.0.0.1:8090/live.ts';
     if (isRecording) {
         // Stop recording
         try {
@@ -147,6 +146,12 @@ async function toggleRecording() {
         // Start recording
         try {
             
+            startRecordButton.style.display = "none";
+            stopRecordButton.style.display = "block";
+            textLabelRecord.textContent = "Stop Recording";
+            progressBar.style.visibility = "visible"; // Show progress bar
+            isRecording = true;
+
             // Call your start recording function here
             let startRecordingResponse = await fetch('/start_recording_view/', {
                 method: 'POST',
@@ -158,81 +163,13 @@ async function toggleRecording() {
             });
 
             let startRecordingData = await startRecordingResponse.json();
-            if (startRecordingData.success) {
-                console.log("start recording view response",startRecordingData.message);
-                sendRecordingStatus(true);
-                startRecordButton.style.display = "none";
-                stopRecordButton.style.display = "block";
-                textLabelRecord.textContent = "Stop Recording";
-                progressBar.style.visibility = "visible"; // Show progress bar
-                isRecording = true;
-            } else {
-                console.error("Error starting recording: " + startRecordingData.error);
-            }         
+            console.log("start recording view response",startRecordingData.message);
+        
         } catch (error) {
             console.error('Failed to start recording:', error);
-            alert('Failed to start recording. Please refresh page and check your device connection');
         }
     }
 }
-
-
-async function updateRecordingButton() {
-   try {
-       const response = await obs.call("GetRecordStatus");
-       isRecording = response.outputActive;
-       console.log(response);
-       console.log(isRecording);
-       if(isRecording){
-           sendRecordingStatus(true);
-       }
-       else{
-           sendRecordingStatus(false);
-       }
-       const startRecordButton = document.getElementById('startRecord');
-       const stopRecordButton = document.getElementById('stopRecord');
-       const textLabelRecord = document.getElementById("text-label-record");
-       const progressBar = document.getElementById("progress-bar1");
-       if (isRecording) {
-           startRecordButton.style.display = 'none';
-           stopRecordButton.style.display = 'block';
-           textLabelRecord.textContent = 'Stop Recording';
-           progressBar.style.visibility = "visible";
-       } else {
-           startRecordButton.style.display = 'block';
-           stopRecordButton.style.display = 'none';
-           textLabelRecord.textContent = 'Start Recording';
-           progressBar.style.visibility = "hidden";
-       }
-   } catch (error) {
-       console.error('Failed to get recording status:', error);
-   }
-}
-
-
-function sendRecordingStatus(status) {
-   fetch('/update_recording_status/', {
-       method: 'POST',
-       headers: {
-           'Content-Type': 'application/json',
-           'X-CSRFToken': getCookie('csrftoken')  // Ensure CSRF token is sent with the request
-       },
-       body: JSON.stringify({is_recording: status})
-   }).then(response => {
-       if (!response.ok) {
-           console.error('Failed to update recording status on server');
-       }
-   }).catch(error => {
-       console.error('Error in sending recording status:', error);
-   });
-}
-
-
-function aiChatPage(){
-   console.log("aiChatPage function")
-   window.location.href = '/ai_chatpage/';
-}
-
 
 // Handling dropdown select subject
 
