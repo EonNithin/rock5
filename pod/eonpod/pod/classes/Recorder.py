@@ -56,52 +56,91 @@ class Recorder:
             logger.warning("No USB Composite Device found.")
             return None, None
 
+
     def pause_recording(self):
         self.stop_recording()
 
-    def unpause_recording(self):
+
+    def resume_recording(self):
         self.part += 1
         self.start_recording(self.subject, self.part)
     
+
     def concat_recording_parts(self):
         """Concatenate all recorded parts into one final MP4 file."""
         try:
             # Directory where parts are saved
             files_dir = os.path.join(self.media_folderpath, self.subject, self.timestamp)
-            
-            # Find all part files in the directory
+
+            # Find all part files in the directory that match the recorded video naming pattern
             part_files = sorted(
-                [f for f in os.listdir(files_dir) if f.endswith('.mp4')],
-                key=lambda x: int(re.search(r'part_(\d+)', x).group(1))  # Sort by part number
+                [f for f in os.listdir(files_dir) 
+                if re.match(r'^\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}_recorded_video_\d+\.mp4$', f)],  # Match the full naming pattern
+                key=lambda x: int(re.search(r'_(\d+)\.mp4', x).group(1))  # Sort by part number
             )
-            
+
             # Create a file with the list of files to be concatenated
             concat_list_path = os.path.join(files_dir, "concat_list.txt")
             with open(concat_list_path, 'w') as concat_list:
                 for part_file in part_files:
                     concat_list.write(f"file '{os.path.join(files_dir, part_file)}'\n")
-            
+
             # Output file (final concatenated MP4 file)
-            output_file = os.path.join(files_dir, f"{self.timestamp}_final_recording.mp4")
-            
+            self.filepath = os.path.join(files_dir, f"{self.timestamp}_recorded_video.mp4")
+
             # Run FFmpeg command to concatenate files
             concat_command = [
                 'ffmpeg', '-f', 'concat', '-safe', '0', '-i', concat_list_path,
-                '-c', 'copy', output_file
+                '-c', 'copy', self.filepath
             ]
-            
+
             # Execute the FFmpeg process
             subprocess.run(concat_command, check=True)
-            
-            logger.info(f"All parts concatenated successfully into {output_file}")
-        
+
+            logger.info(f"All parts concatenated successfully into {self.filepath}")
+
         except Exception as e:
             logger.error(f"Error concatenating recording parts: {str(e)}")
+
+
+    def get_recorded_files(self):
+        # Directory where parts are saved
+        files_dir = os.path.join(self.media_folderpath, self.subject, self.timestamp)
+
+        # Find all recorded video files
+        recorded_files = sorted(
+            [f for f in os.listdir(files_dir) 
+            if re.match(r'^\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}_recorded_video_\d+\.mp4$', f)],
+            key=lambda x: int(re.search(r'_(\d+)\.mp4', x).group(1))
+        )
+        return recorded_files
+    
+
+    def rename_outputfile(self):
+        # Once the recording stops, concatenate parts
+        recorded_files = self.get_recorded_files()
+        # Only one recording found, process it directly
+        single_file = recorded_files[0]
+        logger.info(f"Single file: {single_file}, No need concatination")
+        # Path to the single file
+        files_dir = os.path.join(self.media_folderpath, self.subject, self.timestamp)
+        original_filepath = os.path.join(files_dir, single_file)
+
+        # Remove the part number (_0) before the extension, if present
+        base_name, extension = os.path.splitext(single_file)  # Separate the name and extension
+        updated_name = base_name.rsplit('_', 1)[0] + extension
+
+        updated_filepath = os.path.join(files_dir, updated_name)
+        logger.info(f"File renamed from {original_filepath} to {updated_filepath}")
+        os.rename(original_filepath, updated_filepath)
+
+        return updated_name
 
 
     def start_recording(self, subject, part=0 ):
         # self.part = part
         if part == 0:
+            self.part = 0  # Reset part numbering for each new recording
             self.update_timestamp()
         self.subject = subject
 
@@ -177,7 +216,7 @@ class Recorder:
             self.process.wait()
             logger.info("Recording stopped.")
             # Once the recording stops, concatenate parts
-            self.concat_recording_parts()
+            # self.concat_recording_parts()
         else:
             logger.warning("No recording in progress.")
 

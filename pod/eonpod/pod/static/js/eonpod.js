@@ -122,6 +122,7 @@ function getCookie(name) {
 
 // Function to toggle recording state
 async function toggleRecording() {
+    const controlsDiv = document.getElementById('controls');
     const startRecordButton = document.getElementById("startRecord");
     const stopRecordButton = document.getElementById("stopRecord");
     const textLabelRecord = document.getElementById("text-label-record");
@@ -145,7 +146,7 @@ async function toggleRecording() {
 
         // Start recording
         try {
-            
+            controlsDiv.style.display = 'block';
             startRecordButton.style.display = "none";
             stopRecordButton.style.display = "block";
             textLabelRecord.textContent = "Stop Recording";

@@ -1,5 +1,6 @@
 
 function showConfirmDialog() {
+    const controlsDiv = document.getElementById('controls');
     const modal = document.getElementById("customConfirm");
     const startRecordButton = document.getElementById("startRecord");
     const stopRecordButton = document.getElementById("stopRecord");
@@ -32,6 +33,8 @@ function showConfirmDialog() {
 // Function to stop the recording
 async function stopRecording() {
     try {
+        const controlsDiv = document.getElementById('controls');
+        controlsDiv.style.display = 'none';
         document.getElementById("startRecord").style.display = "block";
         document.getElementById("stopRecord").style.display = "none";
         document.getElementById("text-label-record").textContent = "Start Recording";
@@ -39,6 +42,10 @@ async function stopRecording() {
         document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
         isRecording = false;
 
+        document.getElementById('pause-svg').setAttribute('fill', 'black');
+        console.log("Pause svg color changed to black");
+        document.getElementById('resume-svg').setAttribute('fill', 'black');
+        console.log("Resume svg color changes to black");
 
         let response = await fetch('/stop_recording_view/', {
             method: 'POST',

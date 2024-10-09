@@ -67,6 +67,33 @@ def video_stream(request):
 
     return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
 
+@csrf_exempt
+def pause_recording_view(request):
+    if request.method == 'POST':
+        try:
+            # Call the pause recording method
+            recorder.pause_recording()
+
+            # Return success response
+            return JsonResponse({'status': 'success', 'message': 'Recording paused successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400) 
+
+
+@csrf_exempt
+def resume_recording_view(request):
+    if request.method == 'POST':
+        try:
+            # Call the pause recording method
+            recorder.resume_recording()
+
+            # Return success response
+            return JsonResponse({'status': 'success', 'message': 'Recording paused successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400) 
+
 
 @csrf_exempt
 def start_recording_view(request):
@@ -98,6 +125,21 @@ def stop_recording_view(request):
             logger.info(f"Stopped recording for subject: {selected_subject}")
             recorder.stop_recording()
             logger.info(f"Just after stop recording and before stop screen grab: {datetime.now().time()}")
+            
+            # Once the recording stops, concatenate parts
+            recorded_files = recorder.get_recorded_files()
+
+            if len(recorded_files) == 0:
+                logger.info("No recordings found.")
+            elif len(recorded_files) == 1:
+                logger.info("Single recording found.")
+                recorder.rename_outputfile()
+            else:
+                # Multiple recordings found, concatenate them
+                logger.info("Multiple recordings found, concatenating...")
+                # Call your concatenation function here
+                recorder.concat_recording_parts()
+                
             recorder.stop_screen_grab()
             logger.info(f"Just after stop screen grab: {datetime.now().time()}")
             file_info = recorder.get_file_info()
