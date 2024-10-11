@@ -6,4 +6,4 @@ db.sqlite3
 pod/classes/S3Uploader.py
 pod/classes/__pycache__
 pod/eonpod/pod/__pycache__
-logs/*
+pod/eonpod/pod/dbmodels/.env
