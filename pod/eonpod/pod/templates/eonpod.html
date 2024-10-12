@@ -119,9 +119,14 @@
                                 </svg>
                             </div>
                             <div class="dropdown-content" id="dropdown-content">
-                                <a onclick="selectOption('Science')">Science</a>
-                                <a onclick="selectOption('Mathematics')">Mathematics</a>
-                                <a onclick="selectOption('Social Science')">Social Science</a>
+                                {% for subject in subjects %}
+                                {% if subject.subject_group.is_active %}
+                                <a
+                                    onclick="selectOption('{{ subject.subject_group.class_name }} - {{ subject.subject_group.subject }}', '{{ subject.subject_group.title }}', '{{ subject.subject_group.is_language_subject }}')">
+                                    {{ subject.subject_group.class_name }} - {{ subject.subject_group.subject }}
+                                </a>
+                                {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>

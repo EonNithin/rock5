@@ -122,12 +122,15 @@ function getCookie(name) {
 
 // Function to toggle recording state
 async function toggleRecording() {
-    const controlsDiv = document.getElementById('controls');
     const startRecordButton = document.getElementById("startRecord");
     const stopRecordButton = document.getElementById("stopRecord");
     const textLabelRecord = document.getElementById("text-label-record");
     const progressBar = document.getElementById("progress-bar1");
-    
+    const controlsDiv = document.getElementById('controls');
+    const pauseRecordButton = document.getElementById("pause-recording");
+    const resumeRecordContainer = document.getElementById("resume-recording");
+
+
     if (isRecording) {
         // Stop recording
         try {
@@ -146,11 +149,17 @@ async function toggleRecording() {
 
         // Start recording
         try {
-            controlsDiv.style.display = 'block';
+            
             startRecordButton.style.display = "none";
             stopRecordButton.style.display = "block";
             textLabelRecord.textContent = "Stop Recording";
             progressBar.style.visibility = "visible"; // Show progress bar
+
+            controlsDiv.style.display = 'block';
+            // Show pause button, hide resume button initially
+            pauseRecordButton.style.display = "block";
+            resumeRecordContainer.style.display = "none";
+
             isRecording = true;
 
             // Call your start recording function here
@@ -160,7 +169,10 @@ async function toggleRecording() {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken')
                 },
-                body: JSON.stringify({ subject: selectedSubject }) // Send selectedSubject as part of the request body
+                body: JSON.stringify({ 
+                    subject: selectedSubject,   // Send selectedSubject 
+                    isLanguage: isLanguage      // Send isLanguage
+                })
             });
 
             let startRecordingData = await startRecordingResponse.json();
@@ -175,23 +187,24 @@ async function toggleRecording() {
 // Handling dropdown select subject
 
 let selectedSubject = '';
-
+let isLanguage = '';
 
 function toggleDropdown() {
    document.getElementById("dropdown-content").classList.toggle("show");
 }
 
-
-function selectOption(option) {
-   const dropdownLabel = document.getElementById("dropdown-label").children[0];
-   if (dropdownLabel) {
-       dropdownLabel.textContent = option;
-       selectedSubject = option; // Store the selected option
-       console.log(selectedSubject);
-   } else {
-       console.error('Dropdown label element not found.');
-   }
-   document.getElementById("dropdown-content").classList.remove("show");
+function selectOption(displayValue, title, language) {
+    const dropdownLabel = document.getElementById("dropdown-label").children[0];
+    if (dropdownLabel) {
+        dropdownLabel.textContent = displayValue; // Displays the class and subject
+        selectedSubject = title; // Store the title value
+        isLanguage = language;
+        console.log(`Selected Title is selected subject : ${selectedSubject}`); // For debugging
+        console.log(`Selected Title is selected subject : ${isLanguage}`);
+    } else {
+        console.error('Dropdown label element not found.');
+    }
+    document.getElementById("dropdown-content").classList.remove("show");
 }
 
 

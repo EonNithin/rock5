@@ -1,12 +1,14 @@
-
 document.getElementById('pause-recording').addEventListener('click', function() {
     console.log('Pause button clicked');
-    
-    // Set fill color for pause SVG and reset resume SVG
-    document.getElementById('pause-svg').setAttribute('fill', 'blue');
-    console.log("pause svg fill color changed to blue");
-    document.getElementById('resume-svg').setAttribute('fill', 'black');
-    console.log("resume svg fill color changed to black");
+    const pauseRecordButton = document.getElementById("pause-recording");
+    const resumeRecordContainer = document.getElementById("resume-recording");
+    const pause_resume_textlabel = document.getElementById("text-label");
+    const progressBar = document.getElementById("progress-bar1");
+
+    pauseRecordButton.style.display = "none";
+    resumeRecordContainer.style.display = "block";
+    pause_resume_textlabel.textContent = "Resume Recording";  // Corrected here
+    // progressBar.style.visibility = "visible"; // Show progress bar
 
     // Send POST request to pause recording
     fetch('/pause_recording_view/', {
@@ -17,18 +19,20 @@ document.getElementById('pause-recording').addEventListener('click', function() 
         }
     })
     .then(response => response.json())
-    // Add functionality to pause the recording here
     console.log('Response received from pause recording view');
 });
 
 document.getElementById('resume-recording').addEventListener('click', function() {
     console.log('resume button clicked');
+    const pauseRecordButton = document.getElementById("pause-recording");
+    const resumeRecordContainer = document.getElementById("resume-recording");
+    const pause_resume_textlabel = document.getElementById("text-label");
+    const progressBar = document.getElementById("progress-bar1");
 
-    // Set fill color for resume SVG and reset pause SVG
-    document.getElementById('resume-svg').setAttribute('fill', 'blue');
-    console.log("resume svg fill color changed to blue");
-    document.getElementById('pause-svg').setAttribute('fill', 'black');
-    console.log("pause svg fill color changed to black");
+    pauseRecordButton.style.display = "block";
+    resumeRecordContainer.style.display = "none";
+    pause_resume_textlabel.textContent = "Pause Recording";  // Corrected here
+    // progressBar.style.visibility = "visible"; // Show progress bar
 
     // Send POST request to resume recording
     fetch('/resume_recording_view/', {
@@ -38,8 +42,6 @@ document.getElementById('resume-recording').addEventListener('click', function()
             'X-CSRFToken': getCSRFToken()  // Include CSRF token if needed
         }
     })
-
-    // Add functionality to resume the recording here
     console.log('Response received from resume recording view');
 });
 

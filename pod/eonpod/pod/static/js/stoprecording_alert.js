@@ -1,12 +1,14 @@
 
 function showConfirmDialog() {
-    const controlsDiv = document.getElementById('controls');
+    // const controlsDiv = document.getElementById('controls');
     const modal = document.getElementById("customConfirm");
     const startRecordButton = document.getElementById("startRecord");
     const stopRecordButton = document.getElementById("stopRecord");
     const textLabelRecord = document.getElementById("text-label-record");
     const progressBar = document.getElementById("progress-bar1");
     const customAlert = document.getElementById("customAlert");
+    const pauseRecordButton = document.getElementById("pause-recording");
+    const resumeRecordContainer = document.getElementById("resume-recording");
 
     // Show the confirm modal
     modal.style.display = "block";
@@ -40,6 +42,13 @@ async function stopRecording() {
         document.getElementById("text-label-record").textContent = "Start Recording";
         document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
         document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
+        const pauseRecordButton = document.getElementById("pause-recording");
+        const resumeRecordContainer = document.getElementById("resume-recording");
+
+        // Show pause button, hide resume button initially
+        pauseRecordButton.style.display = "none";
+        resumeRecordContainer.style.display = "none";
+
         isRecording = false;
 
         document.getElementById('pause-svg').setAttribute('fill', 'black');
@@ -53,7 +62,10 @@ async function stopRecording() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({ subject: selectedSubject })
+            body: JSON.stringify({ 
+                subject: selectedSubject,   // Send selectedSubject 
+                isLanguage: isLanguage      // Send isLanguage
+            })
         });
 
         let data = await response.json();

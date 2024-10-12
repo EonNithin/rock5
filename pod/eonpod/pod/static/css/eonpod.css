@@ -260,7 +260,7 @@ body {
     width: 55%;
     height: 55%;
     border-radius: 50%;
-    background-image: url('../images/Recording Icon.png');
+    background-image: url('../images/Start-Record.svg');
     /* Path to the image */
     background-size: cover;
     /* Ensure the image covers the entire element */
@@ -275,7 +275,7 @@ body {
     width: 55%;
     height: 55%;
     border-radius: 50%;
-    background-image: url('../images/Stop\ Record\ Icon.png');
+    background-image: url('../images/Stop-Record.svg');
     /* Path to the image */
     background-size: cover;
     /* Ensure the image covers the entire element */
