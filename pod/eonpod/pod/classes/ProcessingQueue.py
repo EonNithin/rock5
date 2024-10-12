@@ -53,6 +53,7 @@ class ProcessingQueue:
                                 with self.lock:
                                     self.mp4_paths[file_name]["status"] = f"Error: {str(e)}"
                             finally:
+                                self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory = os.path.dirname(file_path))
                                 self.lock.acquire()  # Reacquire the lock
                     else:
                         self.s3_obj.add_to_queue(school = settings.SCHOOL_NAME, subject = subject, local_directory = os.path.dirname(file_path))

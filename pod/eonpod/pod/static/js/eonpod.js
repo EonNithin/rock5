@@ -200,7 +200,7 @@ function selectOption(displayValue, title, language) {
         selectedSubject = title; // Store the title value
         isLanguage = language;
         console.log(`Selected Title is selected subject : ${selectedSubject}`); // For debugging
-        console.log(`Selected Title is selected subject : ${isLanguage}`);
+        console.log(`Selected Subject is language subject : ${isLanguage}`);
     } else {
         console.error('Dropdown label element not found.');
     }

@@ -22,6 +22,10 @@ from pod.classes.CheckConnections import CheckConnections
 import logging
 from django.shortcuts import render
 
+from pod.dbmodels.models import DATABASE_URL, get_session
+from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
+
+
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
 
@@ -34,6 +38,7 @@ recorder = Recorder()
 
 # Initialize the processing queue
 processing_queue = ProcessingQueue()
+
 
 # initialize the check device connections
 connections = CheckConnections()
@@ -103,6 +108,9 @@ def start_recording_view(request):
             selected_subject = data.get('subject', '')  # Get the subject from the request
             logger.info(f"selected subject is : {selected_subject}")
             logger.info(f"Started recording for subject: {selected_subject}")
+            is_language = data.get('isLanguage', '') 
+            logger.info(f"Is language: {is_language}")
+
             recorder.start_recording(selected_subject)
             logger.info(f"Just after start recording and before start screen grab: {datetime.now().time()}")
             recorder.start_screen_grab()
@@ -123,9 +131,15 @@ def stop_recording_view(request):
             data = json.loads(request.body)
             selected_subject = data.get('subject', '')  
             logger.info(f"Stopped recording for subject: {selected_subject}")
+            is_language = data.get('isLanguage', '') 
+            logger.info(f"Is language: {is_language}")
+
             recorder.stop_recording()
             logger.info(f"Just after stop recording and before stop screen grab: {datetime.now().time()}")
             
+            recorder.stop_screen_grab()
+            logger.info(f"Just after stop screen grab: {datetime.now().time()}")
+
             # Once the recording stops, concatenate parts
             recorded_files = recorder.get_recorded_files()
 
@@ -139,15 +153,30 @@ def stop_recording_view(request):
                 logger.info("Multiple recordings found, concatenating...")
                 # Call your concatenation function here
                 recorder.concat_recording_parts()
-                
-            recorder.stop_screen_grab()
-            logger.info(f"Just after stop screen grab: {datetime.now().time()}")
+            
+
+            # Once the recording stops, concatenate parts
+            screengrab_files = recorder.get_screengrab_files()
+
+            if len(screengrab_files) == 0:
+                logger.info("No recordings found.")
+            elif len(screengrab_files) == 1:
+                logger.info("Single recording found.")
+                recorder.rename_screengrabfile()
+            else:
+                # Multiple recordings found, concatenate them
+                logger.info("Multiple recordings found, concatenating...")
+                # Call your concatenation function here
+                recorder.concat_screengrab_parts()
+
+            
             file_info = recorder.get_file_info()
             logger.info(f"File Info: {file_info}")
 
-            processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject)
-            # processing_queue.add_to_queue('recordedfiles.mp4', os.path.join(media_folderpath, 'Mathematics/04-10-2024_08-57-20/16-09-2024_06-34-24_recorded_video.mp4'), selected_subject)
-
+            logger.info(f"Value of is_language right before condition: {is_language}")
+            
+            logger.info(f"Processing happens, as it's not a language subject: {is_language}")
+            processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, is_language)
 
             return JsonResponse({
                 "success": True,
@@ -189,30 +218,68 @@ def check_device_connections(request):
 @csrf_exempt
 def login_page(request):
     error_message = None  # Initialize error_message here
-    rfid = None  # Initialize rfid to avoid UnboundLocalError
-    pin = None   # Initialize pin to avoid UnboundLocalError
+    staff_member = None  # To store the retrieved staff member details
 
     if request.method == 'POST':
-        value = request.POST.get('pin')  # Retrieve the PIN from the form name attribute
-        username = "Kaushik"
-        # rfid Kaushik = 0133014078
-        if len(value) == 10:
-            rfid = value
-        elif len(value) == 4:
-            pin = value
+        value = request.POST.get('pin')  # Retrieve the PIN or RFID from the form field
 
-        if rfid and len(rfid) == 10:
-            logger.info(f"RFID entered: {rfid}")
-            logger.info("Redirecting to eonpod page")
-            return render(request, 'eonpod.html', {'username': username})  # Redirect to the eonpod page if RFID matches
-        elif pin and len(pin) == 4:
-            logger.info(f"PIN entered: {pin}")
-            logger.info("Redirecting to eonpod page")
-            return render(request, 'eonpod.html', {'username': username})  # Redirect to the eonpod page if PIN matches
-        else:
-            error_message = "Invalid credentials. Please try again."
-            logger.warning(f"Login failed with PIN: {pin} or RFID: {rfid}")
-            return render(request, 'login_page.html', {'error_message': error_message})
+        session = get_session(DATABASE_URL)  # Create a new session for the database interaction
+
+        try:
+            if value and len(value) > 4:
+                # Retrieve staff details based on RFID
+                staff_member = get_staff_by_rfid(value)
+                
+            elif value and len(value) == 4:
+                # Retrieve staff details based on PIN (you need to implement this method if required)
+                value = int(value)
+                # Log the new type after conversion
+                staff_member = get_staff_by_pin(value)  # Assuming you'll create this method
+
+            if staff_member:
+                logger.info(f"Login successful: {staff_member.first_name} {staff_member.last_name}")
+                
+                subjects = get_teacher_subject_groups_by_staff(staff_member=staff_member)
+
+                # for subject in subjects:
+                #     print(f"Subjects for {staff_member.first_name}: {subject.subject_group_id}")
+
+                #     # Accessing attributes from SubjectGroup
+                #     subject_group = subject.subject_group  # Accessing the related SubjectGroup instance
+                #     print(f"Title: {subject_group.title}")
+                #     print(f"Class: {subject_group.class_name}")
+                #     print(f"Subject: {subject_group.subject}")
+                #     print(f"Is Active: {subject_group.is_active}")
+                #     print(f"Is Language Subject: {subject_group.is_language_subject}")
+
+                # Redirect to the eonpod page with the staff member's details
+                # return render(request, 'eonpod.html', {'username': f"{staff_member.first_name} {staff_member.last_name}"})
+                # Redirect to the eonpod page with the staff member's details and subjects
+
+                subject_data = []
+                for subject in subjects:
+                    subject_group = subject.subject_group  # Access the related SubjectGroup instance
+
+                subject_data.append({
+                    'title': subject_group.title,
+                    'class_name': subject_group.class_name,
+                    'subject': subject_group.subject,
+                    'is_active': subject_group.is_active,
+                    'is_language_subject': subject_group.is_language_subject,
+                })
+
+                return render(request, 'eonpod.html', {
+                    'username': f"{staff_member.first_name} {staff_member.last_name}",
+                    'subjects': subjects  # Pass the subjects to the template
+                })
+                
+            else:
+                error_message = "Invalid credentials. Please try again."
+        except Exception as e:
+            logger.error(f"An error occurred during login: {e}")
+            error_message = "Invalid Credentials. Please try again."
+        finally:
+            session.close()
 
     return render(request, 'login_page.html', {'error_message': error_message})
 

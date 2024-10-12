@@ -72,7 +72,10 @@ async function stopRecording() {
 
         console.log(data.message);
         
-        checkDeviceConnections();
+        // checkDeviceConnections();
+        // Programmatically trigger the click event
+        console.log("Logging out");
+        document.getElementById('logout').click();
 
     } catch (error) {
         console.error('Failed to stop recording:', error);

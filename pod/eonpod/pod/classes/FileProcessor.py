@@ -88,7 +88,7 @@ class FileProcessor:
             time_taken = self.calculate_time_taken(start_time, end_time)
             self.json_builder.add_generated_files(transcript_filepath, time_taken)
             # return self.transcript_to_summary(transcript_filepath)
-            self.s3.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory= os.path.dirname(transcript_filepath))
+            # self.s3.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory= os.path.dirname(transcript_filepath))
             return True
         except Exception as e:
             logger.error(f"Error transcribing MP3: {e}")

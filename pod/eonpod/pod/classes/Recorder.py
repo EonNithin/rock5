@@ -59,11 +59,13 @@ class Recorder:
 
     def pause_recording(self):
         self.stop_recording()
+        self.stop_screen_grab
 
 
     def resume_recording(self):
         self.part += 1
         self.start_recording(self.subject, self.part)
+        self.start_screen_grab(self.part)
     
 
     def concat_recording_parts(self):
@@ -129,15 +131,16 @@ class Recorder:
         # Remove the part number (_0) before the extension, if present
         base_name, extension = os.path.splitext(single_file)  # Separate the name and extension
         updated_name = base_name.rsplit('_', 1)[0] + extension
-
+        self.filename = updated_name
         updated_filepath = os.path.join(files_dir, updated_name)
+        self.filepath = updated_filepath
         logger.info(f"File renamed from {original_filepath} to {updated_filepath}")
-        os.rename(original_filepath, updated_filepath)
+        os.rename(original_filepath, self.filepath)
 
-        return updated_name
+        return self.filepath
 
 
-    def start_recording(self, subject, part=0 ):
+    def start_recording(self, subject, part=0):
         # self.part = part
         if part == 0:
             self.part = 0  # Reset part numbering for each new recording
@@ -190,25 +193,6 @@ class Recorder:
             logger.error("Cannot start recording, audio device not found.")
 
 
-    def start_screen_grab(self):
-        if self.grab_process and self.grab_process.poll() is None:
-            logger.warning("Screen grab is already in progress.")
-            return
-
-        self.grabpath = os.path.join(self.media_folderpath, self.subject, self.timestamp)
-        os.makedirs(self.grabpath, exist_ok=True)
-        self.grab_filename = f"{self.timestamp}_screen_grab.mp4"
-        self.grab_filepath = os.path.join(self.grabpath, self.grab_filename)
-
-        self.grab_process = subprocess.Popen(
-            ['ffmpeg', '-thread_queue_size', '1024', '-i', '/dev/video1', '-r', '30', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
-            stdin=subprocess.PIPE,
-            stdout=self.devnull,
-            stderr=self.devnull 
-        )
-        logger.info(f"Screen Grab started: {self.grab_filename}, File path: {self.grab_filepath}")
-
-
     def stop_recording(self):
         if self.process and self.process.poll() is None:
             self.process.stdin.write(b'q')  # Encode 'q' as bytes
@@ -221,6 +205,29 @@ class Recorder:
             logger.warning("No recording in progress.")
 
 
+    def start_screen_grab(self, part=0):
+        # self.part = part
+        if part == 0:
+            self.part = 0  # Reset part numbering for each new recording
+            
+        if self.grab_process and self.grab_process.poll() is None:
+            logger.warning("Screen grab is already in progress.")
+            return
+
+        self.grabpath = os.path.join(self.media_folderpath, self.subject, self.timestamp)
+        os.makedirs(self.grabpath, exist_ok=True)
+        self.grab_filename = f"{self.timestamp}_screen_grab_{self.part}.mp4"
+        self.grab_filepath = os.path.join(self.grabpath, self.grab_filename)
+
+        self.grab_process = subprocess.Popen(
+            ['ffmpeg', '-thread_queue_size', '1024', '-i', '/dev/video1', '-r', '30', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
+            stdin=subprocess.PIPE,
+            stdout=self.devnull,
+            stderr=self.devnull 
+        )
+        logger.info(f"Screen Grab started: {self.grab_filename}, File path: {self.grab_filepath}")
+
+
     def stop_screen_grab(self):
         if self.grab_process and self.grab_process.poll() is None:
             self.grab_process.stdin.write(b'q')  # Encode 'q' as bytes
@@ -229,6 +236,76 @@ class Recorder:
             logger.info("Screen Grab stopped.")
         else:
             logger.warning("No screen grab in progress.")
+
+    def get_screengrab_files(self):
+        # Directory where parts are saved
+        files_dir = os.path.join(self.media_folderpath, self.subject, self.timestamp)
+
+        # Find all recorded video files
+        screengrab_files = sorted(
+            [f for f in os.listdir(files_dir) 
+            if re.match(r'^\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}_screen_grab_\d+\.mp4$', f)],
+            key=lambda x: int(re.search(r'_(\d+)\.mp4', x).group(1))
+        )
+        return screengrab_files
+
+
+    def rename_screengrabfile(self):
+        # Once the recording stops, concatenate parts
+        screengrab_files = self.get_screengrab_files()
+        # Only one recording found, process it directly
+        single_file = screengrab_files[0]
+        logger.info(f"Single file: {single_file}, No need concatination")
+        # Path to the single file
+        files_dir = os.path.join(self.media_folderpath, self.subject, self.timestamp)
+        original_filepath = os.path.join(files_dir, single_file)
+
+        # Remove the part number (_0) before the extension, if present
+        base_name, extension = os.path.splitext(single_file)  # Separate the name and extension
+        updated_name = base_name.rsplit('_', 1)[0] + extension
+
+        updated_filepath = os.path.join(files_dir, updated_name)
+        logger.info(f"File renamed from {original_filepath} to {updated_filepath}")
+        os.rename(original_filepath, updated_filepath)
+
+        return updated_name
+    
+
+    def concat_screengrab_parts(self):
+        """Concatenate all screen grab parts into one final MP4 file."""
+        try:
+            # Directory where parts are saved
+            files_dir = os.path.join(self.media_folderpath, self.subject, self.timestamp)
+
+            # Find all part files in the directory that match the recorded video naming pattern
+            part_files = sorted(
+                [f for f in os.listdir(files_dir) 
+                if re.match(r'^\d{2}-\d{2}-\d{4}_\d{2}-\d{2}-\d{2}_screen_grab_\d+\.mp4$', f)],  # Match the full naming pattern
+                key=lambda x: int(re.search(r'_(\d+)\.mp4', x).group(1))  # Sort by part number
+            )
+
+            # Create a file with the list of files to be concatenated
+            concat_screengrab_list_path = os.path.join(files_dir, "concat_screengrab_list.txt")
+            with open(concat_screengrab_list_path, 'w') as concat_list:
+                for part_file in part_files:
+                    concat_list.write(f"file '{os.path.join(files_dir, part_file)}'\n")
+
+            # Output file (final concatenated MP4 file)
+            self.grab_filename= os.path.join(files_dir, f"{self.timestamp}_screen_grab.mp4")
+
+            # Run FFmpeg command to concatenate files
+            concat_command = [
+                'ffmpeg', '-f', 'concat', '-safe', '0', '-i', concat_screengrab_list_path,
+                '-c', 'copy', self.grab_filename
+            ]
+
+            # Execute the FFmpeg process
+            subprocess.run(concat_command, check=True)
+
+            logger.info(f"All screen grab parts concatenated successfully into {self.grab_filename}")
+
+        except Exception as e:
+            logger.error(f"Error concatenating recording parts: {str(e)}")
 
 
     def get_file_info(self):
