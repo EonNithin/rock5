@@ -1,76 +1,61 @@
-
+let selectedSubject = '';
+let isLanguage = '';
 let isConnected = false;
 let isRecording = false;
-let isStreaming = false;
-
+let isLoggingOut = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     const logoutButton = document.getElementById('logout');
-    
+
     if (logoutButton) {
         logoutButton.addEventListener('click', logoutFunction);
     }
+
+    // Initial check for device connections
+    checkDeviceConnections();
 });
 
 function logoutFunction() {
-    // Redirect to the login page or any other logic for logout
-    window.location.href = '/login_page/';
+    isLoggingOut = true; // Set flag to indicate logout process
+    if (isRecording) {
+        // If recording is active, stop it first
+        stopRecording().then(() => {
+            window.location.href = '/login_page/';
+        });
+    } else {
+        // If not recording, proceed to logout
+        window.location.href = '/login_page/';
+    }
 }
 
 window.addEventListener('unload', async function (event) {
+    if (isLoggingOut) return; // Skip if logging out
     console.log('Window is closing, sending fetch request...');
-    alert("You are leaving the window... Recording will be autosaved")
-    // Trigger fetch request when the window is unloading
-    try {
-        let response = await fetch('/stop_recording_view/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        });
+    alert("You are leaving the window... Recording will be autosaved");
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        console.log('Fetch request sent successfully on unload');
-    } catch (error) {
-        console.error('Error during fetch request:', error);
+    // Stop recording if it's active
+    if (isRecording) {
+        await stopRecording(); // Wait for recording to stop
     }
 });
 
-// Add event listener for DOM content loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if the username is present and the welcome message exists
-    var messageElement = document.getElementById('welcome-message');
-    
-    // Correctly logging messageElement instead of welcomeElement
-    console.log(messageElement); 
-    
-    if (messageElement) {
-        console.log("Welcome message element found:", messageElement);
-        // Set timeout to hide the welcome message after 5 seconds
-        setTimeout(function() {
-            console.log("Timeout function triggered");
-            messageElement.style.display = 'none';
-        }, 5000); // 5000 milliseconds = 5 seconds
-    }
-});
+var messageElement = document.getElementById('welcome-message');
+console.log(messageElement);
 
-// Function to update the status and SVG fill colors
+if (messageElement) {
+    console.log("Welcome message element found:", messageElement);
+    setTimeout(function() {
+        console.log("Timeout function triggered");
+        messageElement.style.display = 'none';
+    }, 5000); // 5000 milliseconds = 5 seconds
+}
+
 function updateStatus(data) {
-    // // // Update the status messages
-    // document.getElementById('mic-status').innerText = data.mic_status ? 'True' : 'False';
-    // document.getElementById('video-status').innerText = data.camera_status ? 'True' : 'False';
-    // document.getElementById('screen-capture-status').innerText = data.screen_capture_status ? 'True' : 'False';
-
-    // Update SVG fill colors based on status
     document.getElementById('mic').setAttribute('fill', data.mic_status ? '#a9dfbf' : '#f8c471');
     document.getElementById('camera').setAttribute('fill', data.camera_status ? '#a9dfbf' : '#f8c471');
     document.getElementById('screen-capture').setAttribute('fill', data.screen_capture_status ? '#a9dfbf' : '#f8c471');
 }
 
-// Function to check device connections
 async function checkDeviceConnections() {
     try {
         let response = await fetch('/check_device_connections/', {
@@ -81,7 +66,6 @@ async function checkDeviceConnections() {
             }
         });
         if (response.ok) {
-            // Assuming the response is JSON and contains status fields
             let data = await response.json();
             console.log(data);
             updateStatus(data);
@@ -93,34 +77,21 @@ async function checkDeviceConnections() {
     }
 }
 
-// Add event listener for DOM content loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Initial check
-    checkDeviceConnections();
-    // Set interval to check device connections every minute (60000 milliseconds)
-    // setInterval(checkDeviceConnections, 60000);
-});
-
-
-// Function to get the CSRF token
 function getCookie(name) {
-   let cookieValue = null;
-   if (document.cookie && document.cookie !== '') {
-       const cookies = document.cookie.split(';');
-       for (let i = 0; i < cookies.length; i++) {
-           const cookie = cookies[i].trim();
-           // Does this cookie string begin with the name we want?
-           if (cookie.substring(0, name.length + 1) === (name + '=')) {
-               cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-               break;
-           }
-       }
-   }
-   return cookieValue;
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
-
-// Function to toggle recording state
 async function toggleRecording() {
     const startRecordButton = document.getElementById("startRecord");
     const stopRecordButton = document.getElementById("stopRecord");
@@ -130,39 +101,26 @@ async function toggleRecording() {
     const pauseRecordButton = document.getElementById("pause-recording");
     const resumeRecordContainer = document.getElementById("resume-recording");
 
-
     if (isRecording) {
         // Stop recording
-        try {
-            // Show a confirm dialog instead of an alert
-            // Call this function instead of using `confirm()`
-            showConfirmDialog();
-        } catch (error) {
-            console.error('Failed to stop recording:', error);            
-        }
+        showConfirmDialog();
     } else {
-        // Check if a subject is selected
         if (!selectedSubject) {
             alert('Please select subject to start recording.');
             return;
         }
 
-        // Start recording
+        startRecordButton.style.display = "none";
+        stopRecordButton.style.display = "block";
+        textLabelRecord.textContent = "Stop Recording";
+        progressBar.style.visibility = "visible"; // Show progress bar
+        controlsDiv.style.display = 'block';
+        pauseRecordButton.style.display = "block";
+        resumeRecordContainer.style.display = "none";
+
+        isRecording = true;
+
         try {
-            
-            startRecordButton.style.display = "none";
-            stopRecordButton.style.display = "block";
-            textLabelRecord.textContent = "Stop Recording";
-            progressBar.style.visibility = "visible"; // Show progress bar
-
-            controlsDiv.style.display = 'block';
-            // Show pause button, hide resume button initially
-            pauseRecordButton.style.display = "block";
-            resumeRecordContainer.style.display = "none";
-
-            isRecording = true;
-
-            // Call your start recording function here
             let startRecordingResponse = await fetch('/start_recording_view/', {
                 method: 'POST',
                 headers: {
@@ -170,45 +128,37 @@ async function toggleRecording() {
                     'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({ 
-                    subject: selectedSubject,   // Send selectedSubject 
-                    isLanguage: isLanguage      // Send isLanguage
+                    subject: selectedSubject,   
+                    isLanguage: isLanguage      
                 })
             });
 
             let startRecordingData = await startRecordingResponse.json();
-            console.log("start recording view response",startRecordingData.message);
-        
+            console.log("start recording view response", startRecordingData.message);
         } catch (error) {
             console.error('Failed to start recording:', error);
         }
     }
 }
 
-// Handling dropdown select subject
-
-let selectedSubject = '';
-let isLanguage = '';
-
 function toggleDropdown() {
-   document.getElementById("dropdown-content").classList.toggle("show");
+    document.getElementById("dropdown-content").classList.toggle("show");
 }
 
 function selectOption(displayValue, title, language) {
     const dropdownLabel = document.getElementById("dropdown-label").children[0];
     if (dropdownLabel) {
-        dropdownLabel.textContent = displayValue; // Displays the class and subject
-        selectedSubject = title; // Store the title value
+        dropdownLabel.textContent = displayValue;
+        selectedSubject = title;
         isLanguage = language;
-        console.log(`Selected Title is selected subject : ${selectedSubject}`); // For debugging
-        console.log(`Selected Subject is language subject : ${isLanguage}`);
+        console.log(`Selected Title is selected subject: ${selectedSubject}`);
+        console.log(`Selected Subject is language subject: ${isLanguage}`);
     } else {
         console.error('Dropdown label element not found.');
     }
     document.getElementById("dropdown-content").classList.remove("show");
 }
 
-
-// Close the dropdown if the user clicks outside of it
 window.onclick = function(event) {
    if (!event.target.matches('.custom-dropdown-label') && !event.target.matches('.custom-dropdown-label *')) {
        const dropdowns = document.getElementsByClassName("dropdown-content");
@@ -221,17 +171,11 @@ window.onclick = function(event) {
    }
 }
 
-
-function showSettings(){
+function showSettings() {
    console.log("clicked settings icon");
    const settings = document.getElementById('settings');
-   if (settings.style.display === 'none' || settings.style.display === '') {
-       settings.style.display = 'block';
-   } else {
-       settings.style.display = 'none';
-   }
+   settings.style.display = (settings.style.display === 'none' || settings.style.display === '') ? 'block' : 'none';
 }
-
 
 document.addEventListener('click', function(event) {
    const gearIcon = document.getElementById('gear-icon');
@@ -241,58 +185,117 @@ document.addEventListener('click', function(event) {
    }
 });
 
-
-// Function to request full screen mode
 function requestFullScreen() {
    const elem = document.documentElement;
    if (elem.requestFullscreen) {
        elem.requestFullscreen();
-   } else if (elem.mozRequestFullScreen) { /* Firefox */
+   } else if (elem.mozRequestFullScreen) {
        elem.mozRequestFullScreen();
-   } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+   } else if (elem.webkitRequestFullscreen) {
        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-   } else if (elem.msRequestFullscreen) { /* IE/Edge */
+   } else if (elem.msRequestFullscreen) {
        elem.msRequestFullscreen();
    }
 }
 
-
-// Function to request exit full screen mode
 function exitFullScreen() {
    const elem = document;
    if (elem.exitFullscreen) {
        elem.exitFullscreen();
-   } else if (elem.mozCancelFullScreen) { /* Firefox */
+   } else if (elem.mozCancelFullScreen) {
        elem.mozCancelFullScreen();
-   } else if (elem.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+   } else if (elem.webkitExitFullscreen) {
        elem.webkitExitFullscreen();
-   } else if (elem.msExitFullscreen) { /* IE/Edge */
-       elem.msExitFullscreen();
+   } else if (elem.msRequestFullscreen) {
+       elem.msRequestFullscreen();
    }
 }
 
-
 document.addEventListener("DOMContentLoaded", function() {
-// Assuming a button with ID "fullscreenButton" triggers full screen mode
    const fullscreenButton = document.getElementById("fullscreenButton");
    const fullscreenExitButton = document.getElementById("fullscreenExitButton");
 
-
    if (fullscreenButton) {
        fullscreenButton.addEventListener("click", function() {
-           fullscreenButton.style.display = 'none'
-           fullscreenExitButton.style.display = 'block'
+           fullscreenButton.style.display = 'none';
+           fullscreenExitButton.style.display = 'block';
            requestFullScreen();
        }); 
    }
 
-
    if (fullscreenExitButton) {
        fullscreenExitButton.addEventListener("click", function() {
-           fullscreenButton.style.display = 'block'
-           fullscreenExitButton.style.display = 'none'
+           fullscreenButton.style.display = 'block';
+           fullscreenExitButton.style.display = 'none';
            exitFullScreen();
        }); 
    }
 });
+
+function showConfirmDialog() {
+    const modal = document.getElementById("customConfirm");
+    const customAlert = document.getElementById("customAlert");
+
+    modal.style.display = "block";
+
+    document.getElementById("confirmBtn").onclick = async function () {
+        modal.style.display = "none"; // Close the confirm modal
+        customAlert.style.display = "block"; // Show the custom alert
+
+        setTimeout(async function () {
+            customAlert.style.display = "none"; // Hide the custom alert after 5 seconds
+            await stopRecording(); // Stop the recording automatically
+            logoutFunction(); // Call logout after stopping recording
+        }, 5000); // 5000 milliseconds = 5 seconds
+    };
+
+    document.getElementById("cancelBtn").onclick = function () {
+        modal.style.display = "none"; // Close the modal
+        console.log('Recording continues.');
+    };
+}
+
+async function stopRecording() {
+    try {
+        const controlsDiv = document.getElementById('controls');
+        controlsDiv.style.display = 'none';
+        document.getElementById("startRecord").style.display = "block";
+        document.getElementById("stopRecord").style.display = "none";
+        document.getElementById("text-label-record").textContent = "Start Recording";
+        document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
+        document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
+
+        const pauseRecordButton = document.getElementById("pause-recording");
+        const resumeRecordContainer = document.getElementById("resume-recording");
+        pauseRecordButton.style.display = "none";
+        resumeRecordContainer.style.display = "none";
+
+        isRecording = false;
+
+        let response = await fetch('/stop_recording_view/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ 
+                subject: selectedSubject,   
+                isLanguage: isLanguage      
+            })
+        });
+
+        let data = await response.json();
+        console.log(data.message);
+    } catch (error) {
+        console.error('Failed to stop recording:', error);
+    }
+}
+
+// Close custom alert when clicking outside of the alert box
+window.onclick = function (event) {
+    const customAlert = document.getElementById("customAlert");
+    if (event.target === customAlert) {
+        customAlert.style.display = "none"; // Close the custom alert
+    }
+};
 

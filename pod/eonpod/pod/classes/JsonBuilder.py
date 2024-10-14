@@ -20,8 +20,8 @@ class JsonBuilder:
         metadata_file = os.path.join(directory, "folder_metadata.json")
         school_id = settings.SCHOOL_NAME
         subject_title = "Science"
-        topic = "velocity"
-        subtopic = "speed vs velocity"
+        topic = ""
+        subtopic = ""
         temp = {
             "school_id" : school_id,
             "subject_id" : subject_id,
@@ -76,7 +76,7 @@ class JsonBuilder:
         if name not in data[timestamp]['generated_files']:
             data[timestamp]['generated_files'].append(name)
             data[timestamp]['timestamps'][os.path.basename(name)] = timetaken
-        if len(data[timestamp]["generated_files"]) == 3:
+        if len(data[timestamp]["generated_files"]) == 1:
             self.folder_metadata(subject, directory)
             logger.info(f"Folder metadata generated for {subject} at {directory}.")
         with open(self.current_json_file, 'w') as file:
@@ -89,7 +89,7 @@ class JsonBuilder:
             data[timestamp]['s3_date'] = s3_upload_date
             data[timestamp]['s3_path'].append(s3_path)
             if len(data[timestamp]['s3_path']) == 4:
-                data[timestamp]["deletion_date"] = 2
+                data[timestamp]["deletion_date"] = 7
             with open(self.current_json_file, 'w') as file:
                 json.dump(data, file)
             logger.info(f"Updated S3 metadata for timestamp {timestamp}: path {s3_path}.")

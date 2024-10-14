@@ -110,83 +110,73 @@ def start_recording_view(request):
             logger.info(f"Started recording for subject: {selected_subject}")
             is_language = data.get('isLanguage', '') 
             logger.info(f"Is language: {is_language}")
-
             recorder.start_recording(selected_subject)
-            logger.info(f"Just after start recording and before start screen grab: {datetime.now().time()}")
             recorder.start_screen_grab()
-            logger.info(f"Just after start screen grab: {datetime.now().time()}")
-
             return JsonResponse({"success": True, "message": "Recording started."})
         except Exception as e:
             logger.error(f"Error starting recording: {str(e)}")
             return JsonResponse({"success": False, "error": str(e)})
-
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
 
 @csrf_exempt
 def stop_recording_view(request):
     if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            selected_subject = data.get('subject', '')  
-            logger.info(f"Stopped recording for subject: {selected_subject}")
-            is_language = data.get('isLanguage', '') 
-            logger.info(f"Is language: {is_language}")
+        # try:
+        data = json.loads(request.body)
+        selected_subject = data.get('subject', '')  
+        
+        is_language = data.get('isLanguage', '') 
+        logger.info(f"Is language: {is_language}")
+        recorder.stop_recording()
+        recorder.stop_screen_grab()
+        logger.info(f"Stopped recording for subject: {selected_subject}")
+        # Once the recording stops, concatenate parts
+        recorded_files = recorder.get_recorded_files()
 
-            recorder.stop_recording()
-            logger.info(f"Just after stop recording and before stop screen grab: {datetime.now().time()}")
-            
-            recorder.stop_screen_grab()
-            logger.info(f"Just after stop screen grab: {datetime.now().time()}")
+        if len(recorded_files) == 0:
+            logger.info("No recordings found.")
+        elif len(recorded_files) == 1:
+            logger.info("Single recording found.")
+            recorder.rename_outputfile()
+        else:
+            # Multiple recordings found, concatenate them
+            logger.info("Multiple recordings found, concatenating...")
+            # Call your concatenation function here
+            recorder.concat_recording_parts()
+        
 
-            # Once the recording stops, concatenate parts
-            recorded_files = recorder.get_recorded_files()
+        # Once the recording stops, concatenate parts
+        screengrab_files = recorder.get_screengrab_files()
 
-            if len(recorded_files) == 0:
-                logger.info("No recordings found.")
-            elif len(recorded_files) == 1:
-                logger.info("Single recording found.")
-                recorder.rename_outputfile()
-            else:
-                # Multiple recordings found, concatenate them
-                logger.info("Multiple recordings found, concatenating...")
-                # Call your concatenation function here
-                recorder.concat_recording_parts()
-            
+        if len(screengrab_files) == 0:
+            logger.info("No Screen grab Recording found.")
+        elif len(screengrab_files) == 1:
+            logger.info("Single Screen grab recording found.")
+            recorder.rename_screengrabfile()
+        else:
+            # Multiple recordings found, concatenate them
+            logger.info("Multiple recordings found, concatenating...")
+            # Call your concatenation function here
+            recorder.concat_screengrab_parts()
 
-            # Once the recording stops, concatenate parts
-            screengrab_files = recorder.get_screengrab_files()
+        
+        file_info = recorder.get_file_info()
+        logger.info(f"File Info: {file_info}")
+        
+        logger.info(f"Processing happens, as it's not a language subject: {is_language}")
 
-            if len(screengrab_files) == 0:
-                logger.info("No recordings found.")
-            elif len(screengrab_files) == 1:
-                logger.info("Single recording found.")
-                recorder.rename_screengrabfile()
-            else:
-                # Multiple recordings found, concatenate them
-                logger.info("Multiple recordings found, concatenating...")
-                # Call your concatenation function here
-                recorder.concat_screengrab_parts()
+        processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, is_language)
 
-            
-            file_info = recorder.get_file_info()
-            logger.info(f"File Info: {file_info}")
-
-            logger.info(f"Value of is_language right before condition: {is_language}")
-            
-            logger.info(f"Processing happens, as it's not a language subject: {is_language}")
-            processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, is_language)
-
-            return JsonResponse({
-                "success": True,
-                "message": "Recording stopped.",
-                "filename": file_info["filename"],
-                "filepath": file_info["filepath"]
-            })
-        except Exception as e:
-            logger.error(f"Error stopping recording: {str(e)}")
-            return JsonResponse({"success": False, "error": str(e)})
+        return JsonResponse({
+            "success": True,
+            "message": "Recording stopped.",
+            "filename": file_info["filename"],
+            "filepath": file_info["filepath"]
+        })
+        # except Exception as e:
+        #     logger.error(f"Error stopping recording: {str(e)}")
+        #     return JsonResponse({"success": False, "error": str(e)})
 
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
@@ -213,7 +203,7 @@ def check_device_connections(request):
             logger.error(f"Error checking device connections: {str(e)}")
             return JsonResponse({'error': str(e)}, status=500)
 
-
+school_id = settings.SCHOOL_NAME
 
 @csrf_exempt
 def login_page(request):
@@ -228,13 +218,13 @@ def login_page(request):
         try:
             if value and len(value) > 4:
                 # Retrieve staff details based on RFID
-                staff_member = get_staff_by_rfid(value)
+                staff_member = get_staff_by_rfid(value, school_id)
                 
             elif value and len(value) == 4:
                 # Retrieve staff details based on PIN (you need to implement this method if required)
                 value = int(value)
                 # Log the new type after conversion
-                staff_member = get_staff_by_pin(value)  # Assuming you'll create this method
+                staff_member = get_staff_by_pin(value, school_id)  # Assuming you'll create this method
 
             if staff_member:
                 logger.info(f"Login successful: {staff_member.first_name} {staff_member.last_name}")
@@ -260,13 +250,13 @@ def login_page(request):
                 for subject in subjects:
                     subject_group = subject.subject_group  # Access the related SubjectGroup instance
 
-                subject_data.append({
-                    'title': subject_group.title,
-                    'class_name': subject_group.class_name,
-                    'subject': subject_group.subject,
-                    'is_active': subject_group.is_active,
-                    'is_language_subject': subject_group.is_language_subject,
-                })
+                    subject_data.append({
+                        'title': subject_group.title,
+                        'class_name': subject_group.class_name,
+                        'subject': subject_group.subject,
+                        'is_active': subject_group.is_active,
+                        'is_language_subject': subject_group.is_language_subject,
+                    })
 
                 return render(request, 'eonpod.html', {
                     'username': f"{staff_member.first_name} {staff_member.last_name}",

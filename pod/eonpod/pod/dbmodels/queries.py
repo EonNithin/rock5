@@ -5,12 +5,12 @@ from pod.dbmodels.models import DATABASE_URL, Staff, SubjectGroup, Teacher_Subje
 session = get_session(DATABASE_URL)
 
 
-def get_staff_by_rfid(rfid):
-    staff = session.query(Staff).filter_by(rfid=rfid).first()
+def get_staff_by_rfid(rfid, school_id):
+    staff = session.query(Staff).filter_by(rfid=rfid, school_id=school_id).first()
     return staff
     
-def get_staff_by_pin(pin):
-    staff = session.query(Staff).filter_by(pin=pin).first()
+def get_staff_by_pin(pin, school_id):
+    staff = session.query(Staff).filter_by(pin=pin, school_id=school_id).first()
     return staff
 
     

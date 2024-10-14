@@ -18,7 +18,8 @@ import socket
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 print(BASE_DIR)
-SCHOOL_NAME = socket.gethostname()
+SCHOOL_NAME = "be567583-fa55-406a-9000-fa6419537070"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -155,7 +156,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '{levelname}  --- {asctime} --- {module} --- {message}',
             'style': '{',
         },
     },

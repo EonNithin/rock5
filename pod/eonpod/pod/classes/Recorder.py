@@ -5,6 +5,7 @@ from django.conf import settings
 import logging
 import re
 import pytz
+import signal 
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -184,7 +185,8 @@ class Recorder:
                     '-c:v', 'copy', '-c:a', 'aac', self.filepath],
                     stdin=subprocess.PIPE,
                     stdout=self.devnull,
-                    stderr=self.devnull         
+                    stderr=self.devnull,
+                    preexec_fn=os.setsid         
                 )
                 logger.info(f"Recording started: {self.filename}, File path: {self.filepath}")
             except Exception as e:
@@ -195,14 +197,29 @@ class Recorder:
 
     def stop_recording(self):
         if self.process and self.process.poll() is None:
+            # Send 'q' to stop recording
             self.process.stdin.write(b'q')  # Encode 'q' as bytes
             self.process.stdin.flush()
-            self.process.wait()
-            logger.info("Recording stopped.")
-            # Once the recording stops, concatenate parts
-            # self.concat_recording_parts()
+            logger.info("Sent 'q' to stop recording.")
+            
+            # Wait for a brief moment to allow FFmpeg to terminate gracefully
+            try:
+                self.process.wait(timeout=5)  # Wait for a maximum of 5 seconds
+                logger.info("Recording stopped gracefully.")
+            except subprocess.TimeoutExpired:
+                logger.warning("Recording did not stop in time. Attempting to terminate process.")
+                self.process.terminate()  # Attempt to terminate
+                
+                try:
+                    self.process.wait(timeout=3)  # Wait for a maximum of 5 seconds again
+                    logger.info("Recording forcefully stopped.")
+                except subprocess.TimeoutExpired:
+                    logger.warning("Recording still running. Forcing termination.")
+                    os.killpg(os.getpgid(self.process.pid), signal.SIGKILL)  # Force kill the process group
+                    logger.info("Recording forcefully stopped using os.killpg.")
         else:
             logger.warning("No recording in progress.")
+
 
 
     def start_screen_grab(self, part=0):
@@ -223,19 +240,37 @@ class Recorder:
             ['ffmpeg', '-thread_queue_size', '1024', '-i', '/dev/video1', '-r', '30', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
             stdin=subprocess.PIPE,
             stdout=self.devnull,
-            stderr=self.devnull 
+            stderr=self.devnull,
+            preexec_fn=os.setsid
         )
         logger.info(f"Screen Grab started: {self.grab_filename}, File path: {self.grab_filepath}")
 
 
     def stop_screen_grab(self):
         if self.grab_process and self.grab_process.poll() is None:
+            # Send 'q' to stop the screen grab
             self.grab_process.stdin.write(b'q')  # Encode 'q' as bytes
             self.grab_process.stdin.flush()
-            self.grab_process.wait()
-            logger.info("Screen Grab stopped.")
+            logger.info("Sent 'q' to stop screen grab.")
+            
+            # Wait for a brief moment to allow the process to terminate gracefully
+            try:
+                self.grab_process.wait(timeout=5)  # Wait for a maximum of 5 seconds
+                logger.info("Screen grab stopped gracefully.")
+            except subprocess.TimeoutExpired:
+                logger.warning("Screen grab did not stop in time. Attempting to terminate process.")
+                self.grab_process.terminate()  # Attempt to terminate
+                
+                try:
+                    self.grab_process.wait(timeout=5)  # Wait for termination again
+                    logger.info("Screen grab forcefully stopped.")
+                except subprocess.TimeoutExpired:
+                    logger.warning("Screen grab still running. Forcing termination.")
+                    os.killpg(os.getpgid(self.grab_process.pid), signal.SIGKILL)  # Force kill the process group
+                    logger.info("Screen grab forcefully stopped using os.killpg.")
         else:
             logger.warning("No screen grab in progress.")
+
 
     def get_screengrab_files(self):
         # Directory where parts are saved
