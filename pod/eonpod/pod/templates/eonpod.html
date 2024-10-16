@@ -19,7 +19,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/eonpod.css'%}">
     <link rel="stylesheet" href="{% static 'css/stoprecording_alert.css'%}">
-
+    <link rel="stylesheet" href="{% static 'css/selectsubjectmodal.css'%}">
     <title>EON POD </title>
 
 
@@ -39,7 +39,7 @@
                         <!-- Paragraph to display Some message -->
                         {% if username %}
                         <div class="mt-4" id="welcome-message">
-                            <p class="username" style="font-weight: bold; font-size: xx-large;">Welcome {{ username }}
+                            <p class="username" style="font-weight: bold; font-size: x-large;">Welcome {{ username }}
                             </p>
                         </div>
                         {% endif %}
@@ -131,6 +131,18 @@
                         </div>
                     </div>
                     
+                    <!-- Modal for Select Subject -->
+                    <div id="selectSubjectModal" class="modal">
+                        <div class="modal-content select-subject-modal">
+                            <div class="modal-body">
+                                <p>Please select a subject</p>
+                                <div class="modal-buttons">
+                                    <button id="selectSubjectConfirmBtn">OK</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!--alert box for stop recording -->
                     <div id="customConfirm" class="modal">
                         <div class="modal-content confirm-stop-record">

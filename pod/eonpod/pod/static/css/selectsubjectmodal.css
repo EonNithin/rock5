@@ -1,0 +1,48 @@
+/* CSS for subject modal */
+/* Style for the modal backdrop */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+}
+
+/* Modal content box */
+.select-subject-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Center the modal */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 600px;
+    /* Set a fixed width for the modal */
+}
+
+/* Buttons in the modal */
+.modal-buttons {
+    text-align: center;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.modal-buttons button:hover {
+    background-color: #0056b3;
+}

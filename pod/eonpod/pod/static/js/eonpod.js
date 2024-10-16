@@ -106,7 +106,8 @@ async function toggleRecording() {
         showConfirmDialog();
     } else {
         if (!selectedSubject) {
-            alert('Please select subject to start recording.');
+            showSubjectSelectionAlert();
+            console.log("entered function showSubjectSelectionAlert")
             return;
         }
 
@@ -299,3 +300,29 @@ window.onclick = function (event) {
     }
 };
 
+
+function showSubjectSelectionAlert(){
+    const subjectmodal = document.getElementById('selectSubjectModal');
+    const confirmBtn = document.getElementById('selectSubjectConfirmBtn');
+
+    subjectmodal.style.display = 'block';
+    
+}
+
+// Function to close the modal
+function closeSubjectModal() {
+    const subjectmodal = document.getElementById('selectSubjectModal');
+    subjectmodal.style.display = 'none';
+}
+
+// Attach event listener to the "OK" button to close the modal (only once)
+document.getElementById('selectSubjectConfirmBtn').addEventListener('click', closeSubjectModal);
+
+// Function to close the modal when clicking outside of it
+window.onclick = function(event) {
+    const subjectmodal = document.getElementById('selectSubjectModal');
+
+    if (event.target === subjectmodal) {
+        subjectmodal.style.display = 'none';
+    }
+}

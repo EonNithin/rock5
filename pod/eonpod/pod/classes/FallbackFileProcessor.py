@@ -1,11 +1,16 @@
 import os
+from platform import processor
+
 from pod.classes.FileProcessor import FileProcessor
+from pod.classes.JsonBuilder import JsonBuilder
 import logging
 import threading
 import pytz
 from datetime import datetime, timedelta
 import time
 import shutil
+from pod.dbmodels.models import DATABASE_URL, get_session
+from pod.dbmodels.queries import get_if_subject_is_language_by_title
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -21,7 +26,14 @@ class FallbackFileProcessor:
         self.keep_running = True
         self.thread = threading.Thread(target=self.run_daily_processing, daemon=True)
         self.thread.start()
+        self.json = JsonBuilder()
         logger.info("Started background fallback processing thread.")
+
+    def check_file_in_files(self, file, filelist):
+        for f in filelist:
+            if file in f:
+                return f
+        return None
 
     def process_folders(self):
         logger.info("Started processing folders in media folder path.")
@@ -38,6 +50,12 @@ class FallbackFileProcessor:
             timestamp_folders = [tf for tf in os.listdir(subject_folder_path) if os.path.isdir(os.path.join(subject_folder_path, tf))]
             logger.debug(f"Found timestamp folders: {timestamp_folders}")
 
+            session = get_session(DATABASE_URL)  # Create a new session for the database interaction
+            title = os.path.basename(subject_folder_path)
+            is_language = get_if_subject_is_language_by_title(session, title)
+            if is_language:
+                continue
+
             # Iterate through each timestamp folder
             for timestamp_folder in timestamp_folders:
                 timestamp_folder_path = os.path.join(subject_folder_path, timestamp_folder)
@@ -46,16 +64,23 @@ class FallbackFileProcessor:
                 files = os.listdir(timestamp_folder_path)
                 logger.debug(f"Files in folder {timestamp_folder_path}: {files}")
 
-                # Check if there are 6 files in the subject folder
-                if len(files) == 6:
-                    logger.info(f"Skipping {timestamp_folder_path}, already processed (6 files).")
-                    continue  # Skip processing if file count is 6
-
                 # Sort files by modification time, latest first
                 files_with_paths = [os.path.join(timestamp_folder_path, f) for f in files]
+
+                if self.check_file_in_files("transcript.txt", files_with_paths):
+                    continue
+                else:
+                    mp3 = self.check_file_in_files("mp3", files_with_paths)
+                    if mp3:
+                        self.processor.mp3_to_transcript(mp3, subject_folder)
+                    else:
+                        video = self.check_file_in_files("recorded_video.mp4", files_with_paths)
+                        if video:
+                            self.processor.mp4_to_mp3(video, subject_folder)
+
+
                 latest_filepath = max(files_with_paths, key=os.path.getmtime)
                 logger.info(f"Latest file to process: {latest_filepath}")
-
                 try:
                     # Process the latest file based on its extension
                     if latest_filepath.endswith('recorded_video.mp4') and not any(f.endswith('.mp3') for f in files):

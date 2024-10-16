@@ -212,24 +212,26 @@ def login_page(request):
 
     if request.method == 'POST':
         value = request.POST.get('pin')  # Retrieve the PIN or RFID from the form field
-
-        session = get_session(DATABASE_URL)  # Create a new session for the database interaction
+        try:
+            session = get_session(DATABASE_URL)  # Create a new session for the database interaction
+        except:
+            return render(request, 'login_page.html', {'error_message': "No Internet Connection"})
 
         try:
             if value and len(value) > 4:
                 # Retrieve staff details based on RFID
-                staff_member = get_staff_by_rfid(value, school_id)
+                staff_member = get_staff_by_rfid(session, value, school_id)
                 
             elif value and len(value) == 4:
                 # Retrieve staff details based on PIN (you need to implement this method if required)
                 value = int(value)
                 # Log the new type after conversion
-                staff_member = get_staff_by_pin(value, school_id)  # Assuming you'll create this method
+                staff_member = get_staff_by_pin(session, value, school_id)  # Assuming you'll create this method
 
             if staff_member:
                 logger.info(f"Login successful: {staff_member.first_name} {staff_member.last_name}")
                 
-                subjects = get_teacher_subject_groups_by_staff(staff_member=staff_member)
+                subjects = get_teacher_subject_groups_by_staff(session, staff_member=staff_member)
 
                 # for subject in subjects:
                 #     print(f"Subjects for {staff_member.first_name}: {subject.subject_group_id}")
