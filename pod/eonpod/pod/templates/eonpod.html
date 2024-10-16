@@ -119,11 +119,11 @@
                                 </svg>
                             </div>
                             <div class="dropdown-content" id="dropdown-content">
-                                {% for subject in subjects %}
-                                {% if subject.subject_group.is_active %}
+                                {% for subject in subject_groups %}
+                                {% if subject.is_active %}
                                 <a
-                                    onclick="selectOption('{{ subject.subject_group.class_name }} - {{ subject.subject_group.subject }}', '{{ subject.subject_group.title }}', '{{ subject.subject_group.is_language_subject }}')">
-                                    {{ subject.subject_group.class_name }} - {{ subject.subject_group.subject }}
+                                    onclick="selectOption('{{ subject.class_name }} - {{ subject.subject }}', '{{ subject.title }}', '{{ subject.is_language_subject }}')">
+                                    {{ subject.class_name }} - {{ subject.subject }}
                                 </a>
                                 {% endif %}
                                 {% endfor %}

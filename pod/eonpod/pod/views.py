@@ -1,5 +1,6 @@
 from datetime import datetime
 import glob
+import requests
 import json
 import os
 from django.shortcuts import render, redirect
@@ -22,8 +23,8 @@ from pod.classes.CheckConnections import CheckConnections
 import logging
 from django.shortcuts import render
 
-from pod.dbmodels.models import DATABASE_URL, get_session
-from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
+# from pod.dbmodels.models import DATABASE_URL, get_session
+# from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
 
 
 # Get the logger instance for the 'pod' app
@@ -205,6 +206,34 @@ def check_device_connections(request):
 
 school_id = settings.SCHOOL_NAME
 
+def get_staff_subject_groups(pin, school_id):
+    # API URL
+    url = "http://13.202.101.139:5000/get_staff_subject_groups"
+    
+    # Payload for the POST request
+    payload = {
+        "pin": pin,
+        "school_id": school_id
+    }
+    
+    try:
+        # Sending the POST request
+        response = requests.post(url, json=payload)
+        
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Parse the JSON response
+            data = response.json()
+            logger.info("Response from API:", response.status_code) # json.dumps(data, indent=4)
+            return data
+        else:
+            logger.error(f"Failed to get data. Status code: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error during API call: {e}")
+        return None
+
+
 @csrf_exempt
 def login_page(request):
     error_message = None  # Initialize error_message here
@@ -213,71 +242,27 @@ def login_page(request):
     if request.method == 'POST':
         value = request.POST.get('pin')  # Retrieve the PIN or RFID from the form field
         try:
-            session = get_session(DATABASE_URL)  # Create a new session for the database interaction
-        except:
-            return render(request, 'login_page.html', {'error_message': "No Internet Connection"})
-
-        try:
-            if value and len(value) > 4:
-                # Retrieve staff details based on RFID
-                staff_member = get_staff_by_rfid(session, value, school_id)
+            if value:
+                response = get_staff_subject_groups(value, school_id)
+                # logger.info(f"Response of get_staff_subject_groups: {response}")  # Corrected logging
                 
-            elif value and len(value) == 4:
-                # Retrieve staff details based on PIN (you need to implement this method if required)
-                value = int(value)
-                # Log the new type after conversion
-                staff_member = get_staff_by_pin(session, value, school_id)  # Assuming you'll create this method
-
-            if staff_member:
-                logger.info(f"Login successful: {staff_member.first_name} {staff_member.last_name}")
-                
-                subjects = get_teacher_subject_groups_by_staff(session, staff_member=staff_member)
-
-                # for subject in subjects:
-                #     print(f"Subjects for {staff_member.first_name}: {subject.subject_group_id}")
-
-                #     # Accessing attributes from SubjectGroup
-                #     subject_group = subject.subject_group  # Accessing the related SubjectGroup instance
-                #     print(f"Title: {subject_group.title}")
-                #     print(f"Class: {subject_group.class_name}")
-                #     print(f"Subject: {subject_group.subject}")
-                #     print(f"Is Active: {subject_group.is_active}")
-                #     print(f"Is Language Subject: {subject_group.is_language_subject}")
-
-                # Redirect to the eonpod page with the staff member's details
-                # return render(request, 'eonpod.html', {'username': f"{staff_member.first_name} {staff_member.last_name}"})
-                # Redirect to the eonpod page with the staff member's details and subjects
-
-                subject_data = []
-                for subject in subjects:
-                    subject_group = subject.subject_group  # Access the related SubjectGroup instance
-
-                    subject_data.append({
-                        'title': subject_group.title,
-                        'class_name': subject_group.class_name,
-                        'subject': subject_group.subject,
-                        'is_active': subject_group.is_active,
-                        'is_language_subject': subject_group.is_language_subject,
-                    })
-
-                return render(request, 'eonpod.html', {
-                    'username': f"{staff_member.first_name} {staff_member.last_name}",
-                    'subjects': subjects  # Pass the subjects to the template
-                })
-                
+                # Extract subject groups
+                subject_groups = response['subject_groups']
+                if subject_groups:
+                    print("checking subject group values : \n", subject_groups)
+                    return render(request, 'eonpod.html', {
+                            'username': f"{response['first_name']} {response['last_name']}",  # Assuming staff name comes in subjects
+                            'subject_groups': subject_groups  # Pass the subjects to the template
+                        })
+                else :
+                    return render(request, 'login_page.html', {'error_message': "No Subjects Assigned"})
             else:
                 error_message = "Invalid credentials. Please try again."
         except Exception as e:
             logger.error(f"An error occurred during login: {e}")
             error_message = "Invalid Credentials. Please try again."
-        finally:
-            session.close()
 
     return render(request, 'login_page.html', {'error_message': error_message})
-
-# @login_required
-def ai_chatpage(request):
-   return render(request, 'ai_chatpage.html')
 
 
 # @login_required
