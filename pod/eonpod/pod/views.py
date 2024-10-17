@@ -23,9 +23,9 @@ from pod.classes.CheckConnections import CheckConnections
 import logging
 from django.shortcuts import render
 
-# from pod.dbmodels.models import DATABASE_URL, get_session
-# from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
-
+from pod.dbmodels.models import DATABASE_URL, get_session
+from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
+# from pod.dbmodels.models.staff import Staff
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -227,11 +227,68 @@ def get_staff_subject_groups(pin, school_id):
             logger.info("Response from API:", response.status_code) # json.dumps(data, indent=4)
             return data
         else:
-            logger.error(f"Failed to get data. Status code: {response.status_code}")
-            return None
+            # Fall back to local DB if the API fails
+            logger.error(f"Failed to get data. Status code: {response.status_code}, \nTrying to hit local DB")
+            return handle_local_db(pin, school_id)
     except requests.exceptions.RequestException as e:
-        print(f"Error during API call: {e}")
-        return None
+        logger.info(f"Error during API call: {e}")
+        # No internet connection, use local database instead
+        return handle_local_db(pin, school_id)
+
+
+def handle_local_db(value, school_id):
+    try:
+        session = get_session(database_url=DATABASE_URL)  # Create a new session for the database interaction
+    except Exception as e:
+        logger.error(f"Error connecting to local DB: {e}")
+        return {'error_message': "No Internet Connection and could not access local database"}
+
+    try:
+        staff_member = None
+        
+        if value and len(value) > 4:
+            # Retrieve staff details based on RFID
+            staff_member = get_staff_by_rfid(session, value, school_id)
+        elif value and len(value) == 4:
+            # Retrieve staff details based on PIN
+            value = int(value)
+            staff_member = get_staff_by_pin(session, value, school_id)
+
+        if staff_member:
+            logger.info(f"Login successful: {staff_member.first_name} {staff_member.last_name}")
+            
+            # Retrieve subject groups
+            subjects = get_teacher_subject_groups_by_staff(session, staff_member=staff_member)
+            subject_groups = []
+
+            for subject in subjects:
+                subject_group = subject.subject_group  # Access the related SubjectGroup instance
+                
+                # Structure the data like the API response
+                subject_groups.append({
+                    'class_name': subject_group.class_name,
+                    'title': subject_group.title,
+                    'is_active': subject_group.is_active,
+                    'school_id': subject_group.school_id,
+                    'id': subject_group.id,
+                    'subject': subject_group.subject,
+                    'is_language_subject': subject_group.is_language_subject,
+                })
+
+            logger.info("Subject groups successfully retrieved from local DB")
+            
+            # Return a similar response format as the API
+            return {
+                "first_name": staff_member.first_name,
+                "last_name": staff_member.last_name,
+                "subject_groups": subject_groups
+            }
+        else:
+            logger.warning(f"Staff member not found for value: {value}")
+            return {'error_message': "Staff member not found."}
+    except Exception as e:
+        logger.error(f"Error during local DB processing: {e}")
+        return {'error_message': "An error occurred while processing the local database"}
 
 
 @csrf_exempt
@@ -249,7 +306,8 @@ def login_page(request):
                 # Extract subject groups
                 subject_groups = response['subject_groups']
                 if subject_groups:
-                    print("checking subject group values : \n", subject_groups)
+
+                    logger.info("subject group values fetched:")
                     return render(request, 'eonpod.html', {
                             'username': f"{response['first_name']} {response['last_name']}",  # Assuming staff name comes in subjects
                             'subject_groups': subject_groups  # Pass the subjects to the template
@@ -271,6 +329,5 @@ def eonpod(request):
     # global recording_status, streaming_status
     # Log the current recording and streaming status
     # logger.info(f"Streaming status in eonpod view: {streaming_status}")
-    # print(f"Recording status is : {recording_status}, Streaming status is : {streaming_status}")
     return render(request, 'eonpod.html')
 
