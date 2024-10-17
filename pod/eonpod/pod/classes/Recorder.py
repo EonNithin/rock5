@@ -60,7 +60,7 @@ class Recorder:
 
     def pause_recording(self):
         self.stop_recording()
-        self.stop_screen_grab
+        self.stop_screen_grab()
 
 
     def resume_recording(self):
