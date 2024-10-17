@@ -44,6 +44,9 @@ processing_queue = ProcessingQueue()
 # initialize the check device connections
 connections = CheckConnections()
 
+school_id = settings.SCHOOL_NAME
+
+
 # Global variables to hold device statuses
 camera_status = False
 mic_status = False
@@ -204,7 +207,6 @@ def check_device_connections(request):
             logger.error(f"Error checking device connections: {str(e)}")
             return JsonResponse({'error': str(e)}, status=500)
 
-school_id = settings.SCHOOL_NAME
 
 def get_staff_subject_groups(pin, school_id):
     # API URL
@@ -289,7 +291,9 @@ def handle_local_db(value, school_id):
     except Exception as e:
         logger.error(f"Error during local DB processing: {e}")
         return {'error_message': "An error occurred while processing the local database"}
-
+    finally:
+        # Always close the session to avoid any connection leaks
+        session.close()
 
 @csrf_exempt
 def login_page(request):

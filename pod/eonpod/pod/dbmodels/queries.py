@@ -18,9 +18,9 @@ def get_teacher_subject_groups_by_staff(session, staff_member):
     return subject_groups
     
 
-def get_if_subject_is_language_by_title(session, title):
+def get_if_subject_is_language_by_title(session, school_id, title):
     """Fetch a SubjectGroup by its title."""
-    subject_group = session.query(SubjectGroup).filter_by(title=title).first()
+    subject_group = session.query(SubjectGroup).filter_by(title=title, school_id=school_id).first()
     is_language = subject_group.is_language_subject   
     return is_language
 
