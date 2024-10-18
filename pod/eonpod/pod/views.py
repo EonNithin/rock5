@@ -129,7 +129,7 @@ def stop_recording_view(request):
         # try:
         data = json.loads(request.body)
         selected_subject = data.get('subject', '')  
-        
+        logger.info(f"Selected Subject: {selected_subject}")
         is_language = data.get('isLanguage', '') 
         logger.info(f"Is language: {is_language}")
         recorder.stop_recording()
@@ -243,7 +243,7 @@ def handle_local_db(value, school_id):
         session = get_session(database_url=DATABASE_URL)  # Create a new session for the database interaction
     except Exception as e:
         logger.error(f"Error connecting to local DB: {e}")
-        return {'error_message': "No Internet Connection and could not access local database"}
+        return {'error_message': "Could not access local database"}
 
     try:
         staff_member = None
