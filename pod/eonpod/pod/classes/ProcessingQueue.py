@@ -35,7 +35,6 @@ class ProcessingQueue:
 
 
     def process_queue(self):
-        upload_flag = False
         while True:
             with self.lock:
                 files_to_delete = []
@@ -52,10 +51,6 @@ class ProcessingQueue:
                             if data["is_language"] == "False":
                                 logger.info(f"Sending {file_name} to processor to process files")
                                 self.processor.process_mp4_files(file_path, subject)
-                            else:
-                                logger.info(f"Sending {file_name} to directly upload files to s3")
-                                self.s3_obj.add_to_queue(school = settings.SCHOOL_NAME, subject = subject, local_directory = os.path.dirname(file_path))
-                                upload_flag = True
                             with self.lock:
                                 files_to_delete.append(file_name)
                         except Exception as e:
@@ -63,10 +58,8 @@ class ProcessingQueue:
                             with self.lock:
                                 self.mp4_paths[file_name]["status"] = f"Error: {str(e)}"
                         finally:
-                            logger.info("Running Finally in procsesing queue")
-                            if not upload_flag:
-                                logger.info("Adding to s3 queue")
-                                self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory = os.path.dirname(file_path))
+                            logger.info("Adding to s3 queue")
+                            self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory = os.path.dirname(file_path))
                             self.lock.acquire()  # Reacquire the lock
                     
                 for file_name in files_to_delete:
