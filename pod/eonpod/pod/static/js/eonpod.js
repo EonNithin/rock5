@@ -273,13 +273,6 @@ async function stopRecording() {
         document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
         document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
 
-        const dropdownLabel = document.getElementById("dropdown-label");
-        const dropdownContent = document.getElementById("dropdown-content");
-
-        // Re-enable dropdown after stopping recording
-        dropdownLabel.style.pointerEvents = "auto"; // Enable dropdown label
-        dropdownContent.style.pointerEvents = "auto"; // Enable dropdown options
-        
         const pauseRecordButton = document.getElementById("pause-recording");
         const resumeRecordContainer = document.getElementById("resume-recording");
         pauseRecordButton.style.display = "none";
