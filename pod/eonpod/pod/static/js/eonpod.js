@@ -100,11 +100,14 @@ async function toggleRecording() {
     const controlsDiv = document.getElementById('controls');
     const pauseRecordButton = document.getElementById("pause-recording");
     const resumeRecordContainer = document.getElementById("resume-recording");
+    const dropdownLabel = document.getElementById("dropdown-label");
+    const dropdownContent = document.getElementById("dropdown-content");
 
     if (isRecording) {
         // Stop recording
         showConfirmDialog();
     } else {
+        // Start recording
         if (!selectedSubject) {
             showSubjectSelectionAlert();
             console.log("entered function showSubjectSelectionAlert")
@@ -118,6 +121,10 @@ async function toggleRecording() {
         controlsDiv.style.display = 'block';
         pauseRecordButton.style.display = "block";
         resumeRecordContainer.style.display = "none";
+
+        // Disable dropdown while recording
+        dropdownLabel.style.pointerEvents = "none"; // Disable dropdown label
+        dropdownContent.style.pointerEvents = "none"; // Disable dropdown options
 
         isRecording = true;
 
@@ -266,6 +273,13 @@ async function stopRecording() {
         document.getElementById("progress-bar1").style.visibility = "hidden"; // Hide progress bar
         document.getElementById("progress-bar1").style.width = "0%"; // Reset progress bar
 
+        const dropdownLabel = document.getElementById("dropdown-label");
+        const dropdownContent = document.getElementById("dropdown-content");
+
+        // Re-enable dropdown after stopping recording
+        dropdownLabel.style.pointerEvents = "auto"; // Enable dropdown label
+        dropdownContent.style.pointerEvents = "auto"; // Enable dropdown options
+        
         const pauseRecordButton = document.getElementById("pause-recording");
         const resumeRecordContainer = document.getElementById("resume-recording");
         pauseRecordButton.style.display = "none";
