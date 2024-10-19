@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 import glob
 import requests
@@ -105,7 +106,7 @@ def resume_recording_view(request):
 
 
 @csrf_exempt
-def start_recording_view(request):
+async def start_recording_view(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -114,8 +115,13 @@ def start_recording_view(request):
             logger.info(f"Started recording for subject: {selected_subject}")
             is_language = data.get('isLanguage', '') 
             logger.info(f"Is language: {is_language}")
-            recorder.start_recording(selected_subject)
-            recorder.start_screen_grab()
+
+            # Call both recording and screen grab concurrently
+            await asyncio.gather(
+                recorder.start_recording(selected_subject),
+                recorder.start_screen_grab()
+            )
+
             return JsonResponse({"success": True, "message": "Recording started."})
         except Exception as e:
             logger.error(f"Error starting recording: {str(e)}")
@@ -124,7 +130,7 @@ def start_recording_view(request):
 
 
 @csrf_exempt
-def stop_recording_view(request):
+async def stop_recording_view(request):
     if request.method == "POST":
         # try:
         data = json.loads(request.body)
@@ -132,8 +138,13 @@ def stop_recording_view(request):
         logger.info(f"Selected Subject: {selected_subject}")
         is_language = data.get('isLanguage', '') 
         logger.info(f"Is language: {is_language}")
-        recorder.stop_recording()
-        recorder.stop_screen_grab()
+        
+        # Call both recording and screen grab concurrently
+        await asyncio.gather(
+            recorder.stop_recording(),
+            recorder.stop_screen_grab()
+        )
+
         logger.info(f"Stopped recording for subject: {selected_subject}")
         # Once the recording stops, concatenate parts
         recorded_files = recorder.get_recorded_files()
