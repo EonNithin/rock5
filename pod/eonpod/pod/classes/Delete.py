@@ -57,7 +57,7 @@ class DeletionJob:
                     ("transcript" in generated_file or "mp3" in generated_file) and
                     not any(generated_file in f for f in data["s3_path"])
                 ):
-                    s3.upload_file(local_file_path=generated_file, school=settings.SCHOOL_NAME, subject=data["subject"])
+                    self.s3.upload_file(local_file_path=generated_file, school=settings.SCHOOL_NAME, subject=data["subject"])
 
             try:
                 current = datetime.now(pytz.timezone('Asia/Kolkata'))
