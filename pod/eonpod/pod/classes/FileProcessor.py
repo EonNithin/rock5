@@ -8,6 +8,9 @@ from django.http import JsonResponse
 from pod.classes.JsonBuilder import JsonBuilder
 from pod.classes.S3Uploader import S3UploadQueue
 import logging
+import cv2
+import os
+
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -111,9 +114,39 @@ class FileProcessor:
             logger.error(f"Error loading text from file: {txt_filepath}: {e}")
             return ""
         
+    def generate_thumbnail(self, mp4_filepath):
+        # Get the directory where the MP4 file is located
+        directory = os.path.dirname(mp4_filepath)
+        
+        # Capture the video
+        cap = cv2.VideoCapture(mp4_filepath)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+
+        # Define timestamps where you want to take screenshots
+        timestamps = [0.1, 2]  # In seconds
+
+        # Create the output directory if it doesn't exist
+        os.makedirs(directory, exist_ok=True)
+
+        # Generate thumbnails and save them in the same directory as the MP4 file
+        for idx, t in enumerate(timestamps, 1):  # Start the index from 1
+            cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)  # Set position in milliseconds
+            ret, frame = cap.read()
+            if ret:
+                # Save the frame as an image in the same folder as the MP4 file
+                thumbnail_path = os.path.join(directory, f"thumbnail_{idx}.png")
+                cv2.imwrite(thumbnail_path, frame)
+                logger.info(f"Thumbnail saved at: {thumbnail_path}")
+                # Add the thumbnail to the list of generated files for JSON and S3 upload
+                # self.json_builder.add_generated_files(thumbnail_path, timetaken=1)
+
+        cap.release()
+
+        return
         
     def process_mp4_files(self, mp4_filepath, subject):
         logger.info(f"Processing MP4 file: {mp4_filepath} for subject: {subject}")
+        self.generate_thumbnail(mp4_filepath)
         self.json_builder.add_generated_files(mp4_filepath, timetaken = 1)
         # grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
         # if os.path.exists(grab_path):
