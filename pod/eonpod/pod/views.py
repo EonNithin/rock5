@@ -106,7 +106,7 @@ def resume_recording_view(request):
 
 
 @csrf_exempt
-async def start_recording_view(request):
+def start_recording_view(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -117,10 +117,9 @@ async def start_recording_view(request):
             logger.info(f"Is language: {is_language}")
 
             # Call both recording and screen grab concurrently
-            await asyncio.gather(
-                recorder.start_recording(selected_subject),
-                recorder.start_screen_grab()
-            )
+            
+            recorder.start_recording(selected_subject),
+            recorder.start_screen_grab()
 
             return JsonResponse({"success": True, "message": "Recording started."})
         except Exception as e:
@@ -130,7 +129,7 @@ async def start_recording_view(request):
 
 
 @csrf_exempt
-async def stop_recording_view(request):
+def stop_recording_view(request):
     if request.method == "POST":
         # try:
         data = json.loads(request.body)
@@ -140,10 +139,9 @@ async def stop_recording_view(request):
         logger.info(f"Is language: {is_language}")
         
         # Call both recording and screen grab concurrently
-        await asyncio.gather(
-            recorder.stop_recording(),
-            recorder.stop_screen_grab()
-        )
+
+        recorder.stop_recording(),
+        recorder.stop_screen_grab()
 
         logger.info(f"Stopped recording for subject: {selected_subject}")
         # Once the recording stops, concatenate parts

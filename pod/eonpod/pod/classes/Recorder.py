@@ -142,7 +142,7 @@ class Recorder:
         return self.filepath
 
 
-    async def start_recording(self, subject, part=0):
+    def start_recording(self, subject, part=0):
         # self.part = part
         if part == 0:
             self.part = 0  # Reset part numbering for each new recording
@@ -196,7 +196,7 @@ class Recorder:
             logger.error("Cannot start recording, audio device not found.")
 
 
-    async def stop_recording(self):
+    def stop_recording(self):
         if self.process and self.process.poll() is None:
             # Send 'q' to stop recording
             self.process.stdin.write(b'q')  # Encode 'q' as bytes
@@ -223,7 +223,7 @@ class Recorder:
 
 
 
-    async def start_screen_grab(self, part=0):
+    def start_screen_grab(self, part=0):
         # self.part = part
         if part == 0:
             self.part = 0  # Reset part numbering for each new recording
@@ -247,7 +247,7 @@ class Recorder:
         logger.info(f"Screen Grab started: {self.grab_filename}, File path: {self.grab_filepath}")
 
 
-    async def stop_screen_grab(self):
+    def stop_screen_grab(self):
         if self.grab_process and self.grab_process.poll() is None:
             # Send 'q' to stop the screen grab
             self.grab_process.stdin.write(b'q')  # Encode 'q' as bytes
