@@ -10,37 +10,44 @@ logger = logging.getLogger('pod')
 class CheckConnections:
     def __init__(self):
         self.rtsp_url = "rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101"
-        self.audio_device_index = self.get_audio_device_info()  # Getting device index for ALSA
+        self.audio_device_index = None # Getting device index for ALSA
         self.video_device_path = "/dev/video1"
-        logger.info(f"Initialized CheckConnections")
+        logger.info("Initialized CheckConnections")
 
-    def get_audio_device_info(self):
-        # Run the arecord -l command and capture the output
-        result = subprocess.run(['arecord', '-l'], stdout=subprocess.PIPE, text=True)
+    def get_audio_device_index(self):
+        # Get the list of USB devices
+        result = subprocess.run(['lsusb'], stdout=subprocess.PIPE, text=True)
 
-        # Check if the command was successful
         if result.returncode != 0:
-            logger.error("Error running arecord command.")
+            logger.error("Error running lsusb command.")
             return None
 
-        # Decode the output
         output = result.stdout
+        device_pattern = re.compile(r'Bus \d+ Device \d+: ID \d{4}:\d{4} .*?USB Composite Device')
 
-        # Regular expression to match the card and device numbers
-        device_pattern = re.compile(r'card (\d+): .*?\[.*?USB Composite Device.*?\], device (\d+):')
-
-        # Search for the device in the output
-        matches = device_pattern.findall(output)
-
-        # Return the first found card and device number, if any
-        if matches:
-            card, device = matches[0]
-            logger.info(f"Found audio device: Card {card}, Device {device}")
-            return int(card)  # Returning the card as the index for PyAudio
+        if device_pattern.search(output):
+            logger.info("Found USB Composite Device.")
+            # Attempt to get the device index using PyAudio
+            audio_index = self.get_pyaudio_device_index("USB Composite Device")
+            if audio_index is not None:
+                logger.info(f"Audio device index found: {audio_index}")
+                return audio_index
+            else:
+                logger.warning("No matching audio device found in PyAudio.")
         else:
             logger.warning("No USB Composite Device found.")
-            return None
+        return None
 
+
+    def get_pyaudio_device_index(self, device_name):
+        p = pyaudio.PyAudio()
+        for i in range(p.get_device_count()):
+            info = p.get_device_info_by_index(i)
+            if device_name in info['name']:
+                logger.info(f"Found audio device: {info['name']} at index {i}")
+                return i  # Return the index of the device
+        logger.warning("No matching audio device found in PyAudio.")
+        return None
 
     def test_rtsp_connection(self):
         logger.info(f"Testing RTSP connection to {self.rtsp_url}")
@@ -53,8 +60,8 @@ class CheckConnections:
             logger.error("Failed to connect to RTSP stream.")
             return False
 
-
     def test_alsa_connection(self):
+        self.audio_device_index = self.get_audio_device_index() 
         if self.audio_device_index is None:
             logger.error("No audio device found, skipping ALSA test.")
             return False
@@ -81,7 +88,6 @@ class CheckConnections:
         finally:
             p.terminate()
 
-
     def test_video_device(self):
         logger.info(f"Testing video device at {self.video_device_path}")
         cap = cv2.VideoCapture(self.video_device_path)
@@ -99,10 +105,22 @@ class CheckConnections:
             cap.release()
             return False
 
-# # Example usage
-# if __name__ == "__main__":
-#     connections = CheckConnections()
-#     # Test the devices
-#     connections.test_rtsp_connection()
-#     connections.test_alsa_connection()
-#     connections.test_video_device()
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)  # Set to DEBUG for detailed logs
+    connections = CheckConnections()
+
+    if connections.test_rtsp_connection():
+        logger.info("RTSP connection test was successful.")
+    else:
+        logger.error("RTSP connection test failed.")
+
+    if connections.test_alsa_connection():
+        logger.info("ALSA connection test was successful.")
+    else:
+        logger.error("ALSA connection test failed.")
+
+    if connections.test_video_device():
+        logger.info("Video device test was successful.")
+    else:
+        logger.error("Video device test failed.")

@@ -43,7 +43,7 @@ processing_queue = ProcessingQueue()
 
 
 # initialize the check device connections
-connections = CheckConnections()
+connection_obj = CheckConnections()
 
 school_id = settings.SCHOOL_NAME
 
@@ -202,10 +202,9 @@ def check_device_connections(request):
     global camera_status, mic_status, screen_capture_status
     if request.method == "POST":
         try:
-            connections = CheckConnections()
-            camera_status = connections.test_rtsp_connection()
-            mic_status = connections.test_alsa_connection()
-            screen_capture_status = connections.test_video_device()
+            camera_status = connection_obj.test_rtsp_connection()
+            mic_status = connection_obj.test_alsa_connection()
+            screen_capture_status = connection_obj.test_video_device()
             
             logger.info(f"Camera status: {camera_status}, Mic status: {mic_status}, Screen capture status: {screen_capture_status}")
 
