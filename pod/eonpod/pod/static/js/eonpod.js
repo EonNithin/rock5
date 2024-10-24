@@ -6,9 +6,13 @@ let isLoggingOut = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     const logoutButton = document.getElementById('logout');
-
+    const refreshButton = document.getElementById('refreshButton'); // Select refresh button
     if (logoutButton) {
         logoutButton.addEventListener('click', logoutFunction);
+    }
+
+    if (refreshButton) {
+        refreshButton.addEventListener('click', checkDeviceConnections); // Call checkDeviceConnections on click
     }
 
     // Initial check for device connections
