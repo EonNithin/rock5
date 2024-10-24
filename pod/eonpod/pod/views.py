@@ -234,7 +234,7 @@ def get_staff_subject_groups(pin, school_id):
         if response.status_code == 200:
             # Parse the JSON response
             data = response.json()
-            logger.info("Response from API:", response.status_code) # json.dumps(data, indent=4)
+            logger.info(f"Response from API: {response.status_code}")# json.dumps(data, indent=4)
             return data
         else:
             # Fall back to local DB if the API fails
