@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Integer, Boolean, ForeignKey, DateTime
+from sqlalchemy import create_engine, Column, String, Integer, BigInteger ,Boolean, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 import uuid
@@ -43,7 +43,7 @@ class Staff(Base):
     user_role = Column(String)
     mobile_no = Column(String)
     email = Column(String)
-    employee_id = Column(String)
+    employee_id = Column(BigInteger)
     first_name = Column(String)
     last_name = Column(String)
     rfid = Column(String)
