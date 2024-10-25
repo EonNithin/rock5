@@ -7,7 +7,7 @@ def get_staff_by_rfid(session, rfid, school_id):
     return staff
     
 def get_staff_by_pin(session, pin, school_id):
-    staff = session.query(Staff).filter_by(pin=pin, school_id=school_id).first()
+    staff = session.query(Staff).filter(Staff.pin == int(pin), Staff.school_id == school_id).first()
     return staff
 
     
