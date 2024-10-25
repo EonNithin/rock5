@@ -47,44 +47,19 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+const pinInput = document.getElementById('pin');
+const keys = document.querySelectorAll('.key');
+const clearButton = document.querySelector('.key-clear');
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     // Capture RFID input
-//     document.addEventListener('keyup', function(event) {
-//         if (event.key === 'Enter') {
-//             const rfidTag = event.key; // Capture the RFID tag
-//             console.alert(rfidTag)
-//             //sendToBackend(rfidTag);
-//         }
-//     });
+keys.forEach(key => {
+    key.addEventListener('click', () => {
+        if (pinInput.value.length < 6) {
+            pinInput.value += key.innerText;
+        }
+    });
+});
 
-//     // Handle submit button click
-//     document.getElementById('submit-button').addEventListener('click', function() {
-//         const uniqueId = document.getElementById('unique-id').value;
-//         sendToBackend(uniqueId);
-//     });
+clearButton.addEventListener('click', () => {
+    pinInput.value = '';
+});
 
-//     function sendToBackend(id) {
-//         fetch('/api/login/', {  // URL to your Django API endpoint
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ id: id }),
-//         })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             console.log('Response from backend:', data);
-//             // Handle successful login response
-//         })
-//         .catch(error => {
-//             console.error('Error sending ID:', error);
-//             // Handle error response
-//         });
-//     }
-// });

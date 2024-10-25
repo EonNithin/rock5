@@ -57,10 +57,36 @@
                     <!-- RFID Form -->
                     <form method="post" action="{% url 'login_page' %}">
                         {% csrf_token %}
-                        <img src="{% static 'images/rfid-icon.png' %}" alt="Tap ID Card" class="rfid-image">
-
-                        <input type="password" id="pin" name="pin" placeholder="Use PIN" class="pin-input"
-                            inputmode="numeric" pattern="[0-9]*" autofocus><br><br>
+                        <div class="form-container">
+                            <img src="{% static 'images/rfid-icon.png' %}" alt="Tap ID Card" class="rfid-image">
+                        
+                            <!-- Number Keypad -->
+                            <div class="keypad">
+                                <div class="keypad-row">
+                                    <button type="button" class="key">1</button>
+                                    <button type="button" class="key">2</button>
+                                    <button type="button" class="key">3</button>
+                                </div>
+                                <div class="keypad-row">
+                                    <button type="button" class="key">4</button>
+                                    <button type="button" class="key middle-key">5</button>
+                                    <button type="button" class="key">6</button>
+                                </div>
+                                <div class="keypad-row">
+                                    <button type="button" class="key">7</button>
+                                    <button type="button" class="key">8</button>
+                                    <button type="button" class="key">9</button>
+                                </div>
+                                <div class="keypad-row">
+                                    <button type="button" class="key">0</button>
+                                    <button type="button" class="key-clear">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="password" id="pin" name="pin" placeholder="Use PIN" class="pin-input" inputmode="numeric" pattern="[0-9]*"
+                            autofocus><br><br>
+                        
                         <input type="submit" value="Submit" class="btn btn-primary">
                     </form>
                 </div>
