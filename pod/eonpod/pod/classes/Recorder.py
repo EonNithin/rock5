@@ -22,7 +22,7 @@ class Recorder:
         self.subject = None
         self.part = 0
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
-        self.camera_url = 'rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101'
+        self.camera_url = 'rtsp://admin:learneon@123@192.168.0.76:554/Streaming/Channels/101'
         self.devnull = open(os.devnull, 'w')
         logger.info("Initialized Recorder")
 

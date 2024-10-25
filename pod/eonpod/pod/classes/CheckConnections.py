@@ -9,7 +9,7 @@ logger = logging.getLogger('pod')
 
 class CheckConnections:
     def __init__(self):
-        self.rtsp_url = "rtsp://admin:hik@9753@192.168.0.252:554/Streaming/Channels/101"
+        self.rtsp_url = "rtsp://admin:learneon@123@192.168.0.76:554/Streaming/Channels/101"
         self.audio_device_index = None # Getting device index for ALSA
         self.video_device_path = "/dev/video1"
         logger.info("Initialized CheckConnections")
@@ -43,6 +43,7 @@ class CheckConnections:
         p = pyaudio.PyAudio()
         for i in range(p.get_device_count()):
             info = p.get_device_info_by_index(i)
+            logger.info(f"Info of detected device is {info}")
             if device_name in info['name']:
                 logger.info(f"Found audio device: {info['name']} at index {i}")
                 return i  # Return the index of the device
