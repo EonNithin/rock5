@@ -19,6 +19,9 @@ body {
     background-color: #f8f9fa;
     border-radius: 60px;
 }
+.container-fluid .row{
+    width: 80%;
+}
 
 .home-screen {
     background-color: white;
@@ -97,7 +100,7 @@ h1 {
 }
 
 .key {
-    background-color: #007bff;
+    background-color: grey;
     color: white;
     border: none;
     font-size: 0.5rem;
@@ -109,48 +112,48 @@ h1 {
 }
 
 .key:hover {
-    background-color: #0056b3;
+    background-color: grey;
 }
 
 /* Clear Button */
 .key-clear {
-    background-color: #dc3545;
+    background-color: grey;
     color: white;
     grid-column: span 2;
     /* Make the clear button span two columns */
 }
 
 .key-clear:hover {
-    background-color: #c82333;
+    background-color: grey;
 }
 
 @media (min-width: 576px) {
     .key {
-        font-size: 1.0rem;
+        font-size: 1.5rem;
     }
 
     .key-clear {
-        font-size: 1.0rem;
+        font-size: 1.5rem;
     }
 }
 
 @media (min-width: 768px) {
     .key {
-        font-size: 1.2rem;
+        font-size: 1.8rem;
     }
 
     .key-clear {
-        font-size: 1.2rem;
+        font-size: 1.8rem;
     }
 }
 
 @media (min-width: 992px) {
     .key {
-        font-size: 1.5rem;
+        font-size: 2.0rem;
     }
 
     .key-clear {
-        font-size: 1.5rem;
+        font-size: 2.0rem;
     }
 }
 
