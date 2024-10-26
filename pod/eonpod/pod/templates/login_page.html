@@ -16,6 +16,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/login_page.css'%}">
+    <link rel="icon" href="{% static 'images/eonpod.png'%}" type="image/png">
 
     <title>EON POD </title>
 
@@ -46,7 +47,7 @@
                     </button>
                 </div>
 
-                <div class="home-screen text-center p-4">
+                <div class="home-screen text-center p-2">
                     <h1>Welcome to EONPOD</h1>
 
                     <!-- Display error message if RFID is incorrect -->
@@ -82,10 +83,11 @@
                                     <button type="button" class="key-clear">Clear</button>
                                 </div>
                             </div>
+                            
                         </div>
                         
                         <input type="password" id="pin" name="pin" placeholder="Use PIN" class="pin-input" inputmode="numeric" pattern="[0-9]*"
-                            autofocus><br><br>
+                            autofocus><br>
                         
                         <input type="submit" value="Submit" class="btn btn-primary">
                     </form>

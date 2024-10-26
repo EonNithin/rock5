@@ -25,7 +25,7 @@ body {
 
 .home-screen {
     background-color: white;
-    padding: 20px;
+    padding: 5px;
     border-radius: 10px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
@@ -55,6 +55,7 @@ h1 {
 .btn-primary {
     font-size: 1rem;
     padding: 10px 20px;
+    margin-top: 5px;
 }
 
 /* Error message styling */
@@ -90,8 +91,9 @@ h1 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    max-width: 300px;
+    min-width: 300px;
     margin: 0 auto;
+    margin-bottom: 8px;
 }
 
 .keypad-row {
@@ -211,7 +213,7 @@ h1 {
     }
 
     .rfid-image {
-        width: 350px;
+        width: 380px;
         /* Larger image for large devices */
     }
 
