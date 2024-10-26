@@ -26,6 +26,7 @@ from django.shortcuts import render
 
 from pod.dbmodels.models import DATABASE_URL, get_session
 from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
+from pod.classes.DBOffloader import DBOffloader
 # from pod.dbmodels.models.staff import Staff
 
 # Get the logger instance for the 'pod' app
@@ -40,6 +41,9 @@ recorder = Recorder()
 
 # Initialize the processing queue
 processing_queue = ProcessingQueue()
+
+# Initialize the DB Offloader 
+db_offloader = DBOffloader()
 
 
 # initialize the check device connections
