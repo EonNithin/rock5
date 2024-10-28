@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navigate to the Django project directory
-cd "$HOME/Desktop/rock5/pod/eonpod" || exit
+cd "$HOME/eonpod/pod/eonpod" || exit
 
 # Activate the virtual environment
 source venv/bin/activate
