@@ -42,5 +42,7 @@ sudo make install
 # Return to the home directory
 cd ~
 
+sudo apt install ffmpeg
+
 echo_status "Setup completed successfully!"
 
