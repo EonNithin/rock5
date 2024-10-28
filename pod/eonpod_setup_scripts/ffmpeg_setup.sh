@@ -42,13 +42,5 @@ sudo make install
 # Return to the home directory
 cd ~
 
-# Hold FFmpeg package to prevent it from being updated
-echo_status "Holding FFmpeg package to prevent updates"
-sudo apt-mark hold ffmpeg
-
-# Verify the hold
-echo_status "Verifying the hold on FFmpeg package"
-apt-mark showhold
-
 echo_status "Setup completed successfully!"
 
