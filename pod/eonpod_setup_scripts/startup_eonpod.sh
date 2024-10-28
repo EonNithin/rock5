@@ -14,8 +14,8 @@ if ! lsof -i :8000; then
 fi
 
 # Kill any existing Chromium instance in kiosk mode
-pkill -f "chromium --kiosk" 2>/dev/null
+pkill -f "chromium-browser --kiosk" 2>/dev/null
 
 # Open Chromium in kiosk mode pointing to localhost
-exec chromium --kiosk "http://localhost:8000" --disable-pinch --overscroll-history-navigation=0
+exec chromium-browser --kiosk "http://localhost:8000" --disable-pinch --overscroll-history-navigation=0
 
