@@ -17,20 +17,23 @@ check_python() {
 
 # Function to check and install pip for Python 3.10
 check_pip() {
-    if command -v python3.10 -m pip &> /dev/null; then
+    if command -v pip3 &> /dev/null; then
         echo "pip for Python 3.10 is already installed."
     else
         echo "pip for Python 3.10 is not installed. Installing it now..."
-        curl -sSL https://bootstrap.pypa.io/get-pip.py | python3.10
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
         echo "pip installed successfully."
     fi
 }
+
 
 # Call the function to check and install Python 3.10
 check_python
 
 # Call the function to check and install pip for Python 3.10
 check_pip
+
 
 # Variables
 REPO_URL="https://github.com/EonNithin/rock5.git"  # Your GitHub repository URL
@@ -64,14 +67,6 @@ sudo apt-get install -y portaudio19-dev
 # Step 4: Check for requirements.txt and install dependencies
 if [ -f "$REQUIREMENTS_FILE" ]; then
     echo "Found requirements.txt, installing dependencies..."
-    # It's better to use a virtual environment
-    if [ ! -d "venv" ]; then
-        echo "Creating a virtual environment..."
-        python3.10 -m venv venv
-    fi
-
-    echo "Activating the virtual environment..."
-    source venv/bin/activate
 
     echo "Installing requirements..."
     pip install --upgrade pip
@@ -81,4 +76,3 @@ else
 fi
 
 echo "Setup complete."
-
