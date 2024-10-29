@@ -4,6 +4,7 @@ from datetime import datetime
 from django.conf import settings
 import logging
 import re
+import pyaudio
 import pytz
 import signal 
 import asyncio
@@ -31,32 +32,33 @@ class Recorder:
         self.timestamp = datetime.now(self.timezone).strftime("%d-%m-%Y_%H-%M-%S")
 
 
-    def get_audio_device_info(self):
-        # Run the arecord -l command and capture the output
-        result = subprocess.run(['arecord', '-l'], stdout=subprocess.PIPE, text=True)
-
-        # Check if the command was successful
-        if result.returncode != 0:
-            logger.error("Error running arecord command.")
-            return None, None
-
-        # Decode the output
-        output = result.stdout
-
-        # Regular expression to match the card and device numbers
-        device_pattern = re.compile(r'card (\d+): .*?\[.*?USB Composite Device.*?\], device (\d+):')
-
-        # Search for the device in the output
-        matches = device_pattern.findall(output)
-
-        # Return the first found card and device number, if any
-        if matches:
-            card, device = matches[0]
-            logger.info(f"Found audio device: Card {card}, Device {device}")
-            return f"hw:{card},{device}"
+    def get_audio_device_index(self):
+        # Find the device index by name
+        device_index, hw_value = self.get_pyaudio_device_index("USB Composite Device")
+        if device_index is not None:
+            logger.info(f"Found audio device at index {device_index} with hw value {hw_value}")
+            return device_index, hw_value # Use this integer index for ALSA
         else:
-            logger.warning("No USB Composite Device found.")
-            return None, None
+            logger.warning("No matching audio device found.")
+        return None, None
+
+    def get_pyaudio_device_index(self, device_name):
+        p = pyaudio.PyAudio()
+        hw_pattern = re.compile(r'\(hw:\d+,\d+\)')  # Pattern to find (hw:X,Y)
+        
+        for i in range(p.get_device_count()):
+            info = p.get_device_info_by_index(i)
+
+            # Check if the device name matches
+            if device_name in info['name']:
+                logger.info(f"Info of detected device is {info}")
+                # Extract the hw value if present
+                hw_match = hw_pattern.search(info['name'])
+                hw_value = hw_match.group() if hw_match else None
+                logger.info(f"Found audio device: {info['name']} with index {i} and hw value {hw_value}")
+                return i, hw_value  # Return index and hw value
+        logger.warning("No matching audio device with hw value found in PyAudio.")
+        return None, None
 
 
     def pause_recording(self):
@@ -154,7 +156,9 @@ class Recorder:
             return
 
         # Get the audio device info
-        self.audio_device = self.get_audio_device_info()
+        
+        self.audio_device = self.get_audio_device_index()
+        logger.info(f"Audio device detected is: {self.audio_device}")
 
         # Log and check types of variables
         logger.info(f"Media folder path: {self.media_folderpath} (Type: {type(self.media_folderpath)})")
@@ -178,16 +182,24 @@ class Recorder:
         self.filepath = os.path.join(self.filepath, self.filename)
         logger.info(f"Full filepath with filename: {self.filepath} (Type: {type(self.filepath)})")
 
-        # Start recording with ffmpeg
-        if self.audio_device:
+        # Start recording with ffmpeg if audio device is found
+        if self.audio_device and self.audio_device[1]:
+            device_index, hw_value = self.audio_device  # Unpack the tuple
+            hw_value = hw_value.strip("()")  # Remove any parentheses, if present
+            
+            logger.info(f"Audio device index: {device_index}")
+            logger.info(f"Audio device hw_value: {hw_value}")
+
             try:
                 self.process = subprocess.Popen(
-                    ['ffmpeg', '-f', 'alsa', '-channels', '1', '-i', self.audio_device, '-i', self.camera_url, 
-                    '-c:v', 'copy', '-c:a', 'aac', self.filepath],
+                    ['ffmpeg',
+                     '-f', 'alsa', '-channels', '1', '-i', hw_value,  # Use hw value for audio input
+                     '-i', self.camera_url,  # RTSP camera URL
+                     '-c:v', 'copy', '-c:a', 'aac', self.filepath],
                     stdin=subprocess.PIPE,
                     stdout=self.devnull,
                     stderr=self.devnull,
-                    preexec_fn=os.setsid         
+                    preexec_fn=os.setsid
                 )
                 logger.info(f"Recording started: {self.filename}, File path: {self.filepath}")
             except Exception as e:
@@ -238,7 +250,7 @@ class Recorder:
         self.grab_filepath = os.path.join(self.grabpath, self.grab_filename)
 
         self.grab_process = subprocess.Popen(
-            ['ffmpeg', '-thread_queue_size', '1024', '-i', '/dev/video1', '-r', '30', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
+            ['ffmpeg', '-thread_queue_size', '1024', '-f', 'v4l2', '-video_size', '1920x1080', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
             stdin=subprocess.PIPE,
             stdout=self.devnull,
             stderr=self.devnull,

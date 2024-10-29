@@ -15,40 +15,33 @@ class CheckConnections:
         logger.info("Initialized CheckConnections")
 
     def get_audio_device_index(self):
-        # Get the list of USB devices
-        result = subprocess.run(['lsusb'], stdout=subprocess.PIPE, text=True)
-
-        if result.returncode != 0:
-            logger.error("Error running lsusb command.")
-            return None
-
-        output = result.stdout
-        device_pattern = re.compile(r'Bus \d+ Device \d+: ID \d{4}:\d{4} .*?USB Composite Device')
-
-        if device_pattern.search(output):
-            logger.info("Found USB Composite Device.")
-            # Attempt to get the device index using PyAudio
-            audio_index = self.get_pyaudio_device_index("USB Composite Device")
-            if audio_index is not None:
-                logger.info(f"Audio device index found: {audio_index}")
-                return audio_index
-            else:
-                logger.warning("No matching audio device found in PyAudio.")
+        # Find the device index by name
+        device_index, hw_value = self.get_pyaudio_device_index("USB Composite Device")
+        if device_index is not None:
+            logger.info(f"Found audio device at index {device_index} with hw value {hw_value}")
+            return device_index  # Use this integer index for ALSA
         else:
-            logger.warning("No USB Composite Device found.")
+            logger.warning("No matching audio device found.")
         return None
-
 
     def get_pyaudio_device_index(self, device_name):
         p = pyaudio.PyAudio()
+        hw_pattern = re.compile(r'\(hw:\d+,\d+\)')  # Pattern to find (hw:X,Y)
+        
         for i in range(p.get_device_count()):
             info = p.get_device_info_by_index(i)
-            logger.info(f"Info of detected device is {info}")
+            
+            # Check if the device name matches
             if device_name in info['name']:
-                logger.info(f"Found audio device: {info['name']} at index {i}")
-                return i  # Return the index of the device
-        logger.warning("No matching audio device found in PyAudio.")
-        return None
+                logger.info(f"Info of detected device is {info}")
+                # Extract the hw value if present
+                hw_match = hw_pattern.search(info['name'])
+                hw_value = hw_match.group() if hw_match else None
+                logger.info(f"Found audio device: {info['name']} with index {i} and hw value {hw_value}")
+                return i, hw_value  # Return index and hw value
+        logger.warning("No matching audio device with hw value found in PyAudio.")
+        return None, None
+
 
     def test_rtsp_connection(self):
         logger.info(f"Testing RTSP connection to {self.rtsp_url}")
