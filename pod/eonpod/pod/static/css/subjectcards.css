@@ -1,0 +1,57 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    overflow: hidden;
+}
+
+.container-fluid{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #f8f9fa;
+    border-radius: 60px;
+}
+
+.row {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.card {
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 15px;
+    /* Add border radius to the card */
+    overflow: hidden;
+    /* Ensures the rounded corners are applied properly */
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* Logo styles */
+#logo img {
+    width: 40vw;
+    height: auto;
+    /* Adjust height as needed */
+}
+
+/* Additional styling for card body */
+.card-body {
+    padding: 20px;
+    /* Ensure padding is sufficient for spacing */
+}
+
+/* Optional: Set a shadow effect to enhance card appearance */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add shadow for depth */
+}

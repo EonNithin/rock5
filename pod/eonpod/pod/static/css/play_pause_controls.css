@@ -12,3 +12,30 @@
 }
 
 
+.center-circle-pause {
+    width: 55%;
+    height: 55%;
+    border-radius: 50%;
+    background-image: url('../images/pause.svg');
+    /* Ensure the image covers the entire element */
+    background-size: cover;
+    /* Center the image within the element */
+    background-position: center;
+    /* Prevent the image from repeating */
+    background-repeat: no-repeat;
+    z-index: 3;
+}
+
+.center-circle-resume {
+    width: 55%;
+    height: 55%;
+    border-radius: 50%;
+    background-image: url('../images/resume.svg');
+    /* Ensure the image covers the entire element */
+    background-size: cover;
+    /* Center the image within the element */
+    background-position: center;
+    /* Prevent the image from repeating */
+    background-repeat: no-repeat;
+    z-index: 3;
+}

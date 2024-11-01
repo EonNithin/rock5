@@ -32,7 +32,8 @@ CREATE_SUBJECT_GROUP_TABLE="CREATE TABLE IF NOT EXISTS subject_group (
     class VARCHAR(50) NOT NULL,
     subject VARCHAR(255) NOT NULL,
     is_language_subject BOOLEAN DEFAULT FALSE,
-    is_active BOOLEAN DEFAULT TRUE
+    is_active BOOLEAN DEFAULT TRUE,
+    section VARCHAR(8)
 );"
 
 CREATE_TEACHER_SUBJECT_GROUPS_TABLE="CREATE TABLE IF NOT EXISTS teacher_subject_groups (

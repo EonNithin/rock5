@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'ui/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subjectcards.css' %}">
+    <title>Subject Cards</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+    <div class="row justify-content-center align-items-center">
+        <!-- Header -->
+        <div class="header d-flex justify-content-between align-items-center mb-2 mt-2">
+            <div class="logo" id="logo">
+                <img src="{% static 'images/eonpodlogo.png' %}" loading="lazy" alt="Logo" class="img-fluid">
+            </div>
+        
+            <!-- Paragraph to display some message -->
+            {% if username %}
+            <div id="welcome-message" class="m-4"> <!-- Add margin-left for spacing -->
+                <p class="username" style="font-weight: bold; font-size: xx-large;">Welcome {{ username }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+
+        <div class="container my-4">
+            <div class="row" id="subject-groups-container">
+                {% for subject in subject_groups %}
+                {% if subject.is_active %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100"
+                        onclick="selectOption('{{ subject.class_name }} - {{ subject.subject }}', '{{ subject.title }}', '{{ subject.is_active }}', '{{ subject.is_language_subject }}')">
+                        <div class="card-body">
+                            <h1 class="card-title">{{ subject.class_name }}{{ subject.section }} - {{ subject.subject }}</h1>
+                            <p class="card-text">{{ subject.title }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- New Subject Groups or Elements -->
+        <div class="row" id="new-subject-groups-container">
+            <!-- New elements will be dynamically added here via JavaScript -->
+        </div>
+
+    </div>
+    </div>
+
+    <script src="{% static 'js/subjectcards.js' %}"></script>
+</body>
+
+</html>

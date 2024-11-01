@@ -15,11 +15,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/eonpod.css'%}">
     <link rel="stylesheet" href="{% static 'css/stoprecording_alert.css'%}">
-    <link rel="stylesheet" href="{% static 'css/selectsubjectmodal.css'%}">
     <title>EON POD </title>
     <link rel="icon" href="{% static 'images/eonpod.png'%}" type="image/png">
 
@@ -30,119 +28,7 @@
         <div class="row justify-content-center align-items-center ">
             <div class="col-12 col-lg-12">
                 <div class="home-screen text-center p-3">
-                    <!--Header-->
-                    <div class="header d-flex justify-content-between align-items-center mb-2">
-                        <div class="logo" id="logo">
-                            <img src="{% static 'images/eonpodlogo.png' %}" loading="lazy" alt="Logo" class="img-fluid">
-                        </div>
-
-                        <!-- Paragraph to display Some message -->
-                        {% if username %}
-                        <div class="mt-4" id="welcome-message">
-                            <p class="username" style="font-weight: bold; font-size: x-large;">Welcome {{ username }}
-                            </p>
-                        </div>
-                        {% endif %}
-
-                        <!-- Gear icon -->
-                        <div class="gear-icon dropdown" id="gear-icon" style="display: flex; flex-direction: row;">
-                            <!-- Buttons for full screen and full screen exit -->
-                            <div class="button-row" style="align-items: right;">
-                                <!-- Full screen button -->
-                                <button id="fullscreenButton" class="button btn btn-outline-secondary"
-                                    style="background-color: transparent; border: none; outline: none;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        class="bi bi-arrows-fullscreen" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707" />
-                                    </svg>
-                                </button>
-
-                                <!-- Full screen exit button -->
-                                <button id="fullscreenExitButton" class="button btn btn-outline-secondary"
-                                    style="display: none; background-color: transparent; border: none; outline: none;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        class="bi bi-fullscreen-exit" viewBox="0 0 16 16">
-                                        <path
-                                            d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0z" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <!-- Gear button with SVG -->
-                            <button type="button" class="gear-btn-icon btn btn-outline-secondary" id="gear-btn-icon"
-                                style="background-color: transparent; border: none; outline: none;"
-                                onclick="showSettings()" data-bs-toggle="popover" data-bs-placement="bottom"
-                                title="Settings">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="grey"
-                                    class="bi bi-gear-fill" viewBox="0 0 16 16">
-                                    <path
-                                        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
-                                </svg>
-                            </button>
-
-
-                            <div id="settings" class="tooltip-settings" style="display: none;">
-                                <ul class='list-group'>
-                                    <li class='list-group-item'>Smart Screen Grab
-                                        <span id="switch-btn">
-                                            <label class="switch">
-                                                <input type="checkbox" checked>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </span>
-                                    </li>
-                                    <li class='list-group-item'>Class Camera
-                                        <span id="switch-btn">
-                                            <label class="switch">
-                                                <input type="checkbox" checked>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </span>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Custom Dropdown -->
-                    <div class="custom-dropdown-container d-flex mt-4 justify-content-center">
-                        <div class="custom-dropdown">
-                            <div class="custom-dropdown-label" id="dropdown-label" onclick="toggleDropdown()">
-                                <span style="color: #888888;">Select Subject</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
-                                    class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67" />
-                                </svg>
-                            </div>
-                            <div class="dropdown-content" id="dropdown-content">
-                                {% for subject in subject_groups %}
-                                {% if subject.is_active %}
-                                <a
-                                    onclick="selectOption('{{ subject.class_name }} - {{ subject.subject }}', '{{ subject.title }}', '{{ subject.is_language_subject }}')">
-                                    {{ subject.class_name }} - {{ subject.subject }}
-                                </a>
-                                {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
                     
-                    <!-- Modal for Select Subject -->
-                    <div id="selectSubjectModal" class="modal">
-                        <div class="modal-content select-subject-modal">
-                            <div class="modal-body">
-                                <p>Please select a subject</p>
-                                <div class="modal-buttons">
-                                    <button id="selectSubjectConfirmBtn">OK</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!--alert box for stop recording -->
                     <div id="customConfirm" class="modal">
                         <div class="modal-content confirm-stop-record">
@@ -162,12 +48,6 @@
                     <div id="customAlert" class="modal">
                         <div class="modal-content mic-alert">
                             <div class="modal-body">
-                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-mic-fill"
-                                    viewBox="0 0 16 16">
-                                    <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z" />
-                                    <path
-                                        d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
-                                </svg> -->
                                 <img id="digitek-image" src="{% static 'images/digitek.png' %}" />
                                 <p>Place your Mic back in the eonpod</p>
                                 <!-- <button id="closeAlertBtn">OK</button> -->
@@ -206,7 +86,7 @@
                                     </div>
                                 </div>
                             </button>
-                            <div class="button-text text-center mt-2" id="text-label-record">Start Recording</div>
+                            <div class="button-text text-center mt-2" id="text-label-record">Start Capture</div>
                         </div>
 
                         <!-- Additional buttons for pause and play recording -->
@@ -230,13 +110,21 @@
                         </div>
 
                     </div>
-
+                    
+                    <!-- Back Button -->
+                    <button class="btn btn-secondary position-fixed bottom-0 start-0 m-5" id="backButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" fill="#888888" class="bi bi-arrow-left"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
 
                     <div class="connections-container position-fixed bottom-0 end-0 m-5">
                         <!-- Refresh Button -->
                         <button class="btn-custom-refresh" id="refreshButton"
                             style="background-color: transparent; border: none; outline: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-clockwise"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="#888888" class="bi bi-arrow-clockwise"
                                 viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
                                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
@@ -246,7 +134,7 @@
                         <!-- Video On/Off Button -->
                         <button class="btn-custom-camera" id="videoOn"
                             style="background-color: transparent; border: none; outline: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="currentColor"
                                 id="camera" class="bi bi-camera-video-fill" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd"
                                     d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z" />
@@ -256,7 +144,7 @@
                         <!-- Mic On/Off Button -->
                         <button class="btn-custom-mic" id="micOn"
                             style="background-color: transparent; border: none; outline: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" id="mic"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="currentColor" id="mic"
                                 class="bi bi-mic-fill" viewBox="0 0 16 16">
                                 <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z" />
                                 <path
@@ -268,20 +156,13 @@
                         <button class="btn-custom-screencapture" id="screenCaptureOn"
                             style="background-color: transparent; border: none; outline: none;">
                             <!-- Screen Capture On SVG -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="currentColor"
                                 id="screen-capture" class="bi bi-display-fill" viewBox="0 0 16 16">
                                 <path
                                     d="M6 12q0 1-.25 1.5H5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1h-.75Q10 13 10 12h4c2 0 2-2 2-2V4c0-2-2-2-2-2H2C0 2 0 4 0 4v6c0 2 2 2 2 2z" />
                             </svg>
                         </button>
                     </div>
-
-                    <!-- <div>
-                        <h1>Eonpod Connection Status</h1>
-                        <p>Video Device Status: <span id="video-status"></span></p>
-                        <p>Microphone Status: <span id="mic-status"></span></p>
-                        <p>Screen Capture Status: <span id="screen-capture-status"></span></p>
-                    </div> -->
 
                 </div>
             </div>

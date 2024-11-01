@@ -13,36 +13,13 @@
 <body>
     <div class="controls" id="controls" style="display: none;">
 
-        <!-- Pause Button
-        <button id="pause-recording" class="control-button pause-recording">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="black" class="bi bi-pause-fill" id="pause-svg"
-                viewBox="0 0 16 16">
-                <path
-                    d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5" />
-            </svg>
-            <div class="button-label mt-2">Pause Recording</div>  Pause Button Label -->
-        <!-- </button> -->
-        <!-- Play Button -->
-        <!-- <button id="resume-recording" class="control-button resume-recording">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="black" class="bi bi-play-fill" id="resume-svg"
-                viewBox="0 0 16 16">
-                <path
-                    d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
-            </svg>
-            <div class="button-label mt-2">Resume Recording</div>  Resume Button Label -->
-        <!-- </button>  -->
-
         <button id="pause-recording" class="control-button pause-recording">
             <div class="circle-container">
                 <div class="outer-circle">
                     <div class="middle-circle">
                         <div class="progress-bar" id="progress-bar1" style="display: none;"></div>
                         <div class="inner-circle">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="red" class="bi bi-pause-fill" id="pause-svg"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5" />
-                            </svg>
+                            <div class="center-circle-pause"></div>
                         </div>
                     </div>
                 </div>
@@ -55,16 +32,13 @@
                     <div class="middle-circle">
                         <div class="progress-bar" id="progress-bar1" style="display: none;"></div>
                         <div class="inner-circle">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="red" class="bi bi-play-fill" id="resume-svg"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
-                            </svg>
+                            <div class="center-circle-resume"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </button>
+
         <div class="button-text text-center mt-2" id="text-label">Pause Recording</div>
     </div>
 

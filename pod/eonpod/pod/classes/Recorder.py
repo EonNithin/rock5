@@ -249,8 +249,9 @@ class Recorder:
         self.grab_filename = f"{self.timestamp}_screen_grab_{self.part}.mp4"
         self.grab_filepath = os.path.join(self.grabpath, self.grab_filename)
 
+        # ['ffmpeg', '-thread_queue_size', '1024', '-f', 'v4l2', '-video_size', '1920x1080', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
         self.grab_process = subprocess.Popen(
-            ['ffmpeg', '-thread_queue_size', '1024', '-f', 'v4l2', '-video_size', '1920x1080', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
+            ['ffmpeg', '-video_size', '1280x720', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '18', self.grab_filepath],
             stdin=subprocess.PIPE,
             stdout=self.devnull,
             stderr=self.devnull,
