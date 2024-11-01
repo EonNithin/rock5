@@ -72,6 +72,7 @@ class SubjectGroup(Base):
     is_active = Column(Boolean, default=True)
     is_language_subject = Column(Boolean, default=False)
     school_id = Column(String, ForeignKey('school.id'))
+    section = Column(String(8))  # Adding the section column with a max length of 8 characters
 
     # Correctly define relationships
     school = relationship("School", back_populates="subject_groups")

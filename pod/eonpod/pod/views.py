@@ -289,6 +289,7 @@ def handle_local_db(value, school_id):
                     'id': str(subject_group.id) if isinstance(subject_group.id, UUID) else subject_group.id,
                     'subject': subject_group.subject,
                     'is_language_subject': subject_group.is_language_subject,
+                    'section':subject_group.section,
                 })
 
             logger.info("Subject groups successfully retrieved from local DB")
