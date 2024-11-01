@@ -79,6 +79,7 @@ class FileProcessor:
             logger.info(f"Transcribing MP3 file: {mp3_filepath}")
             start_time = self.getTimeStamp()
             logger.debug(f"mp3filepath received: {mp3_filepath}")
+            logger.debug("Calling Whisper model for transcript generation")
             result = self.whisper_model.transcribe(mp3_filepath)
             transcript_text = result["text"]
             logger.debug("Got Transcript from Whisper: ")
