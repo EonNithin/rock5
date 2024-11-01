@@ -120,6 +120,17 @@
                         </svg>
                     </button>
 
+                    <!-- Modal for warning when back button is clicked during recording -->
+                    <div id="backWarningModal" class="modal backWarningModal" style="display: none;">
+                        <div class="modal-content backWarningModal-content">
+                            <p>Recording is in progress. Please stop the recording before navigating away.</p>
+                            <div class="modal-buttons backWarningModal-modal-btns">
+                                <button id="backWarningModal-confirmBtn">OK</button>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="connections-container position-fixed bottom-0 end-0 m-5">
                         <!-- Refresh Button -->
                         <button class="btn-custom-refresh" id="refreshButton"

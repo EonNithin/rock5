@@ -18,11 +18,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// Add an event listener to the back button
-document.getElementById('backButton').addEventListener('click', function() {
-    // Redirect to subjectcards.html
-    window.location.href = '/subjectcards/';
+// Get modal and elements
+const backWarningModal = document.getElementById("backWarningModal");
+const closeBackWarningModalBtn = document.getElementById("closeBackWarningModal");
+const backButton = document.getElementById("backButton");
+
+// Function to show the modal
+function showBackWarningModal() {
+    backWarningModal.style.display = "block";
+}
+
+// Function to close the modal
+function closeBackWarningModal() {
+    backWarningModal.style.display = "none";
+}
+
+// Event listener for the back button
+backButton.addEventListener("click", function(event) {
+    if (isRecording) {
+        event.preventDefault(); // Prevent the redirect
+        showBackWarningModal(); // Show warning modal
+    } else {
+        // Redirect to the desired page if no recording is in progress
+        window.location.href = "/subjectcards/";
+    }
 });
+
+// Add event listener for the OK button in the modal
+document.getElementById('backWarningModal-confirmBtn').addEventListener('click', function() {
+    // Close the modal
+    document.getElementById('backWarningModal').style.display = 'none';
+});
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target === backWarningModal) {
+        closeBackWarningModal(); // Call the function to close the modal
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const logoutButton = document.getElementById('logout');
@@ -39,13 +73,25 @@ document.addEventListener('DOMContentLoaded', function() {
     checkDeviceConnections();
 });
 
+// function logoutFunction() {
+//     isLoggingOut = true; // Set flag to indicate logout process
+//     if (isRecording) {
+//         // If recording is active, stop it first
+//         stopRecording().then(() => {
+//             window.location.href = '/login_page/';
+//         });
+//     } else {
+//         // If not recording, proceed to logout
+//         window.location.href = '/login_page/';
+//     }
+// }
+
+// Logout function with modal confirmation
 function logoutFunction() {
     isLoggingOut = true; // Set flag to indicate logout process
     if (isRecording) {
-        // If recording is active, stop it first
-        stopRecording().then(() => {
-            window.location.href = '/login_page/';
-        });
+        // If recording is active, prevent logout and show warning modal
+        showBackWarningModal();
     } else {
         // If not recording, proceed to logout
         window.location.href = '/login_page/';

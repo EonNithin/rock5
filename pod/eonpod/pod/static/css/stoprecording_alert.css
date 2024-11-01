@@ -17,7 +17,7 @@
     margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%;
+    width: 80%;
     text-align: center;
     border-radius: 10px;
 }
@@ -34,7 +34,7 @@
 }
 
 .modal-buttons {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .modal-buttons button {

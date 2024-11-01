@@ -500,3 +500,77 @@ input:checked+.slider:before {
     border: none;
     /* padding-left: 30px; */
 }
+
+/* Basic modal styling */
+.backWarningModal{
+    position: fixed;
+    /* Stay in place */
+    z-index: 1000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Black w/ opacity */
+}
+
+/* Modal content styling */
+.backWarningModal-content {
+    background-color: #fff;
+        /* White background */
+        margin: 10% auto;
+        /* 15% from the top and centered */
+        padding: 20px;
+        /* Padding inside the modal */
+        border: 1px solid #888;
+        /* Gray border */
+        border-radius: 5px;
+        /* Rounded corners */
+        width: 90%;
+        /* Could be more or less, depending on screen size */
+        max-width: 760px;
+        /* Maximum width */
+}
+
+/* Button container styling */
+.backWarningModal-modal-btns {
+    display: flex;
+    /* Flexbox for layout */
+    justify-content: center;
+    /* Align buttons to the right */
+}
+
+/* Button styling */
+#backWarningModal-confirmBtn {
+    background-color: #007bff;
+    /* Bootstrap primary color */
+    color: white;
+    /* White text */
+    border: none;
+    /* No border */
+    border-radius: 5px;
+    /* Rounded corners */
+    padding: 10px 15px;
+    /* Padding for button */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+    font-size: 46px;
+    /* Button text size */
+    transition: background-color 0.3s;
+    /* Smooth transition */
+}
+
+
+/* Warning message styling */
+.backWarningModal-content p {
+    color: #333;
+    /* Dark gray for the text */
+    font-size: 52px;
+    /* Size of the warning text */
+}
+
