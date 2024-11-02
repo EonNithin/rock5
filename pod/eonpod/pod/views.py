@@ -363,5 +363,5 @@ def subjectcards(request):
 
 @csrf_exempt
 def eonpod(request):
-    # Render `eonpod.html` template with `subjectdata` as context
+    # Render `eonpod.html` template 
     return render(request, 'eonpod.html')

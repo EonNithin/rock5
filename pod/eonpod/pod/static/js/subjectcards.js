@@ -51,3 +51,12 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+const subjectcards_backButton = document.getElementById('subject-cards-backButton');
+// Event listener for the back button
+subjectcards_backButton.addEventListener("click", function(event) {
+
+    // Redirect to the desired page if no recording is in progress
+    window.location.href = "/login_page/";
+  
+});

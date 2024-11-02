@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'ui/bootstrap.min.css' %}">
-    
+
     <link rel="stylesheet" href="{% static 'css/subjectcards.css' %}">
     <title>Subject Cards</title>
 </head>
@@ -36,7 +36,7 @@
                 {% if subject.is_active %}
                 <div class="col-md-4 mb-4">
                     <div class="card h-100"
-                        onclick="selectOption('{{ subject.class_name }} - {{ subject.subject }}', '{{ subject.title }}', '{{ subject.is_active }}', '{{ subject.is_language_subject }}')">
+                        onclick="selectOption('{{ subject.class_name }}{{ subject.section }} - {{ subject.subject }}', '{{ subject.title }}', '{{ subject.is_active }}', '{{ subject.is_language_subject }}')">
                         <div class="card-body">
                             <h1 class="card-title">{{ subject.class_name }}{{ subject.section }} - {{ subject.subject }}</h1>
                             <p class="card-text">{{ subject.title }}</p>
@@ -52,6 +52,15 @@
         <div class="row" id="new-subject-groups-container">
             <!-- New elements will be dynamically added here via JavaScript -->
         </div>
+
+        <button class="btn btn-secondary position-fixed bottom-0 start-0 m-2" id="subject-cards-backButton">
+            <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" fill="#888888" class="bi bi-arrow-left"
+                viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+            </svg>
+        </button>
+
 
     </div>
     </div>

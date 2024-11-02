@@ -4,7 +4,7 @@ let isLoggingOut = false;
 
 // Global variable to store subjectdata and subjectgroups
 let subjectdata = {};
-
+let subjectname = '';
 // On DOMContentLoaded, retrieve subjectdata and subjectgroups from sessionStorage
 document.addEventListener('DOMContentLoaded', () => {
     // Retrieve and parse subjectdata
@@ -12,6 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (storedData) {
         subjectdata = JSON.parse(storedData);
         console.log('Retrieved Subject Data from sessionStorage:', subjectdata);
+        
+        subjectname = subjectdata.subject
+        // Select the `subject-name` div
+        const subjectNameDiv = document.getElementById('subject-name');
+        if (subjectNameDiv) {
+            // Create a new h3 element
+            const h3Element = document.createElement('h1');
+            // Set the text content of the h3 element to the subject name
+            h3Element.textContent = subjectname 
+            // Append the h3 element to the `subject-name` div
+            subjectNameDiv.appendChild(h3Element);
+        } else {
+            console.error('Subject name div not found in the DOM');
+        }
+
     } else {
         console.error('No subject data found in sessionStorage');
     }
@@ -73,18 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
     checkDeviceConnections();
 });
 
-// function logoutFunction() {
-//     isLoggingOut = true; // Set flag to indicate logout process
-//     if (isRecording) {
-//         // If recording is active, stop it first
-//         stopRecording().then(() => {
-//             window.location.href = '/login_page/';
-//         });
-//     } else {
-//         // If not recording, proceed to logout
-//         window.location.href = '/login_page/';
-//     }
-// }
 
 // Logout function with modal confirmation
 function logoutFunction() {

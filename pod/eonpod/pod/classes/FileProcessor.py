@@ -18,7 +18,15 @@ logger = logging.getLogger('pod')
 class FileProcessor:
     def __init__(self):
         # Initialize the models
-        self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+        # self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+        try:
+            # Attempt to initialize the Whisper model
+            self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+            logger.info(f"Whisper model initialized from path: {self.whisper_model}")
+        except FileNotFoundError:
+            logger.error(f"No Whisper model found at specified path: {self.whisper_model}. Please ensure the file exists.")
+            self.whisper_model = None  # Set to None or a placeholder if necessary
+            
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_builder = JsonBuilder()
         self.s3 = S3UploadQueue()
@@ -75,6 +83,10 @@ class FileProcessor:
 
 
     def mp3_to_transcript(self, mp3_filepath, subject):
+        if self.whisper_model is None:
+            logger.error("Whisper model is not available; skipping transcription.")
+            return None  # Or handle accordingly
+
         try:
             logger.info(f"Transcribing MP3 file: {mp3_filepath}")
             start_time = self.getTimeStamp()

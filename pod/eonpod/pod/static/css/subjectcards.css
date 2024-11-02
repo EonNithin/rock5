@@ -55,3 +55,35 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* Add shadow for depth */
 }
+
+#subject-cards-backButton {
+    width: 100px;
+    /* Adjust width */
+    height: 100px;
+    /* Adjust height */
+    border-radius: 10px;
+    /* Optional: rounded corners */
+    display: flex;
+    /* Center icon inside the button */
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 1000;
+    /* Remove padding to fit icon nicely */
+    border: none;
+    background: none;
+}
+
+#subject-cards-backButton svg {
+    width: 80px;
+    /* Adjust icon size */
+    height: 80px;
+    /* Adjust icon size */
+}
+
+#subject-cards-backButton:hover {
+    background-color: none;
+    /* Change color on hover */
+    cursor: pointer;
+    /* Change cursor on hover */
+}
