@@ -1,5 +1,5 @@
 body {
-    background: rgb(60, 59, 59);
+    background: rgb(60, 59, 59) !important;
     /* Black background for container */
     margin: 0;
     gap: 0px;
