@@ -47,10 +47,13 @@ class ProcessingQueue:
                         subject = data["subject"]  # Retrieve the subject
                         self.lock.release()  # Release the lock before processing
                         try:
-                            logger.info(f"{type(data['is_language'])}, {data['is_language']}")
+                            logger.info(f"Subject is_language : {type(data['is_language'])}, {data['is_language']}")
                             if data["is_language"] == "False":
+                                logger.info(f"Processing happens as its not a language subject")
                                 logger.info(f"Sending {file_name} to processor to process files")
                                 self.processor.process_mp4_files(file_path, subject)
+                            else:
+                                logger.info(f"Skipping file processing as its a language subject")
                             with self.lock:
                                 files_to_delete.append(file_name)
                         except Exception as e:

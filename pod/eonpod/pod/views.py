@@ -183,7 +183,6 @@ def stop_recording_view(request):
         file_info = recorder.get_file_info()
         logger.info(f"File Info: {file_info}")
         
-        logger.info(f"Processing happens, as it's not a language subject: {is_language}")
 
         processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, is_language)
 
