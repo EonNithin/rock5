@@ -93,8 +93,13 @@ class FileProcessor:
             logger.debug(f"mp3filepath received: {mp3_filepath}")
             logger.debug("Calling Whisper model for transcript generation")
             result = self.whisper_model.transcribe(mp3_filepath)
-            transcript_text = result["text"]
-            logger.debug("Got Transcript from Whisper: ")
+            
+            if(result):
+                transcript_text = result["text"]
+                logger.debug("Got Transcript from Whisper")
+            else:
+                logger.debug("Transcript not generated")
+            
             # Define the path to save the transcript file in the same directory as the MP3 file
             transcript_filepath = mp3_filepath.replace('.mp3', '_transcript.txt')
             # Save the transcript to a text file
