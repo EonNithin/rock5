@@ -18,15 +18,7 @@ logger = logging.getLogger('pod')
 class FileProcessor:
     def __init__(self):
         # Initialize the models
-        # self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
-        try:
-            # Attempt to initialize the Whisper model
-            self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
-            logger.info(f"Whisper model initialized from path: {self.whisper_model}")
-        except FileNotFoundError:
-            logger.error(f"No Whisper model found at specified path: {self.whisper_model}. Please ensure the file exists.")
-            self.whisper_model = None  # Set to None or a placeholder if necessary
-            
+        self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_builder = JsonBuilder()
         self.s3 = S3UploadQueue()
@@ -92,14 +84,17 @@ class FileProcessor:
             start_time = self.getTimeStamp()
             logger.debug(f"mp3filepath received: {mp3_filepath}")
             logger.debug("Calling Whisper model for transcript generation")
-            result = self.whisper_model.transcribe(mp3_filepath)
-            
-            if(result):
-                transcript_text = result["text"]
-                logger.debug("Got Transcript from Whisper")
-            else:
-                logger.debug("Transcript not generated")
-            
+            try:
+                result = self.whisper_model.transcribe(mp3_filepath)
+                if result:
+                    transcript_text = result["text"]
+                    logger.debug("Got Transcript from Whisper")
+                else:
+                    logger.debug("Transcript not generated")
+            except Exception as e:
+                logger.error(f"Error transcribing MP3: {e}")
+                return None
+
             # Define the path to save the transcript file in the same directory as the MP3 file
             transcript_filepath = mp3_filepath.replace('.mp3', '_transcript.txt')
             # Save the transcript to a text file
