@@ -18,7 +18,21 @@ logger = logging.getLogger('pod')
 class FileProcessor:
     def __init__(self):
         # Initialize the models
-        self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+        # self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+        # Initialize the models
+        model_path = os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin')
+        
+        try:
+            # Attempt to initialize the Whisper model
+            self.whisper_model = whisper.Whisper(model_path=model_path)
+            logger.info(f"Whisper model initialized from path: {model_path}")
+        except FileNotFoundError:
+            logger.error(f"No Whisper model found at specified path: {model_path}. Please ensure the file exists.")
+            self.whisper_model = None  # Set to None or a placeholder if necessary
+        except Exception as e:
+            logger.error(f"Error initializing Whisper model: {e}")
+            self.whisper_model = None  # Handle any other exceptions as needed
+
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_builder = JsonBuilder()
         self.s3 = S3UploadQueue()
