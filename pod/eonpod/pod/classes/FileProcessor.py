@@ -174,11 +174,19 @@ class FileProcessor:
         return
         
     def process_mp4_files(self, mp4_filepath, subject):
-        logger.info(f"Processing MP4 file: {mp4_filepath} for subject: {subject}")
-        self.generate_thumbnail(mp4_filepath)
-        self.json_builder.add_generated_files(mp4_filepath, timetaken = 1)
-        # grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
-        # if os.path.exists(grab_path):
-        #     self.json_builder.add_generated_files(grab_path)
-        return self.mp4_to_mp3(mp4_filepath, subject)
 
+        # Check if the MP4 file exists before processing
+        if not os.path.exists(mp4_filepath):
+            logger.error(f"MP4 file not found: {mp4_filepath}")
+            return None  # Return early if the file does not exist
+        
+        logger.info(f"Processing MP4 file: {mp4_filepath} for subject: {subject}")
+        # Generate thumbnails for the MP4 file
+        self.generate_thumbnail(mp4_filepath)
+        # Add the MP4 file to the generated files list
+        self.json_builder.add_generated_files(mp4_filepath, timetaken=1)
+        grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
+        if os.path.exists(grab_path):
+            self.json_builder.add_generated_files(grab_path)
+        # Process the file further (e.g., converting to MP3)
+        return self.mp4_to_mp3(mp4_filepath, subject)
