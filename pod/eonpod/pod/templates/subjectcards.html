@@ -30,7 +30,7 @@
         </div>
 
 
-        <div class="container my-4">
+        <div class="container my-2">
             <div class="row" id="subject-groups-container">
                 {% for subject in subject_groups %}
                 {% if subject.is_active %}
@@ -43,14 +43,10 @@
                         </div>
                     </div>
                 </div>
+
                 {% endif %}
                 {% endfor %}
             </div>
-        </div>
-
-        <!-- New Subject Groups or Elements -->
-        <div class="row" id="new-subject-groups-container">
-            <!-- New elements will be dynamically added here via JavaScript -->
         </div>
 
         <button class="btn btn-secondary position-fixed bottom-0 start-0 m-2" id="subject-cards-backButton">

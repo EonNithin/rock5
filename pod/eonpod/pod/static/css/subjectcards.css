@@ -24,6 +24,14 @@ body {
     display: flex;
 }
 
+#subject-groups-container {
+    display: flex;
+    /* Arrange items vertically */
+    overflow-y: auto;
+    /* Enables vertical scrolling */
+    max-height: 270px;
+}
+
 .card {
     cursor: pointer;
     transition: transform 0.2s;
