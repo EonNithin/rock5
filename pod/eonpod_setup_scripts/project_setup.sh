@@ -54,8 +54,8 @@ if [ -d ".git" ]; then
     echo "Repository already exists. Pulling the latest changes..."
     git pull
 else
-    echo "Cloning repository from $REPO_URL..."
-    git clone "$REPO_URL" "$PROJECT_DIR"
+    echo "Cloning repository from $REPO_URL on branch eonpod..."
+    git clone -b eonpod "$REPO_URL" "$PROJECT_DIR"
     cd "$PROJECT_DIR" || exit
 fi
 
