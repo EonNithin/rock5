@@ -185,8 +185,8 @@ class FileProcessor:
         self.generate_thumbnail(mp4_filepath)
         # Add the MP4 file to the generated files list
         self.json_builder.add_generated_files(mp4_filepath, timetaken=1)
-        grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
-        if os.path.exists(grab_path):
-            self.json_builder.add_generated_files(grab_path)
+        # grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
+        # if os.path.exists(grab_path):
+        #     self.json_builder.add_generated_files(grab_path, timetaken=1)
         # Process the file further (e.g., converting to MP3)
         return self.mp4_to_mp3(mp4_filepath, subject)
