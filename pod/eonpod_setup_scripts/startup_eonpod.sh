@@ -3,9 +3,6 @@
 # Navigate to the Django project directory
 cd "$HOME/eonpod/pod/eonpod" || exit
 
-# Activate the virtual environment
-source venv/bin/activate
-
 # Check if port 8000 is in use (Django server running)
 if ! lsof -i :8000; then
     # Start the Django server in the background if not running
