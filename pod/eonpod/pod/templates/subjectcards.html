@@ -37,7 +37,7 @@
                 {% for subject in subject_groups %}
                 {% if subject.is_active %}
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100"
+                    <div class="card"
                         onclick="selectOption('{{ subject.class_name }}{{ subject.section }} - {{ subject.subject }}', '{{ subject.title }}', '{{ subject.is_active }}', '{{ subject.is_language_subject }}')">
                         <div class="card-body">
                             <h1 class="card-title">{{ subject.class_name }}{{ subject.section }} - {{ subject.subject }}</h1>

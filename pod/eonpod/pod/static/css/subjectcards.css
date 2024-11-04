@@ -33,6 +33,8 @@ body {
 }
 
 .card {
+    /* height: 120px;
+    width: 300px; */
     cursor: pointer;
     transition: transform 0.2s;
     border-radius: 15px;
