@@ -1,0 +1,17 @@
+Below is a trascript of a lecture for Indian Students for {@class_number} class subject {@subject_name}. The transript is split by groups:
+group_number: text
+
+Please do the following:
+- Read the transcript
+- Classify teach group per CBSE classification. I.e. I need to know the Chapter and Topic (per CBSE classification) of the subject is being talked about.
+- Return the results in the following json format:
+{
+    "groups": [
+        group_number: group number from the input list. It must be a numeric value. It must be in the same order as in the transcript.
+        book: the title of the book used in CBSE system
+        chapter: the chapter per CBSE classification
+        probability: the probability of the group being relevant
+    ]
+}
+
+The transcript is below:

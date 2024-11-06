@@ -5,6 +5,7 @@ let isLoggingOut = false;
 // Global variable to store subjectdata and subjectgroups
 let subjectdata = {};
 let subjectname = '';
+
 // On DOMContentLoaded, retrieve subjectdata and subjectgroups from sessionStorage
 document.addEventListener('DOMContentLoaded', () => {
     // Retrieve and parse subjectdata
@@ -18,11 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const subjectNameDiv = document.getElementById('subject-name');
         if (subjectNameDiv) {
             // Create a new h3 element
-            const h3Element = document.createElement('h1');
+            const h1Element = document.createElement('h1');
             // Set the text content of the h3 element to the subject name
-            h3Element.textContent = subjectname 
+            h1Element.textContent = subjectname 
             // Append the h3 element to the `subject-name` div
-            subjectNameDiv.appendChild(h3Element);
+            subjectNameDiv.appendChild(h1Element);
         } else {
             console.error('Subject name div not found in the DOM');
         }
@@ -189,6 +190,8 @@ async function toggleRecording() {
                 },
                 body: JSON.stringify({ 
                     subject: subjectdata.title,
+                    subject_name: subjectdata.subject,
+                    class_no: subjectdata.class,
                     isLanguage: subjectdata.is_language // Convert string to boolean
                 })
             });
@@ -250,6 +253,8 @@ async function stopRecording() {
             },
              body: JSON.stringify({ 
                     subject: subjectdata.title,
+                    subject_name: subjectdata.subject,
+                    class_no: subjectdata.class,
                     isLanguage: subjectdata.is_language // Convert string to boolean
                 })
         });

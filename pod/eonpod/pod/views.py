@@ -117,7 +117,11 @@ def start_recording_view(request):
         try:
             data = json.loads(request.body)
             selected_subject = data.get('subject', '')  # Get the subject from the request
+            subject_name = data.get('subject_name', '') 
+            class_no = data.get('class', '')
             logger.info(f"selected subject is : {selected_subject}")
+            logger.info(f"subject name is : {subject_name}")
+            logger.info(f"class_no  is : {class_no}")
             logger.info(f"Started recording for subject: {selected_subject}")
             is_language = data.get('isLanguage', '') 
             logger.info(f"Is language: {is_language}")
@@ -140,7 +144,11 @@ def stop_recording_view(request):
         # try:
         data = json.loads(request.body)
         selected_subject = data.get('subject', '')  
+        subject_name = data.get('subject_name', '') 
+        class_no = data.get('class', '') 
         logger.info(f"Selected Subject: {selected_subject}")
+        logger.info(f"subject name is : {subject_name}")
+        logger.info(f"class_no  is : {class_no}")
         is_language = data.get('isLanguage', '') 
         logger.info(f"Is language: {is_language}")
         
@@ -184,7 +192,7 @@ def stop_recording_view(request):
         logger.info(f"File Info: {file_info}")
         
 
-        processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, is_language)
+        processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, subject_name, class_no, is_language)
 
         return JsonResponse({
             "success": True,
