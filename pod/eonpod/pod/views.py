@@ -118,7 +118,7 @@ def start_recording_view(request):
             data = json.loads(request.body)
             selected_subject = data.get('subject', '')  # Get the subject from the request
             subject_name = data.get('subject_name', '') 
-            class_no = data.get('class', '')
+            class_no = data.get('class_no', '')
             logger.info(f"selected subject is : {selected_subject}")
             logger.info(f"subject name is : {subject_name}")
             logger.info(f"class_no  is : {class_no}")
@@ -145,7 +145,7 @@ def stop_recording_view(request):
         data = json.loads(request.body)
         selected_subject = data.get('subject', '')  
         subject_name = data.get('subject_name', '') 
-        class_no = data.get('class', '') 
+        class_no = data.get('class_no', '') 
         logger.info(f"Selected Subject: {selected_subject}")
         logger.info(f"subject name is : {subject_name}")
         logger.info(f"class_no  is : {class_no}")

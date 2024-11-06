@@ -190,8 +190,8 @@ async function toggleRecording() {
                 },
                 body: JSON.stringify({ 
                     subject: subjectdata.title,
-                    subject_name: subjectdata.subject,
-                    class_no: subjectdata.class,
+                    subject_name: subjectdata.subject_name,
+                    class_no: subjectdata.class_name,
                     isLanguage: subjectdata.is_language // Convert string to boolean
                 })
             });
@@ -253,8 +253,8 @@ async function stopRecording() {
             },
              body: JSON.stringify({ 
                     subject: subjectdata.title,
-                    subject_name: subjectdata.subject,
-                    class_no: subjectdata.class,
+                    subject_name: subjectdata.subject_name,
+                    class_no: subjectdata.class_name,
                     isLanguage: subjectdata.is_language // Convert string to boolean
                 })
         });
