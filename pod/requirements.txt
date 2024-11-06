@@ -78,7 +78,7 @@ numpy==2.0.0
 oauthlib==3.2.2
 openai==1.51.0
 openai-whisper==20240930
-pyopenssl==20.0.1 
+pyopenssl==24.2.1 
 cryptography==3.4.7
 opencensus==0.11.4
 opencensus-context==0.1.3
