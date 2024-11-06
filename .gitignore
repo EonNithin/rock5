@@ -1,3 +1,4 @@
 pod/eonpod/media/*
 pod/eonpod/pod/__pycache__/*
 pod/eonpod/eonpod/__pycache__/*
+pod/eonpod/eonpod/__pycache__*
