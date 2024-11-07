@@ -186,24 +186,24 @@ class S3UploadQueue:
 
                 current_task = self.s3_queue.pop(0)
 
-                try:
-                    file_path = current_task["file_path"]
-                    school = current_task["school"]
-                    subject = current_task["subject"]
-                    timestamp = current_task["timestamp"]
+            try:
+                file_path = current_task["file_path"]
+                school = current_task["school"]
+                subject = current_task["subject"]
+                timestamp = current_task["timestamp"]
 
-                    logger.info(f"Starting S3 upload for {file_path}")
-                    # Upload the file with provided details
-                    self.upload_file(file_path, school, subject, timestamp)
-                    logger.info(f"Finished uploading file {file_path}")
-                
+                logger.info(f"Starting S3 upload for {file_path}")
+                # Upload the file with provided details
+                self.upload_file(file_path, school, subject, timestamp)
+                logger.info(f"Finished uploading file {file_path}")
+            
+            except Exception as e:
+                logger.error(f"Error processing S3 upload for {file_path}: {str(e)}")
+                # Re-add the current task to the queue in case of failure
+                with self.lock:
+                    self.s3_queue.append(current_task)
+                logger.info(f"Re-added file to queue: {file_path}")
 
-                except Exception as e:
-                    logger.error(f"Error processing S3 upload for {file_path}: {str(e)}")
-                    # Re-add the current task to the queue in case of failure
-                    with self.lock:
-                        self.s3_queue.append(current_task)
-                    logger.info(f"Re-added file to queue: {file_path}")
             time.sleep(20)  # Sleep for a short while before processing the next item
 
 
