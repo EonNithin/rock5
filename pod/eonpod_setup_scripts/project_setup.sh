@@ -37,8 +37,9 @@ check_pip
 
 # Variables
 REPO_URL="https://github.com/EonNithin/rock5.git"  # Your GitHub repository URL
-PROJECT_DIR="$HOME/eonpod"  # Your project directory path
-REQUIREMENTS_FILE="$PROJECT_DIR/pod/eonpod/requirements.txt"
+PROJECT_DIR="$HOME/eonpod-ai"  # Your project directory path
+REQUIREMENTS_FILE_1="$PROJECT_DIR/pod/eonpod/requirements.txt"  # First requirements file
+REQUIREMENTS_FILE_2="$PROJECT_DIR/pod/requirements.txt"  # Second requirements file
 
 # Step 1: Create project directory if it doesn't exist
 if [ ! -d "$PROJECT_DIR" ]; then
@@ -55,7 +56,7 @@ if [ -d ".git" ]; then
     git pull
 else
     echo "Cloning repository from $REPO_URL on branch eonpod..."
-    git clone -b eonpod "$REPO_URL" "$PROJECT_DIR"
+    git clone -b eonpod-ai "$REPO_URL" "$PROJECT_DIR"
     cd "$PROJECT_DIR" || exit
 fi
 
@@ -64,15 +65,20 @@ echo "Installing portaudio..."
 sudo apt-get update
 sudo apt-get install -y portaudio19-dev
 
-# Step 4: Check for requirements.txt and install dependencies
-if [ -f "$REQUIREMENTS_FILE" ]; then
-    echo "Found requirements.txt, installing dependencies..."
+# Step 4: Check and install dependencies from both requirements files
+install_requirements() {
+    local requirements_file="$1"
+    if [ -f "$requirements_file" ]; then
+        echo "Found $requirements_file, installing dependencies..."
+        pip install --upgrade pip
+        pip install -r "$requirements_file"
+    else
+        echo "$requirements_file not found, skipping installation."
+    fi
+}
 
-    echo "Installing requirements..."
-    pip install --upgrade pip
-    pip install -r "$REQUIREMENTS_FILE"
-else
-    echo "requirements.txt not found, skipping dependency installation."
-fi
+# Install dependencies from both requirements files
+install_requirements "$REQUIREMENTS_FILE_1"
+install_requirements "$REQUIREMENTS_FILE_2"
 
 echo "Setup complete."

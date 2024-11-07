@@ -24,7 +24,7 @@ def process_video_background(data):
     try:
         input_video_url = data["file_path"]
         class_n = data["class_no"]
-        subject = data["subject"]
+        subject = data["subject_name"]
         use_gpt = data["use_gpt"]
         syllabus = data["syllabus"]
         render_final_video = data["render_final_video"]
