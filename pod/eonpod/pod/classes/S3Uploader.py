@@ -93,7 +93,7 @@ class S3UploadQueue:
                     logger.debug(f"filepath retrieved")
                     # Extract timestamp from the parent directory name
                     timestamp = os.path.basename(root)
-                    logger.debug(f"filepath retrieved")
+                    logger.debug(f"timestamp retrieved")
 
                     # Add the file to the queue with relevant information
                     self.s3_queue.append({
