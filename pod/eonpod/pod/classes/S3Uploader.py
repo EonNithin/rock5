@@ -82,6 +82,7 @@ class S3UploadQueue:
 
 
     def add_to_queue(self, school, subject, local_directory):
+        logger.debug("Entered S3 Queue")
         # Expects a folderpath where we have all the files inplace
         # if True:
         with self.lock:
@@ -89,9 +90,10 @@ class S3UploadQueue:
                 for file in files:
                     # Construct the full file path
                     file_path = os.path.join(root, file)
-
+                    logger.debug(f"filepath retrieved")
                     # Extract timestamp from the parent directory name
                     timestamp = os.path.basename(root)
+                    logger.debug(f"filepath retrieved")
 
                     # Add the file to the queue with relevant information
                     self.s3_queue.append({
@@ -184,24 +186,24 @@ class S3UploadQueue:
 
                 current_task = self.s3_queue.pop(0)
 
-            try:
-                file_path = current_task["file_path"]
-                school = current_task["school"]
-                subject = current_task["subject"]
-                timestamp = current_task["timestamp"]
+                try:
+                    file_path = current_task["file_path"]
+                    school = current_task["school"]
+                    subject = current_task["subject"]
+                    timestamp = current_task["timestamp"]
 
-                logger.info(f"Starting S3 upload for {file_path}")
-                # Upload the file with provided details
-                self.upload_file(file_path, school, subject, timestamp)
-                logger.info(f"Finished uploading file {file_path}")
-            
+                    logger.info(f"Starting S3 upload for {file_path}")
+                    # Upload the file with provided details
+                    self.upload_file(file_path, school, subject, timestamp)
+                    logger.info(f"Finished uploading file {file_path}")
+                
 
-            except Exception as e:
-                logger.error(f"Error processing S3 upload for {file_path}: {str(e)}")
-                # Re-add the current task to the queue in case of failure
-                with self.lock:
-                    self.s3_queue.append(current_task)
-                logger.info(f"Re-added file to queue: {file_path}")
+                except Exception as e:
+                    logger.error(f"Error processing S3 upload for {file_path}: {str(e)}")
+                    # Re-add the current task to the queue in case of failure
+                    with self.lock:
+                        self.s3_queue.append(current_task)
+                    logger.info(f"Re-added file to queue: {file_path}")
             time.sleep(20)  # Sleep for a short while before processing the next item
 
 
