@@ -1,0 +1,40 @@
+Below is a trascript of a lecture for Indian Students for {@class_number} class subject {@subject_name}. The transript is split by sentences in a format:
+sentence_number: sentence_text
+
+Please do the following:
+- Read the transcript
+- Classify the speech per CBSE classification. I.e. I need to know with Chapter (per CBSE) of the subject is being talked about.
+- Find all off-topic sentences, i.e. the sentences don't relate to Chapter (per CBSE) and student education process (e.g. talks about weather, how my day goes, other off-topic talks)
+- Return the results in the following json format:
+{
+    chapter: chapter name per CBSE classification,
+    off_topic_sentences: [
+        {
+            sentence_number: the sentence number from the transcript,
+            text: sentence text
+        }
+    ]
+}
+The transcript is below:
+
+---
+
+Below is a trascript of a lecture for Indian Students for {@class_number} class subject {@subject_name}. The transript is split by sentences in a format:
+sentence_number: sentence_text
+
+Please do the following:
+- Read the transcript
+- Classify the speech per CBSE classification. I.e. I need to know with Chapter (per CBSE) of the subject is being talked about.
+- Find all off-topic sentences, i.e. the sentences don't relate to student education process (e.g. talks about weather, how my day goes, other off-topic talks)
+- Return the results in the following json format:
+{
+    chapter: chapter name per CBSE classification,
+    off_topic_sentences (you must include all off-topic sentences here): [
+        {
+            sentence_number: the sentence number from the transcript. It must be a numeric value. It must be in the same order as in the transcript.
+            text: sentence text
+        }
+    ]
+}
+
+The transcript is below:

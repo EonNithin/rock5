@@ -30,7 +30,8 @@ class School(Base):
     school_name = Column(String)
     branch = Column(String)
     city = Column(String)
-    
+    subdomain_key = Column(String) 
+
     # Define the relationship with Staff
     staff_members = relationship("Staff", back_populates="school")
     subject_groups = relationship("SubjectGroup", back_populates="school")
@@ -72,6 +73,7 @@ class SubjectGroup(Base):
     is_active = Column(Boolean, default=True)
     is_language_subject = Column(Boolean, default=False)
     school_id = Column(String, ForeignKey('school.id'))
+    section = Column(String(8))  # Adding the section column with a max length of 8 characters
 
     # Correctly define relationships
     school = relationship("School", back_populates="subject_groups")

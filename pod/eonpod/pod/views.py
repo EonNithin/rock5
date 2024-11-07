@@ -23,11 +23,13 @@ import numpy
 from pod.classes.CheckConnections import CheckConnections
 import logging
 from django.shortcuts import render
+from uuid import UUID
 
 from pod.dbmodels.models import DATABASE_URL, get_session
 from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
 from pod.classes.DBOffloader import DBOffloader
 # from pod.dbmodels.models.staff import Staff
+
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -115,7 +117,11 @@ def start_recording_view(request):
         try:
             data = json.loads(request.body)
             selected_subject = data.get('subject', '')  # Get the subject from the request
+            subject_name = data.get('subject_name', '') 
+            class_no = data.get('class_no', '')
             logger.info(f"selected subject is : {selected_subject}")
+            logger.info(f"subject name is : {subject_name}")
+            logger.info(f"class_no  is : {class_no}")
             logger.info(f"Started recording for subject: {selected_subject}")
             is_language = data.get('isLanguage', '') 
             logger.info(f"Is language: {is_language}")
@@ -138,7 +144,11 @@ def stop_recording_view(request):
         # try:
         data = json.loads(request.body)
         selected_subject = data.get('subject', '')  
+        subject_name = data.get('subject_name', '') 
+        class_no = data.get('class_no', '') 
         logger.info(f"Selected Subject: {selected_subject}")
+        logger.info(f"subject name is : {subject_name}")
+        logger.info(f"class_no  is : {class_no}")
         is_language = data.get('isLanguage', '') 
         logger.info(f"Is language: {is_language}")
         
@@ -181,9 +191,8 @@ def stop_recording_view(request):
         file_info = recorder.get_file_info()
         logger.info(f"File Info: {file_info}")
         
-        logger.info(f"Processing happens, as it's not a language subject: {is_language}")
 
-        processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, is_language)
+        processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, subject_name, class_no, is_language)
 
         return JsonResponse({
             "success": True,
@@ -278,15 +287,16 @@ def handle_local_db(value, school_id):
             for subject in subjects:
                 subject_group = subject.subject_group  # Access the related SubjectGroup instance
                 
-                # Structure the data like the API response
+                # Structure the data like the API response, converting UUIDs to strings
                 subject_groups.append({
                     'class_name': subject_group.class_name,
                     'title': subject_group.title,
                     'is_active': subject_group.is_active,
-                    'school_id': subject_group.school_id,
-                    'id': subject_group.id,
+                    'school_id': str(subject_group.school_id) if isinstance(subject_group.school_id, UUID) else subject_group.school_id,
+                    'id': str(subject_group.id) if isinstance(subject_group.id, UUID) else subject_group.id,
                     'subject': subject_group.subject,
                     'is_language_subject': subject_group.is_language_subject,
+                    'section':subject_group.section,
                 })
 
             logger.info("Subject groups successfully retrieved from local DB")
@@ -318,14 +328,18 @@ def login_page(request):
             if value:
                 response = get_staff_subject_groups(value, school_id)
                 # logger.info(f"Response of get_staff_subject_groups: {response}")  # Corrected logging
-                
+                firstname = response['first_name']
+                lastname = response['last_name']
+                username = f"{firstname} {lastname}"
                 # Extract subject groups
                 subject_groups = response['subject_groups']
                 if subject_groups:
-
-                    logger.info("subject group values fetched:")
-                    return render(request, 'eonpod.html', {
-                            'username': f"{response['first_name']} {response['last_name']}",  # Assuming staff name comes in subjects
+                    # Store subject groups in session
+                    request.session['subject_groups'] = subject_groups
+                    request.session['username'] = username
+                    logger.info(f"subject group values fetched:{subject_groups}")
+                    return render(request, 'subjectcards.html', {
+                            'username': username,  # Assuming staff name comes in subjects
                             'subject_groups': subject_groups  # Pass the subjects to the template
                         })
                 else :
@@ -339,11 +353,23 @@ def login_page(request):
     return render(request, 'login_page.html', {'error_message': error_message})
 
 
-# @login_required
-def eonpod(request):
-    # start_preview()
-    # global recording_status, streaming_status
-    # Log the current recording and streaming status
-    # logger.info(f"Streaming status in eonpod view: {streaming_status}")
-    return render(request, 'eonpod.html')
+@csrf_exempt
+def subjectcards(request):
+    # Retrieve subject groups and username from session
+    subject_groups = request.session.get('subject_groups', [])
+    username = request.session.get('username', '')
 
+    logger.info(f"I am in subjectcards, subject groups are: {subject_groups}")
+    logger.info(f"Username is: {username}")
+
+    # Combine context data into one dictionary
+    return render(request, 'subjectcards.html', {
+        'subject_groups': subject_groups,
+        'username': username
+    })
+
+
+@csrf_exempt
+def eonpod(request):
+    # Render `eonpod.html` template 
+    return render(request, 'eonpod.html')

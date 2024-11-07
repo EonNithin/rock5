@@ -14,4 +14,6 @@ pandas
 psycopg2-binary
 boto3
 python-dotenv
-
+faster_whisper
+pyopenssl==24.2.1 
+cryptography==3.4.7

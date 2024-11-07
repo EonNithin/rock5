@@ -18,7 +18,21 @@ logger = logging.getLogger('pod')
 class FileProcessor:
     def __init__(self):
         # Initialize the models
-        self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+        # self.whisper_model = whisper.Whisper(model_path=os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin'))
+        # Initialize the models
+        model_path = os.path.join(settings.BASE_DIR, 'models', 'ggml-base.en.bin')
+        
+        try:
+            # Attempt to initialize the Whisper model
+            self.whisper_model = whisper.Whisper(model_path=model_path)
+            logger.info(f"Whisper model initialized from path: {model_path}")
+        except FileNotFoundError:
+            logger.error(f"No Whisper model found at specified path: {model_path}. Please ensure the file exists.")
+            self.whisper_model = None  # Set to None or a placeholder if necessary
+        except Exception as e:
+            logger.error(f"Error initializing Whisper model: {e}")
+            self.whisper_model = None  # Handle any other exceptions as needed
+
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_builder = JsonBuilder()
         self.s3 = S3UploadQueue()
@@ -75,13 +89,28 @@ class FileProcessor:
 
 
     def mp3_to_transcript(self, mp3_filepath, subject):
+        if self.whisper_model is None:
+            logger.error("Whisper model is not available; skipping transcription.")
+            return {"success": False, "message": "Whisper model is not available."}
+
         try:
             logger.info(f"Transcribing MP3 file: {mp3_filepath}")
             start_time = self.getTimeStamp()
             logger.debug(f"mp3filepath received: {mp3_filepath}")
-            result = self.whisper_model.transcribe(mp3_filepath)
-            transcript_text = result["text"]
-            logger.debug("Got Transcript from Whisper: ")
+            logger.debug("Calling Whisper model for transcript generation")
+            
+            try:
+                result = self.whisper_model.transcribe(mp3_filepath)
+                if result and "text" in result:
+                    transcript_text = result["text"]
+                    logger.debug("Got Transcript from Whisper")
+                else:
+                    logger.error("Transcript not generated")
+                    return {"success": False, "message": "Transcript not generated."}
+            except Exception as e:
+                logger.error(f"Error transcribing MP3: {e}")
+                return {"success": False, "message": str(e)}
+
             # Define the path to save the transcript file in the same directory as the MP3 file
             transcript_filepath = mp3_filepath.replace('.mp3', '_transcript.txt')
             # Save the transcript to a text file
@@ -90,12 +119,12 @@ class FileProcessor:
             end_time = self.getTimeStamp()
             time_taken = self.calculate_time_taken(start_time, end_time)
             self.json_builder.add_generated_files(transcript_filepath, time_taken)
-            # return self.transcript_to_summary(transcript_filepath)
-            # self.s3.add_to_queue(school=settings.SCHOOL_NAME, subject=subject, local_directory= os.path.dirname(transcript_filepath))
-            return True
+            
+            return {"success": True, "transcript_filepath": transcript_filepath}
+            
         except Exception as e:
             logger.error(f"Error transcribing MP3: {e}")
-            return None
+            return {"success": False, "message": str(e)}
 
 
     def save_text_as_file(self, text, file_path):
@@ -145,11 +174,19 @@ class FileProcessor:
         return
         
     def process_mp4_files(self, mp4_filepath, subject):
+
+        # Check if the MP4 file exists before processing
+        if not os.path.exists(mp4_filepath):
+            logger.error(f"MP4 file not found: {mp4_filepath}")
+            return None  # Return early if the file does not exist
+        
         logger.info(f"Processing MP4 file: {mp4_filepath} for subject: {subject}")
+        # Generate thumbnails for the MP4 file
         self.generate_thumbnail(mp4_filepath)
-        self.json_builder.add_generated_files(mp4_filepath, timetaken = 1)
+        # Add the MP4 file to the generated files list
+        self.json_builder.add_generated_files(mp4_filepath, timetaken=1)
         # grab_path = mp4_filepath.replace("recorded_video", "screen_grab")
         # if os.path.exists(grab_path):
-        #     self.json_builder.add_generated_files(grab_path)
+        #     self.json_builder.add_generated_files(grab_path, timetaken=1)
+        # Process the file further (e.g., converting to MP3)
         return self.mp4_to_mp3(mp4_filepath, subject)
-

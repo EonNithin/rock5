@@ -1,8 +1,78 @@
-let selectedSubject = '';
-let isLanguage = '';
 let isConnected = false;
 let isRecording = false;
 let isLoggingOut = false;
+
+// Global variable to store subjectdata and subjectgroups
+let subjectdata = {};
+let subjectname = '';
+
+// On DOMContentLoaded, retrieve subjectdata and subjectgroups from sessionStorage
+document.addEventListener('DOMContentLoaded', () => {
+    // Retrieve and parse subjectdata
+    const storedData = sessionStorage.getItem('subjectdata');
+    if (storedData) {
+        subjectdata = JSON.parse(storedData);
+        console.log('Retrieved Subject Data from sessionStorage:', subjectdata);
+        
+        subjectname = subjectdata.subject
+        // Select the `subject-name` div
+        const subjectNameDiv = document.getElementById('subject-name');
+        if (subjectNameDiv) {
+            // Create a new h3 element
+            const h1Element = document.createElement('h1');
+            // Set the text content of the h3 element to the subject name
+            h1Element.textContent = subjectname 
+            // Append the h3 element to the `subject-name` div
+            subjectNameDiv.appendChild(h1Element);
+        } else {
+            console.error('Subject name div not found in the DOM');
+        }
+
+    } else {
+        console.error('No subject data found in sessionStorage');
+    }
+
+});
+
+// Get modal and elements
+const backWarningModal = document.getElementById("backWarningModal");
+const closeBackWarningModalBtn = document.getElementById("closeBackWarningModal");
+const backButton = document.getElementById("backButton");
+
+// Function to show the modal
+function showBackWarningModal() {
+    backWarningModal.style.display = "block";
+}
+
+// Function to close the modal
+function closeBackWarningModal() {
+    backWarningModal.style.display = "none";
+}
+
+// Event listener for the back button
+backButton.addEventListener("click", function(event) {
+    if (isRecording) {
+        event.preventDefault(); // Prevent the redirect
+        showBackWarningModal(); // Show warning modal
+    } else {
+        // Redirect to the desired page if no recording is in progress
+        window.location.href = "/subjectcards/";
+    }
+});
+
+// Add event listener for the OK button in the modal
+document.getElementById('backWarningModal-confirmBtn').addEventListener('click', function() {
+    // Close the modal
+    document.getElementById('backWarningModal').style.display = 'none';
+});
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target === backWarningModal) {
+        closeBackWarningModal(); // Call the function to close the modal
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const logoutButton = document.getElementById('logout');
@@ -19,13 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
     checkDeviceConnections();
 });
 
+
+// Logout function with modal confirmation
 function logoutFunction() {
     isLoggingOut = true; // Set flag to indicate logout process
     if (isRecording) {
-        // If recording is active, stop it first
-        stopRecording().then(() => {
-            window.location.href = '/login_page/';
-        });
+        // If recording is active, prevent logout and show warning modal
+        showBackWarningModal();
     } else {
         // If not recording, proceed to logout
         window.location.href = '/login_page/';
@@ -43,21 +113,11 @@ window.addEventListener('unload', async function (event) {
     }
 });
 
-var messageElement = document.getElementById('welcome-message');
-console.log(messageElement);
-
-if (messageElement) {
-    console.log("Welcome message element found:", messageElement);
-    setTimeout(function() {
-        console.log("Timeout function triggered");
-        messageElement.style.display = 'none';
-    }, 5000); // 5000 milliseconds = 5 seconds
-}
 
 function updateStatus(data) {
-    document.getElementById('mic').setAttribute('fill', data.mic_status ? '#a9dfbf' : '#f8c471');
-    document.getElementById('camera').setAttribute('fill', data.camera_status ? '#a9dfbf' : '#f8c471');
-    document.getElementById('screen-capture').setAttribute('fill', data.screen_capture_status ? '#a9dfbf' : '#f8c471');
+    document.getElementById('mic').setAttribute('fill', data.mic_status ? 'green' : 'red');
+    document.getElementById('camera').setAttribute('fill', data.camera_status ? 'green' : 'red');
+    document.getElementById('screen-capture').setAttribute('fill', data.screen_capture_status ? 'green' : 'red');
 }
 
 async function checkDeviceConnections() {
@@ -104,31 +164,20 @@ async function toggleRecording() {
     const controlsDiv = document.getElementById('controls');
     const pauseRecordButton = document.getElementById("pause-recording");
     const resumeRecordContainer = document.getElementById("resume-recording");
-    const dropdownLabel = document.getElementById("dropdown-label");
-    const dropdownContent = document.getElementById("dropdown-content");
 
     if (isRecording) {
         // Stop recording
         showConfirmDialog();
     } else {
         // Start recording
-        if (!selectedSubject) {
-            showSubjectSelectionAlert();
-            console.log("entered function showSubjectSelectionAlert")
-            return;
-        }
-
+       
         startRecordButton.style.display = "none";
         stopRecordButton.style.display = "block";
-        textLabelRecord.textContent = "Stop Recording";
+        textLabelRecord.textContent = "Stop Capture";
         progressBar.style.visibility = "visible"; // Show progress bar
         controlsDiv.style.display = 'block';
         pauseRecordButton.style.display = "block";
         resumeRecordContainer.style.display = "none";
-
-        // Disable dropdown while recording
-        dropdownLabel.style.pointerEvents = "none"; // Disable dropdown label
-        dropdownContent.style.pointerEvents = "none"; // Disable dropdown options
 
         isRecording = true;
 
@@ -140,8 +189,10 @@ async function toggleRecording() {
                     'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({ 
-                    subject: selectedSubject,   
-                    isLanguage: isLanguage      
+                    subject: subjectdata.title,
+                    subject_name: subjectdata.subject_name,
+                    class_no: subjectdata.class_name,
+                    isLanguage: subjectdata.is_language // Convert string to boolean
                 })
             });
 
@@ -153,96 +204,6 @@ async function toggleRecording() {
     }
 }
 
-function toggleDropdown() {
-    document.getElementById("dropdown-content").classList.toggle("show");
-}
-
-function selectOption(displayValue, title, language) {
-    const dropdownLabel = document.getElementById("dropdown-label").children[0];
-    if (dropdownLabel) {
-        dropdownLabel.textContent = displayValue;
-        selectedSubject = title;
-        isLanguage = language;
-        console.log(`Selected Title is selected subject: ${selectedSubject}`);
-        console.log(`Selected Subject is language subject: ${isLanguage}`);
-    } else {
-        console.error('Dropdown label element not found.');
-    }
-    document.getElementById("dropdown-content").classList.remove("show");
-}
-
-window.onclick = function(event) {
-   if (!event.target.matches('.custom-dropdown-label') && !event.target.matches('.custom-dropdown-label *')) {
-       const dropdowns = document.getElementsByClassName("dropdown-content");
-       for (let i = 0; i < dropdowns.length; i++) {
-           const openDropdown = dropdowns[i];
-           if (openDropdown.classList.contains('show')) {
-               openDropdown.classList.remove('show');
-           }
-       }
-   }
-}
-
-function showSettings() {
-   console.log("clicked settings icon");
-   const settings = document.getElementById('settings');
-   settings.style.display = (settings.style.display === 'none' || settings.style.display === '') ? 'block' : 'none';
-}
-
-document.addEventListener('click', function(event) {
-   const gearIcon = document.getElementById('gear-icon');
-   const settings = document.getElementById('settings');
-   if (!gearIcon.contains(event.target)) {
-       settings.style.display = 'none';
-   }
-});
-
-function requestFullScreen() {
-   const elem = document.documentElement;
-   if (elem.requestFullscreen) {
-       elem.requestFullscreen();
-   } else if (elem.mozRequestFullScreen) {
-       elem.mozRequestFullScreen();
-   } else if (elem.webkitRequestFullscreen) {
-       elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-   } else if (elem.msRequestFullscreen) {
-       elem.msRequestFullscreen();
-   }
-}
-
-function exitFullScreen() {
-   const elem = document;
-   if (elem.exitFullscreen) {
-       elem.exitFullscreen();
-   } else if (elem.mozCancelFullScreen) {
-       elem.mozCancelFullScreen();
-   } else if (elem.webkitExitFullscreen) {
-       elem.webkitExitFullscreen();
-   } else if (elem.msRequestFullscreen) {
-       elem.msRequestFullscreen();
-   }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-   const fullscreenButton = document.getElementById("fullscreenButton");
-   const fullscreenExitButton = document.getElementById("fullscreenExitButton");
-
-   if (fullscreenButton) {
-       fullscreenButton.addEventListener("click", function() {
-           fullscreenButton.style.display = 'none';
-           fullscreenExitButton.style.display = 'block';
-           requestFullScreen();
-       }); 
-   }
-
-   if (fullscreenExitButton) {
-       fullscreenExitButton.addEventListener("click", function() {
-           fullscreenButton.style.display = 'block';
-           fullscreenExitButton.style.display = 'none';
-           exitFullScreen();
-       }); 
-   }
-});
 
 function showConfirmDialog() {
     const modal = document.getElementById("customConfirm");
@@ -290,10 +251,12 @@ async function stopRecording() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({ 
-                subject: selectedSubject,   
-                isLanguage: isLanguage      
-            })
+             body: JSON.stringify({ 
+                    subject: subjectdata.title,
+                    subject_name: subjectdata.subject_name,
+                    class_no: subjectdata.class_name,
+                    isLanguage: subjectdata.is_language // Convert string to boolean
+                })
         });
 
         let data = await response.json();
@@ -311,29 +274,3 @@ window.onclick = function (event) {
     }
 };
 
-
-function showSubjectSelectionAlert(){
-    const subjectmodal = document.getElementById('selectSubjectModal');
-    const confirmBtn = document.getElementById('selectSubjectConfirmBtn');
-
-    subjectmodal.style.display = 'block';
-    
-}
-
-// Function to close the modal
-function closeSubjectModal() {
-    const subjectmodal = document.getElementById('selectSubjectModal');
-    subjectmodal.style.display = 'none';
-}
-
-// Attach event listener to the "OK" button to close the modal (only once)
-document.getElementById('selectSubjectConfirmBtn').addEventListener('click', closeSubjectModal);
-
-// Function to close the modal when clicking outside of it
-window.onclick = function(event) {
-    const subjectmodal = document.getElementById('selectSubjectModal');
-
-    if (event.target === subjectmodal) {
-        subjectmodal.style.display = 'none';
-    }
-}

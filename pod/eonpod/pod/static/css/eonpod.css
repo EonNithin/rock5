@@ -1,5 +1,5 @@
 body {
-    background: rgb(60, 59, 59);
+    background: rgb(60, 59, 59) !important;
     /* Black background for container */
     margin: 0;
     gap: 0px;
@@ -9,7 +9,7 @@ body {
 .container-fluid .home-screen {
     background: #E7EBEF;
     /* Light gray background for home screen */
-    min-height: 96vh;
+    min-height: 98vh;
     /* Use min-height instead of height */
     min-width: 100%;
     gap: 0px;
@@ -27,33 +27,7 @@ body {
     align-items: center;
 }
 
-/* Logo styles */
-#logo img {
-    width: 30vw;
-    height: auto;
-    /* Adjust height as needed */
-    margin-left: 20px;
-}
 
-#fullscreenButton {
-    width: auto;
-    border: none;
-    background-color: #E7EBEF;
-    outline: none;
-    height: 8vh;
-    /* Adjust height as needed */
-    margin-right: 5px;
-}
-
-#fullscreenExitButton {
-    width: auto;
-    border: none;
-    background-color: #E7EBEF;
-    outline: none;
-    height: 8vh;
-    /* Adjust height as needed */
-    margin-right: 5px;
-}
 
 .btn-outline-secondary:focus{
     outline: none;
@@ -84,74 +58,6 @@ body {
     }
 }
 
-/* Custom Dropdown styles */
-.custom-dropdown {
-    position: relative;
-    display: inline-block;
-    width: 98%;
-    margin-left: 3px;
-    font-size: 24px;
-    z-index: 1;
-    /* Ensure dropdown is above buttons */
-}
-
-.custom-dropdown-label {
-    background-color: #E1E4E7;
-    width: 100%;
-    max-width: 100%;
-    height: 70px;
-    border-radius: 20px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #E1E4E7;
-    width: 100%;
-    max-width: 98%;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    z-index: 2;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.dropdown-content a {
-    color: black;
-    width: 100%;
-    height: auto;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown-content a:hover {
-    background-color: lightgray;
-}
-
-.show {
-    display: block;
-}
-
-/* Add this style to ensure dropdown content covers buttons */
-.dropdown-content.show {
-    top: calc(100% + 10px);
-    /* Position dropdown content below dropdown label */
-}
-
-/* Media query for smaller screens */
-@media (max-width: 500px) {
-
-    .custom-dropdown-label,
-    .dropdown-content {
-        width: 100%;
-    }
-}
 
 .buttons-div {
     position: relative;
@@ -180,9 +86,10 @@ body {
 
 .circle-container {
     position: relative;
-    width: 160px;
-    height: 160px;
+    width: 230px;
+    height: 230px;
 }
+
 
 .outer-circle {
     position: absolute;
@@ -227,6 +134,8 @@ body {
         /* End with green */
         border-right-color: #91cb6a;
         /* Progress bar color (initial) */
+        border-bottom-color: #91cb6a;
+        border-left-color: #91cb6a;
     }
 }
 
@@ -286,6 +195,7 @@ body {
     z-index: 3;
 }
 
+
 .center-circle-logout {
     width: 55%;
     height: 55%;
@@ -303,7 +213,7 @@ body {
 
 
 .button-text {
-    font-size: 24px;
+    font-size: 36px;
     color: #888888;
     /* Adjust color as needed */
     text-align: center;
@@ -387,198 +297,84 @@ body {
     /* Adjust size as needed */
 }
 
-.gear-icon {
-    position: relative;
+
+#backButton {
+    border-radius: 10px;
+    background-color: transparent;
+    border: none;
+    /* padding-left: 30px; */
 }
 
-
-.tooltip-settings {
-    position: absolute;
-    top: 80%;
-    /* Adjust this value to place it correctly below the gear icon */
-    left: 0%;
-    transform: translateX(-50%);
-    background-color: #E7EBEF;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-    border-radius: 4px;
-    padding: 10px;
-    width: max-content;
-}
-
-.list-group {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.list-group-item {
-    padding: 8px 16px;
-    text-decoration: none;
-    display: block;
-    border: 1px solid #ddd;
-    background-color: #E7EBEF;
-    margin-bottom: 2px;
-}
-
-.list-group-item:hover {
-    background-color: #E7EBEF;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
+/* Basic modal styling */
+.backWarningModal{
+    position: fixed;
+    /* Stay in place */
+    z-index: 1000;
+    /* Sit on top */
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-input:checked+.slider {
-    background-color: #2196F3;
-}
-
-input:focus+.slider {
-    box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked+.slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}
-
-.gear-icon {
-    position: relative;
-}
-
-.tooltip-settings {
-    position: absolute;
-    top: 100%;
-    /* Adjust this value to place it correctly below the gear icon */
-    left: 0px;
-    transform: translateX(-50%);
-    background-color: #E7EBEF;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-    border-radius: 4px;
-    padding: 10px;
-    width: max-content;
-}
-
-.list-group {
-    list-style: none;
-    align-items: end;
-    padding: 0;
-    margin: 0;
-}
-
-.list-group-item {
-    padding: 8px 16px;
-    text-decoration: none;
-    display: block;
-    border: 1px solid #ddd;
-    background-color: #E7EBEF;
-    margin-bottom: 2px;
-}
-
-.list-group-item:hover {
-    background-color: #E7EBEF;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Black w/ opacity */
 }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
+/* Modal content styling */
+.backWarningModal-content {
+    background-color: #fff;
+        /* White background */
+        margin: 10% auto;
+        /* 15% from the top and centered */
+        padding: 20px;
+        /* Padding inside the modal */
+        border: 1px solid #888;
+        /* Gray border */
+        border-radius: 5px;
+        /* Rounded corners */
+        width: 90%;
+        /* Could be more or less, depending on screen size */
+        max-width: 760px;
+        /* Maximum width */
 }
 
-input:checked+.slider {
-    background-color: #30D158;
+/* Button container styling */
+.backWarningModal-modal-btns {
+    display: flex;
+    /* Flexbox for layout */
+    justify-content: center;
+    /* Align buttons to the right */
 }
 
-input:focus+.slider {
-    box-shadow: 0 0 1px #30D158;
+/* Button styling */
+#backWarningModal-confirmBtn {
+    background-color: #007bff;
+    /* Bootstrap primary color */
+    color: white;
+    /* White text */
+    border: none;
+    /* No border */
+    border-radius: 5px;
+    /* Rounded corners */
+    padding: 10px 15px;
+    /* Padding for button */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+    font-size: 46px;
+    /* Button text size */
+    transition: background-color 0.3s;
+    /* Smooth transition */
 }
 
-input:checked+.slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+
+/* Warning message styling */
+.backWarningModal-content p {
+    color: #333;
+    /* Dark gray for the text */
+    font-size: 52px;
+    /* Size of the warning text */
 }
 
-/* Rounded sliders */
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}

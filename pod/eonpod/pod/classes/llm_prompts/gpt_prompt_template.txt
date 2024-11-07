@@ -1,0 +1,21 @@
+Below is a trascript of a lecture for Indian Students for {@class_number} class subject {@subject_name}. The transript is split by sentences in a format:
+sentence_number: sentence_text
+
+Please do the following:
+- Read the transcript
+- Classify the speech per {@syllabus} classification. I.e. I need to know with Chapter (per {@syllabus}) of the subject is being talked about.
+- Find all off-topic sentences, i.e. the sentences that don't relate to the Subject or Chapter or other student education process
+- Classify relevant examples/real-life scenarios as relevant
+- Return the results in the following json format:
+{
+    chapter: chapter name per {@syllabus} classification,
+    off_topic_sentences (you must include all off-topic sentences here): [
+        {
+            sentence_number: the sentence number from the transcript. It must be a numeric value. It must be in the same order as in the transcript.
+            text: sentence text
+            probability: the probability of the sentence being off-topic
+        }
+    ]
+}
+
+The transcript is below:
