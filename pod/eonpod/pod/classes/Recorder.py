@@ -8,6 +8,10 @@ import pyaudio
 import pytz
 import signal 
 import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -23,7 +27,7 @@ class Recorder:
         self.subject = None
         self.part = 0
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
-        self.camera_url = 'rtsp://admin:hik@9753@192.168.0.75:554/Streaming/Channels/101'
+        self.camera_url = None
         self.devnull = open(os.devnull, 'w')
         logger.info("Initialized Recorder")
 
@@ -190,6 +194,8 @@ class Recorder:
             logger.info(f"Audio device index: {device_index}")
             logger.info(f"Audio device hw_value: {hw_value}")
 
+            load_dotenv()
+            self.camera_url = os.getenv('camera_url')
             try:
                 self.process = subprocess.Popen(
                     ['ffmpeg',

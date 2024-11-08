@@ -10,10 +10,8 @@ import logging
 from dotenv import load_dotenv
 from multiprocessing import Process, Queue
 from queue import Empty
-import pickle
-import signal
 import sys
-import atexit
+
 
 load_dotenv()
 
@@ -50,11 +48,6 @@ class S3UploadQueue:
         self.processing_process.start()
         logger.info("Initialized S3UploadQueue processor daemon")
         
-        # Register cleanup handlers
-        atexit.register(self.shutdown)
-        signal.signal(signal.SIGTERM, self._handle_shutdown)
-        signal.signal(signal.SIGINT, self._handle_shutdown)
-
 
     def _initialize_aws_clients(self):
         """Initialize AWS clients with proper error handling"""
@@ -70,43 +63,6 @@ class S3UploadQueue:
         except Exception as e:
             logger.error(f"Failed to initialize AWS clients: {str(e)}")
             raise
-
-    def shutdown(self):
-        """Cleanly shutdown the upload queue"""
-        logger.info("Initiating shutdown sequence...")
-        self.shutdown_flag = True
-        
-        try:
-            # Wait for queue to empty (with timeout)
-            timeout = 60  # 60 seconds timeout
-            start_time = time.time()
-            while not self.upload_queue.empty() and time.time() - start_time < timeout:
-                logger.info(f"Waiting for queue to empty. Remaining items: {self.upload_queue.qsize()}")
-                time.sleep(1)
-            
-            if self.processing_process.is_alive():
-                logger.info("Terminating processing process...")
-                self.processing_process.terminate()
-                self.processing_process.join(timeout=5)
-            
-            # Clean up AWS resources
-            logger.info("Cleaning up AWS resources...")
-            if hasattr(self, 's3_client'):
-                self.s3_client.close()
-            if hasattr(self, 's3_resource'):
-                self.s3_resource.meta.client.close()
-            if hasattr(self, 'session'):
-                del self.session
-            
-            logger.info("Shutdown complete")
-        except Exception as e:
-            logger.error(f"Error during shutdown: {str(e)}")
-
-    def _handle_shutdown(self, signum, frame):
-        """Handle shutdown signals"""
-        logger.info(f"Received shutdown signal {signum}, cleaning up...")
-        self.shutdown()
-        sys.exit(0)
 
     def compress_mp4(self, input_file, output_file):
         """Compress an MP4 file using ffmpeg"""
