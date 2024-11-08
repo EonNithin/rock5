@@ -9,7 +9,7 @@ logger = logging.getLogger('pod')
 
 class CheckConnections:
     def __init__(self):
-        self.rtsp_url = "rtsp://admin:hik@9753@192.168.0.76:554/Streaming/Channels/101"
+        self.rtsp_url = "rtsp://admin:hik@9753@192.168.0.75:554/Streaming/Channels/101"
         self.audio_device_index = None # Getting device index for ALSA
         self.video_device_path = "/dev/video1"
         logger.info("Initialized CheckConnections")

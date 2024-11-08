@@ -8,6 +8,12 @@ from concurrent.futures import ThreadPoolExecutor
 from pod.classes.JsonBuilder import JsonBuilder
 import logging
 from dotenv import load_dotenv
+from multiprocessing import Process, Queue
+from queue import Empty
+import pickle
+import signal
+import sys
+import atexit
 
 load_dotenv()
 
@@ -19,191 +25,320 @@ aws_secret_access_key = os.getenv('aws_secret_access_key')
 region_name = os.getenv('region_name')
 s3_bucket_name = os.getenv('s3_bucket_name')
 
+class S3UploadTask:
+    def __init__(self, file_path, school, subject, timestamp):
+        self.file_path = file_path
+        self.school = school
+        self.subject = subject
+        self.timestamp = timestamp
+        self.retry_count = 0
+        self.max_retries = 7
 
 class S3UploadQueue:
     def __init__(self):
-        self.s3_queue = []
-        self.lock = threading.Lock()
+        self.upload_queue = Queue()
+        self.process_lock = threading.Lock()
+        self.shutdown_flag = False
         self.json_info = JsonBuilder()
-        
         self.s3_bucket_name = s3_bucket_name
-        # AWS session setup
-        self.session = boto3.session.Session(
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-            region_name=region_name
-        )
-        self.s3_resource = self.session.resource("s3")
-        self.s3_client = self.session.client("s3")
-        self.processing_thread = threading.Thread(target=self.process_queue)
-        self.processing_thread.daemon = True
-        self.processing_thread.start()
-        logger.info(f"Initialized processing_thread for S3Uploader ")
-    
-    
-    def compress_mp4(self, input_file, output_file, codec='libx264', crf=23):
-        """
-        Compress an MP4 file to a smaller size using ffmpeg.
+        
+        # Initialize AWS clients
+        self._initialize_aws_clients()
+        
+        # Start the processing daemon
+        self.processing_process = Process(target=self._process_queue, daemon=True)
+        self.processing_process.start()
+        logger.info("Initialized S3UploadQueue processor daemon")
+        
+        # Register cleanup handlers
+        atexit.register(self.shutdown)
+        signal.signal(signal.SIGTERM, self._handle_shutdown)
+        signal.signal(signal.SIGINT, self._handle_shutdown)
 
-        :param input_file: Path to the input MP4 file.
-        :param output_file: Path where the compressed MP4 file will be saved.
-        :param codec: Codec to use for compression (default is 'libx264').
-        :param crf: Constant Rate Factor for quality (lower is better quality, default is 23).
-        """
+
+    def _initialize_aws_clients(self):
+        """Initialize AWS clients with proper error handling"""
+        try:
+            self.session = boto3.session.Session(
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+                region_name=region_name
+            )
+            self.s3_resource = self.session.resource("s3")
+            self.s3_client = self.session.client("s3")
+            logger.info("Successfully initialized AWS clients")
+        except Exception as e:
+            logger.error(f"Failed to initialize AWS clients: {str(e)}")
+            raise
+
+    def shutdown(self):
+        """Cleanly shutdown the upload queue"""
+        logger.info("Initiating shutdown sequence...")
+        self.shutdown_flag = True
+        
+        try:
+            # Wait for queue to empty (with timeout)
+            timeout = 60  # 60 seconds timeout
+            start_time = time.time()
+            while not self.upload_queue.empty() and time.time() - start_time < timeout:
+                logger.info(f"Waiting for queue to empty. Remaining items: {self.upload_queue.qsize()}")
+                time.sleep(1)
+            
+            if self.processing_process.is_alive():
+                logger.info("Terminating processing process...")
+                self.processing_process.terminate()
+                self.processing_process.join(timeout=5)
+            
+            # Clean up AWS resources
+            logger.info("Cleaning up AWS resources...")
+            if hasattr(self, 's3_client'):
+                self.s3_client.close()
+            if hasattr(self, 's3_resource'):
+                self.s3_resource.meta.client.close()
+            if hasattr(self, 'session'):
+                del self.session
+            
+            logger.info("Shutdown complete")
+        except Exception as e:
+            logger.error(f"Error during shutdown: {str(e)}")
+
+    def _handle_shutdown(self, signum, frame):
+        """Handle shutdown signals"""
+        logger.info(f"Received shutdown signal {signum}, cleaning up...")
+        self.shutdown()
+        sys.exit(0)
+
+    def compress_mp4(self, input_file, output_file):
+        """Compress an MP4 file using ffmpeg"""
+        if not os.path.exists(input_file):
+            logger.error(f"Input file does not exist: {input_file}")
+            return False
+            
         try:
             command = [
                 'ffmpeg',
-                '-hwaccel',
-                'rkmpp',
+                '-hwaccel', 'rkmpp',
                 '-i', input_file,       
-                '-c:v', 'h264_rkmpp', '-b:v', '2000k', '-c:a', 'copy',    
+                '-c:v', 'h264_rkmpp', 
+                '-b:v', '2000k', 
+                '-c:a', 'copy',    
                 output_file             
             ]
-
-            # Run the command
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, capture_output=True, text=True)
+            
+            if not os.path.exists(output_file):
+                logger.error(f"Compression failed: Output file not created: {output_file}")
+                return False
+                
             logger.info(f"Compressed video saved to: {output_file}")
+            return True
         except subprocess.CalledProcessError as e:
+            logger.error(f"FFmpeg compression failed: {e.stderr}")
+            return False
+        except Exception as e:
             logger.error(f"Error compressing MP4: {e}")
-        except Exception as e:
-            logger.error(f"An unexpected error occurred: {e}")
-
-
-    def create_folder_in_s3(self, folder_name):
-        # Ensure the folder name ends with a trailing slash
-        folder_key = folder_name if folder_name.endswith('/') else folder_name + '/'
-
-        # Use the existing s3_client to put an empty object representing the folder
-        try:
-            self.s3_client.put_object(Bucket=self.s3_bucket_name, Key=folder_key)
-            logger.info(f"Folder '{folder_name}' created successfully in bucket '{self.s3_bucket_name}'")
-        except Exception as e:
-            logger.error(f"Error creating folder '{folder_name}' in bucket '{self.s3_bucket_name}': {e}")
-
-
-    def add_to_queue(self, school, subject, local_directory):
-        logger.debug("Entered S3 Queue")
-        # Expects a folderpath where we have all the files inplace
-        # if True:
-        with self.lock:
-            for root, _, files in os.walk(local_directory):
-                for file in files:
-                    # Construct the full file path
-                    file_path = os.path.join(root, file)
-                    logger.debug(f"filepath retrieved")
-                    # Extract timestamp from the parent directory name
-                    timestamp = os.path.basename(root)
-                    logger.debug(f"timestamp retrieved")
-
-                    # Add the file to the queue with relevant information
-                    self.s3_queue.append({
-                        "file_path": file_path,
-                        "school": school,
-                        "subject": subject,
-                        "timestamp": timestamp,
-                    })
-                    logger.info(f"Added to queue: {file_path} for {subject} with timestamp {timestamp}")
-   
+            return False
 
     def check_edited_video(self, local_file_path):
-        all_files =  os.listdir(os.path.dirname(local_file_path))
-        if "recorded.mp4" in all_files or "screen_grab.mp4" in all_files:
-            return True
+        """
+        Check if edited video files exist and return both the check result and the replacement file path
+        Returns: (bool, str or None) - (has_edited_files, replacement_path)
+        """
+        if not os.path.exists(local_file_path):
+            logger.error(f"Local file path does not exist: {local_file_path}")
+            return False, None
+            
+        directory = os.path.dirname(local_file_path)
+        try:
+            all_files = os.listdir(directory)
+        except Exception as e:
+            logger.error(f"Error listing directory {directory}: {e}")
+            return False, None
+            
+        base_name = os.path.basename(local_file_path)
+        
+        has_edited_files = "recorded.mp4" in all_files or "ai_screen_grab.mp4" in all_files
+        
+        if not has_edited_files:
+            return False, None
+            
+        if "_recorded_video.mp4" in base_name and "recorded.mp4" in all_files:
+            replacement_path = os.path.join(directory, "recorded.mp4")
+            if os.path.exists(replacement_path):
+                return True, replacement_path
+        elif "_screen_grab.mp4" in base_name and "ai_screen_grab.mp4" in all_files:
+            replacement_path = os.path.join(directory, "ai_screen_grab.mp4")
+            if os.path.exists(replacement_path):
+                return True, replacement_path
+        
+        return True, None
+
+    def add_to_queue(self, school, subject, local_directory):
+        """Add files to the upload queue - can be called from any process"""
+        if not os.path.exists(local_directory):
+            logger.error(f"Directory does not exist: {local_directory}")
+            return
+            
+        try:
+            file_count = 0
+            for root, _, files in os.walk(local_directory):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    if not os.path.exists(file_path):
+                        logger.warning(f"File no longer exists: {file_path}")
+                        continue
+                        
+                    timestamp = os.path.basename(root)
+                    
+                    task = S3UploadTask(
+                        file_path=file_path,
+                        school=school,
+                        subject=subject,
+                        timestamp=timestamp
+                    )
+                    
+                    self.upload_queue.put(task)
+                    file_count += 1
+                    logger.info(f"Added to queue: {file_path} for {subject} with timestamp {timestamp}")
+            
+            logger.info(f"Added {file_count} files to upload queue from {local_directory}")
+        except Exception as e:
+            logger.error(f"Error adding files to queue: {str(e)}")
+
+    def _is_excluded(self, file_name):
+        excluded_list = ["segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
+        for ex in excluded_list:
+            if ex in file_name:
+                return True
         return False
 
-    def upload_file(self, local_file_path, school, subject, timestamp):
-        # Get the base name (filename) from the local file path
-        file_name = os.path.basename(local_file_path)
-
-        # Construct the S3 object key using the school, subject, and the file name
-
-        s3_object_key = f"{school}/{subject}/{timestamp}/{file_name}"
-        date = timestamp.split("_")[0]
-
-        jsonfile = self.json_info.fetch_json_from_date_folder(date)
-        if jsonfile is not None:
-            jsondata = jsonfile[timestamp]
-            logger.info(f"jsondata available for timestamp {timestamp}")  
-        
-            if jsondata is not None:
-                # Extract the s3_path values
-                s3_paths = jsondata.get("s3_path", [])
-                logger.info(f"retrieved files available in s3_path for timestamp {timestamp}")  
-                # Check if the file is in any of the s3_path values
-                file_in_s3 = any(file_name in path for path in s3_paths)
-
-                # Output the result
-                if file_in_s3:
-                    logger.info(f"{file_name} is already present in S3 paths, skipping upload.")
-                    return  # No need to continue, exit function if file is already uploaded
-
+    def _upload_single_file(self, task):
+        """Handle the upload of a single file with retries"""
         try:
-            # Use the s3_client to upload the file 
-            final_name = os.path.basename(local_file_path)
-            timestamp_folder = os.path.dirname(local_file_path)
-            is_ai_edited = self.check_edited_video(local_file_path)
-            if is_ai_edited:
-                local_file_path = os.path.join(timestamp_folder, "recorded.mp4") if "recorded_video.mp4" in local_file_path else os.path.join(timestamp_folder, "screen_grab.mp4")
-                if "recorded" in local_file_path:
-                    compressed_file_path = os.path.join(os.path.dirname(local_file_path), f"{timestamp}_compressed_file.mp4")
-                    self.compress_mp4(input_file=local_file_path, output_file=compressed_file_path)
-                    local_file_path = compressed_file_path  # Now use the compressed file for uploading    
-            logger.info(f"compressed file path is : {local_file_path}")
-            self.s3_client.upload_file(Filename=local_file_path, Bucket=self.s3_bucket_name, Key=s3_object_key)
-            logger.info(f"Uploaded {local_file_path} to s3://{self.s3_bucket_name}/{s3_object_key}")
-            self.json_info.update_s3(timestamp=timestamp, s3_path=s3_object_key, date = date)
+            with self.process_lock:
+                if not os.path.exists(task.file_path):
+                    logger.error(f"Source file no longer exists: {task.file_path}")
+                    return False
+
+                original_file_name = os.path.basename(task.file_path)
+                
+                if self._is_excluded(original_file_name):
+                    logger.info(f"{original_file_name} is in excluded list, so ignoring it...")
+                    return True
+
+                s3_object_key = f"{task.school}/{task.subject}/{task.timestamp}/{original_file_name}"
+                date = task.timestamp.split("_")[0]
+
+                # Check if file is already uploaded
+                jsonfile = self.json_info.fetch_json_from_date_folder(date)
+                if jsonfile and task.timestamp in jsonfile:
+                    s3_paths = jsonfile[task.timestamp].get("s3_path", [])
+                    if any(original_file_name in path for path in s3_paths):
+                        logger.info(f"{original_file_name} already present in S3, skipping")
+                        return True
+
+                # Check for edited videos and get replacement path if available
+                has_edited_files, replacement_path = self.check_edited_video(task.file_path)
+                
+                # Determine the actual file to upload
+                upload_path = task.file_path
+                if has_edited_files and replacement_path:
+                    if not os.path.exists(replacement_path):
+                        logger.error(f"Replacement file does not exist: {replacement_path}")
+                        return False
+                        
+                    upload_path = replacement_path
+                    logger.info(f"Using edited file {replacement_path} instead of {task.file_path}")
+                    
+                    # Handle compression for recorded video
+                    if "_recorded_video.mp4" in original_file_name:
+                        compressed_path = os.path.join(
+                            os.path.dirname(task.file_path),
+                            f"{task.timestamp}_compressed_file.mp4"
+                        )
+                        if not self.compress_mp4(upload_path, compressed_path):
+                            logger.error(f"Failed to compress {upload_path}")
+                            return False
+                        upload_path = compressed_path
+                        logger.info(f"Using compressed file {compressed_path}")
+
+                # Verify the final upload path exists
+                if not os.path.exists(upload_path):
+                    logger.error(f"Final upload file does not exist: {upload_path}")
+                    return False
+
+                # Perform the upload
+                try:
+                    self.s3_client.upload_file(
+                        Filename=upload_path,
+                        Bucket=self.s3_bucket_name,
+                        Key=s3_object_key
+                    )
+                except Exception as e:
+                    logger.error(f"S3 upload failed for {upload_path}: {str(e)}")
+                    return False
+                
+                # Update JSON info
+                try:
+                    self.json_info.update_s3(
+                        local_file_path = upload_path,
+                        timestamp=task.timestamp,
+                        s3_path=s3_object_key,
+                        date=date
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to update JSON info: {str(e)}")
+                    # Don't return False here as the file was uploaded successfully
+                
+                logger.info(f"Successfully uploaded {upload_path} to S3 as {s3_object_key}")
+                return True
+
         except Exception as e:
-            logger.error(f"Error uploading file {local_file_path}: {e}")
-            raise
+            logger.error(f"Error in _upload_single_file for {task.file_path}: {str(e)}")
+            return False
 
-
-    def count_files_and_upload(self, local_directory, school, subject):
-        timestamp = os.path.basename(local_directory)
-        self.create_folder_in_s3(folder_name=f"{school}/{subject}/{timestamp}")
-
-        for root, _, files in os.walk(local_directory):
-            for file in files:
-                local_file_path = os.path.join(root, file)
-
-                # Apply filter logic
-                if file.endswith("_recorded_video.mp4"):
-                    # Compress the _recorded_video.mp4 file before uploading
-                    self.upload_file(local_file_path, school, subject, timestamp)
-                elif file.endswith("_screen_grab.mp4") or file.endswith("_transcript.txt") or file.endswith(".mp3") or file == "folder_metadata.json":
-                    # Upload screen_grab.mp4, transcript.txt, .mp3 and folder_metadata.json files
-                    self.upload_file(local_file_path, school, subject, timestamp)
-                else:
-                    logger.info(f"Skipping file: {file}")
-
-
-    def process_queue(self):
-
-        while True:
-            with self.lock:
-                if not self.s3_queue:
-                    time.sleep(10)  # Sleep for a while if the queue is empty
-                    continue
-
-                current_task = self.s3_queue.pop(0)
-
-            try:
-                file_path = current_task["file_path"]
-                school = current_task["school"]
-                subject = current_task["subject"]
-                timestamp = current_task["timestamp"]
-
-                logger.info(f"Starting S3 upload for {file_path}")
-                # Upload the file with provided details
-                self.upload_file(file_path, school, subject, timestamp)
-                logger.info(f"Finished uploading file {file_path}")
+    def _process_queue(self):
+        """Main queue processing loop"""
+        # Initialize AWS clients in the child process
+        try:
+            self._initialize_aws_clients()
+        except Exception as e:
+            logger.error(f"Failed to initialize AWS clients in processing thread: {str(e)}")
+            return
             
+        while not self.shutdown_flag:
+            try:
+                # Try to get a task with timeout
+                task = self.upload_queue.get(timeout=5)
+                
+                # Verify file still exists before processing
+                if not os.path.exists(task.file_path):
+                    logger.warning(f"File no longer exists, skipping: {task.file_path}")
+                    continue
+                
+                # Process the task
+                success = self._upload_single_file(task)
+                
+                if not success and task.retry_count < task.max_retries:
+                    # Re-queue failed task with increased retry count
+                    task.retry_count += 1
+                    logger.info(f"Retrying upload for {task.file_path} (attempt {task.retry_count}/{task.max_retries})")
+                    self.upload_queue.put(task)
+                elif not success:
+                    logger.error(f"Failed to upload {task.file_path} after {task.max_retries} attempts")
+                
+                time.sleep(1)
+                
+            except Empty:
+                time.sleep(60)
             except Exception as e:
-                logger.error(f"Error processing S3 upload for {file_path}: {str(e)}")
-                # Re-add the current task to the queue in case of failure
-                with self.lock:
-                    self.s3_queue.append(current_task)
-                logger.info(f"Re-added file to queue: {file_path}")
+                logger.error(f"Error in queue processor: {str(e)}")
+                time.sleep(5)
 
-            time.sleep(20)  # Sleep for a short while before processing the next item
-
-
+    def get_queue_size(self):
+        """Get current size of upload queue"""
+        try:
+            return self.upload_queue.qsize()
+        except Exception as e:
+            logger.error(f"Error getting queue size: {str(e)}")
+            return 0

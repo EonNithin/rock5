@@ -34,7 +34,7 @@ class VideoCutter:
         if "recorded_video" in video_file:
             message = "recorded_segment"
         else:
-            message = "screen_grab_segment"
+            message = "ai_screen_grab_segment"
         concat_list = ""
         i =0
         timestamp = os.path.basename(self.__output_dir)
@@ -50,11 +50,12 @@ class VideoCutter:
             i += 1
             subprocess.run(cmd, shell=True, check=True)
             concat_list += f"file {os.path.abspath(segment_path)} \n"
-        concat_list_text_file = os.path.join(self.__output_dir, f"{message}_concat_list.txt")
-        with open(concat_list_text_file, "w") as f:
-            f.write(concat_list)
-        concat_cmd = f"ffmpeg -y -f concat -safe 0 -i {os.path.abspath(concat_list_text_file)} -c copy {os.path.join(self.__output_dir, message.replace('_segment', '') + '.mp4')}"
-        subprocess.run(concat_cmd, shell=True, check=True)
+        if concat_list != "":
+            concat_list_text_file = os.path.join(self.__output_dir, f"{message}_concat_list.txt")
+            with open(concat_list_text_file, "w") as f:
+                f.write(concat_list)
+            concat_cmd = f"ffmpeg -y -f concat -safe 0 -i {os.path.abspath(concat_list_text_file)} -c copy {os.path.join(self.__output_dir, message.replace('_segment', '') + '.mp4')}"
+            subprocess.run(concat_cmd, shell=True, check=True)
 
     def __cut_ffmpeg(self) -> None:
         TRANSITION_EFFECT = 'fade'

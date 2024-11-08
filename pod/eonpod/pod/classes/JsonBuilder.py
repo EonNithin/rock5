@@ -50,13 +50,9 @@ class JsonBuilder:
         return content
 
     def add_generated_files(self, name, timetaken):
-        #PGS_Science_14-09-2024_14-57-32_recorded_video.jpg
-        #Science\10-09-2024_06-33-53\22-11-21_recorder_vedeo.mp4
-        # name = os.path.basename(name)
         fname = os.path.basename(name)
         directory = os.path.dirname(name)
-        parts = directory.split("/")  
-        # print(fname, directory, parts)
+        parts = directory.split("/")
         logger.debug(f"fname, directory and parts: {fname}, {directory}, {parts}")
         subject = parts[-2]
         timestamp = parts[-1]
@@ -81,19 +77,22 @@ class JsonBuilder:
             logger.info(f"Folder metadata generated for {subject} at {directory}.")
         with open(self.current_json_file, 'w') as file:
             json.dump(data, file)
+        
 
-    def update_s3(self, timestamp, s3_path, date = None, s3_upload_date=None, ):
+    def update_s3(self, local_file_path, timestamp, s3_path, date = None, s3_upload_date=None, ):
         data = self.fetch_json_from_date_folder(date)
-        if timestamp in data:
-            data[timestamp]['in_s3'] = 1
-            data[timestamp]['s3_date'] = s3_upload_date
-            data[timestamp]['s3_path'].append(s3_path)
-            if len(data[timestamp]['s3_path']) == 4:
-                data[timestamp]["deletion_date"] = 7
-            with open(self.current_json_file, 'w') as file:
-                json.dump(data, file)
-            logger.info(f"Updated S3 metadata for timestamp {timestamp}: path {s3_path}.")
-
+        if timestamp not in data:
+            self.add_generated_files(local_file_path, "100")
+            data = self.fetch_json_from_date_folder(date)
+        data[timestamp]['in_s3'] = 1
+        data[timestamp]['s3_date'] = s3_upload_date
+        data[timestamp]['s3_path'].append(s3_path)
+        if len(data[timestamp]['s3_path']) == 4:
+            data[timestamp]["deletion_date"] = 7
+        with open(self.current_json_file, 'w') as file:
+            json.dump(data, file)
+        logger.info(f"Updated S3 metadata for timestamp {timestamp}: path {s3_path}.")
+        
     def no_of_files(self, timestamp, date = None):
         data = self.fetch_json_from_date_folder(date)
         if timestamp in data:
