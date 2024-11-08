@@ -8,7 +8,8 @@ CREATE_SCHOOL_TABLE="CREATE TABLE IF NOT EXISTS school (
     id UUID PRIMARY KEY,
     school_name VARCHAR(255) NOT NULL,
     city VARCHAR(255),
-    branch VARCHAR(255)
+    branch VARCHAR(255),
+    subdomain_key VARCHAR(256)  
 );"
 
 CREATE_STAFF_TABLE="CREATE TABLE IF NOT EXISTS staff (
@@ -28,9 +29,9 @@ CREATE_STAFF_TABLE="CREATE TABLE IF NOT EXISTS staff (
 CREATE_SUBJECT_GROUP_TABLE="CREATE TABLE IF NOT EXISTS subject_group (
     id UUID PRIMARY KEY,
     school_id UUID REFERENCES school(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    class VARCHAR(50) NOT NULL,
-    subject VARCHAR(255) NOT NULL,
+    title VARCHAR(255),
+    class VARCHAR(50),
+    subject VARCHAR(255),
     is_language_subject BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
     section VARCHAR(8)
