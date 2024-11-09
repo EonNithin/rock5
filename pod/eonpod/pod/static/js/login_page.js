@@ -15,3 +15,10 @@ clearButton.addEventListener('click', () => {
     pinInput.value = '';
 });
 
+// Add an event listener to the document that will refocus the pin input on each click
+document.addEventListener('click', (event) => {
+    // Check if the clicked element is not the pin input
+    if (event.target !== pinInput) {
+        pinInput.focus(); // Refocus the input
+    }
+});
