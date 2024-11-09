@@ -30,6 +30,7 @@ class School(Base):
     school_name = Column(String)
     branch = Column(String)
     city = Column(String)
+    subdomain_key = Column(String)
     
     # Define the relationship with Staff
     staff_members = relationship("Staff", back_populates="school")
