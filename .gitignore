@@ -1,0 +1,21 @@
+pod/eonpod/logs/pod.log
+pod/eonpod/media/*
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore log files
+*.log
+
+# Ignore environment files (if needed)
+.env
+
+# Ignore compiled Python files
+**/*.pyc
+__pycache__/
+
+# Ignore all log files
+**/*.log
+
+# Ignore .env files (if needed)
+.env
