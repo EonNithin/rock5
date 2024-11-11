@@ -255,7 +255,7 @@ class Recorder:
 
         # ['ffmpeg', '-thread_queue_size', '1024', '-f', 'v4l2', '-video_size', '1920x1080', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '21', self.grab_filepath],
         self.grab_process = subprocess.Popen(
-            ['ffmpeg', '-video_size', '1280x720', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '18', self.grab_filepath],
+            ['ffmpeg', '-video_size', '1280x720', '-i', '/dev/video1', '-r', '30', '-aspect', '16:9', '-c:v', 'hevc_rkmpp', '-preset', 'medium', '-crf', '17', self.grab_filepath],
             stdin=subprocess.PIPE,
             stdout=self.devnull,
             stderr=self.devnull,
