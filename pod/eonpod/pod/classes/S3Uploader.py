@@ -7,25 +7,30 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pod.classes.JsonBuilder import JsonBuilder
 import logging
-from dotenv import load_dotenv
+import dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+dotenv.load_dotenv()
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
 
-aws_access_key_id = os.getenv('aws_access_key_id')
-aws_secret_access_key = os.getenv('aws_secret_access_key')
-region_name = os.getenv('region_name')
-s3_bucket_name = os.getenv('s3_bucket_name')
-
 class S3UploadQueue:
     def __init__(self):
+        # Load AWS credentials and region from environment variables
+        aws_access_key_id = os.getenv("aws_access_key_id")
+        aws_secret_access_key = os.getenv("aws_secret_access_key")
+        region_name = os.getenv("region_name")
+        
+        if not aws_access_key_id or not aws_secret_access_key or not region_name:
+            logger.error("AWS credentials or region are not set in the environment variables.")
+            raise ValueError("Missing AWS credentials or region.")
+
         self.s3_queue = []
         self.lock = threading.Lock()
         self.json_info = JsonBuilder()
-        self.s3_bucket_name = s3_bucket_name
+        self.s3_bucket_name = os.getenv("s3_bucket_name")
+
         # AWS session setup
         self.session = boto3.session.Session(
             aws_access_key_id=aws_access_key_id,
@@ -34,11 +39,14 @@ class S3UploadQueue:
         )
         self.s3_resource = self.session.resource("s3")
         self.s3_client = self.session.client("s3")
+        
+        # Start the processing thread
         self.processing_thread = threading.Thread(target=self.process_queue)
         self.processing_thread.daemon = True
         self.processing_thread.start()
+        
         logger.info(f"Initialized processing_thread for S3Uploader ")
-    
+        
     def print_queue(self):
         with self.lock:
             if not self.s3_queue:
@@ -202,4 +210,5 @@ class S3UploadQueue:
                 logger.info(f"Re-added task to queue: {current_task['local_directory']}")
 
             time.sleep(20)  # Sleep for a short while before processing the next item
+
 
