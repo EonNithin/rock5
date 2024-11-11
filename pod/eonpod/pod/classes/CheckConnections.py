@@ -3,13 +3,14 @@ import re
 import cv2
 import pyaudio
 import logging
-
+from dotenv import load_dotenv
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
+import os 
 
 class CheckConnections:
     def __init__(self):
-        self.rtsp_url = "rtsp://admin:hik@9753@192.168.0.76:554/Streaming/Channels/101"
+        self.rtsp_url = None
         self.audio_device_index = None # Getting device index for ALSA
         self.video_device_path = "/dev/video1"
         logger.info("Initialized CheckConnections")
@@ -44,6 +45,8 @@ class CheckConnections:
 
 
     def test_rtsp_connection(self):
+        load_dotenv()
+        self.rtsp_url = os.getenv('camera_url')
         logger.info(f"Testing RTSP connection to {self.rtsp_url}")
         cap = cv2.VideoCapture(self.rtsp_url)
         if cap.isOpened():

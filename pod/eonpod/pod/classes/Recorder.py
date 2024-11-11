@@ -9,6 +9,8 @@ import pytz
 import signal 
 import asyncio
 
+from dotenv import load_dotenv
+
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
 
@@ -189,7 +191,9 @@ class Recorder:
             
             logger.info(f"Audio device index: {device_index}")
             logger.info(f"Audio device hw_value: {hw_value}")
-
+            
+            load_dotenv()
+            self.camera_url = os.getenv('camera_url')
             try:
                 self.process = subprocess.Popen(
                     ['ffmpeg',
