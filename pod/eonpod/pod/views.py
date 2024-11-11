@@ -47,7 +47,6 @@ processing_queue = ProcessingQueue()
 # Initialize the DB Offloader 
 db_offloader = DBOffloader()
 
-
 # initialize the check device connections
 connection_obj = CheckConnections()
 

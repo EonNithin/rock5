@@ -5,7 +5,7 @@ import pyaudio
 import logging
 from dotenv import load_dotenv
 import os
-
+import time
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -17,6 +17,36 @@ class CheckConnections:
         self.video_device_path = "/dev/video1"
         logger.info("Initialized CheckConnections")
 
+
+    def get_pyaudio_device_index(self, device_name):
+        time.sleep(2)  # Adding a 2-second delay before PyAudio device detection
+        p = pyaudio.PyAudio()
+        hw_pattern = re.compile(r'\(hw:\d+,\d+\)')  # Pattern to find (hw:X,Y)
+        
+        logger.debug(f"device name passed to pyaudio function is :{device_name}")
+
+        for i in range(p.get_device_count()):
+            info = p.get_device_info_by_index(i)
+            logger.debug(f"Checking device: {info['name']}")
+        
+            # Check if the device name matches
+            if device_name in info['name']:
+                logger.info(f"Info of detected device is {info}")
+
+                # Extract the hw value if present
+                hw_match = hw_pattern.search(info['name'])
+                hw_value = hw_match.group() if hw_match else None
+                logger.info(f"Found audio device: {info['name']} with index {i} and hw value {hw_value}")
+                return i, hw_value  # Return index and hw value
+        
+        # If no match was found, list all available devices
+        logger.warning(f"No device found matching '{device_name}'. Listing available devices:")
+        for i in range(p.get_device_count()):
+            info = p.get_device_info_by_index(i)
+            logger.info(f"Device index {i}: {info['name']}")
+            
+        return None, None
+    
     def get_audio_device_index(self):
         # Find the device index by name
         device_index, hw_value = self.get_pyaudio_device_index("USB Composite Device")
@@ -26,38 +56,6 @@ class CheckConnections:
         else:
             logger.warning("No matching audio device found.")
         return None
-
-    def get_pyaudio_device_index(self, device_name):
-        p = pyaudio.PyAudio()
-        hw_pattern = re.compile(r'\(hw:\d+,\d+\)')  # Pattern to find (hw:X,Y)
-        
-        for i in range(p.get_device_count()):
-            info = p.get_device_info_by_index(i)
-            
-            # Check if the device name matches
-            if device_name in info['name']:
-                logger.info(f"Info of detected device is {info}")
-                # Extract the hw value if present
-                hw_match = hw_pattern.search(info['name'])
-                hw_value = hw_match.group() if hw_match else None
-                logger.info(f"Found audio device: {info['name']} with index {i} and hw value {hw_value}")
-                return i, hw_value  # Return index and hw value
-        logger.warning("No matching audio device with hw value found in PyAudio.")
-        return None, None
-
-
-    def test_rtsp_connection(self):
-        load_dotenv()
-        self.rtsp_url = os.getenv('camera_url')
-        logger.info(f"Testing RTSP connection to {self.rtsp_url}")
-        cap = cv2.VideoCapture(self.rtsp_url)
-        if cap.isOpened():
-            logger.debug("RTSP connection successful!")
-            cap.release()
-            return True
-        else:
-            logger.error("Failed to connect to RTSP stream.")
-            return False
 
     def test_alsa_connection(self):
         self.audio_device_index = self.get_audio_device_index() 
@@ -86,6 +84,20 @@ class CheckConnections:
             return False
         finally:
             p.terminate()
+
+    def test_rtsp_connection(self):
+        load_dotenv()
+        self.rtsp_url = os.getenv('camera_url')
+        logger.info(f"Testing RTSP connection to {self.rtsp_url}")
+        cap = cv2.VideoCapture(self.rtsp_url)
+        if cap.isOpened():
+            logger.debug("RTSP connection successful!")
+            cap.release()
+            return True
+        else:
+            logger.error("Failed to connect to RTSP stream.")
+            return False
+
 
     def test_video_device(self):
         logger.info(f"Testing video device at {self.video_device_path}")

@@ -59,7 +59,7 @@ class DBOffloader:
                     insert_stmt = text(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join([':' + col for col in columns])})")
 
                     insertion_data = [{columns[i]: row[i] for i in range(len(columns))} for row in data]
-                    logger.info(f"Inserting data into {table}: {insertion_data}")
+                    logger.info(f"Inserting data into {table}")
 
                     local_session.execute(insert_stmt, insertion_data)
             local_session.commit()  # Commit transaction only if all tables are processed successfully
