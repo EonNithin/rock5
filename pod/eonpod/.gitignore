@@ -1,5 +1,5 @@
 
-media/processed_files/*
+media/*
 models/*
 pod/tests/testdata
 db.sqlite3
