@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Database connection details from environment variables
-SOURCE_DB_URL = os.getenv('SOURCE_DB_URL') or "postgresql+psycopg2://learneon_dev:(gm6|CHj**ICqq8W}GAuT>(bu4jU@learneondev.cngyygccg89w.ap-south-1.rds.amazonaws.com:5432/learneondev"
-LOCAL_DB_URL = os.getenv('LOCAL_DB_URL') or "postgresql+psycopg2://learneon_dev:12345@localhost:5432/local_eonpod_db"
+SOURCE_DB_URL = os.getenv('SOURCE_DB_URL') 
+LOCAL_DB_URL = os.getenv('LOCAL_DB_URL') 
+
+logger.debug(f"\nSOURCE_DB_URL is: {SOURCE_DB_URL} \nLOCAL_DB_URL is: {LOCAL_DB_URL}")
 
 Base = declarative_base()
 
