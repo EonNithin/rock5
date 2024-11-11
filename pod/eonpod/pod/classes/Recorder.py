@@ -10,8 +10,6 @@ import signal
 import asyncio
 from dotenv import load_dotenv
 
-load_dotenv()
-
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')

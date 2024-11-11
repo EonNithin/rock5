@@ -6,7 +6,6 @@ import logging
 from dotenv import load_dotenv
 import os
 
-# load_dotenv()
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
