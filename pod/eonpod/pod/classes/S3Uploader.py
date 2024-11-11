@@ -225,6 +225,14 @@ class S3UploadQueue:
 
                 # Perform the upload
                 try:
+                # logger.debug(f"upload_path: {upload_path} (type: {type(upload_path)})")
+                # logger.debug(f"s3_bucket_name: {s3_bucket_name} (type: {type(s3_bucket_name)})")
+                # logger.debug(f"s3_object_key: {s3_object_key} (type: {type(s3_object_key)})")
+                    # Check if the file exists
+                    if not os.path.isfile(upload_path):
+                        logger.error(f"File does not exist: {upload_path}")
+                        return False
+
                     self.s3_client.upload_file(
                         Filename=upload_path,
                         Bucket=self.s3_bucket_name,
