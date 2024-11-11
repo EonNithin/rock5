@@ -17,8 +17,6 @@ db.sqlite3
 pod/classes/__pycache__
 pod/eonpod/pod/__pycache__
 
-# Ignore .env files inside specific directories
-pod/eonpod/pod/dbmodels/.env
 
 # Ignore compiled Python files
 *.pyc
