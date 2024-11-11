@@ -1,9 +1,9 @@
 
-media/*
-models/*
-pod/tests/testdata
-db.sqlite3
-pod/classes/DBOffloader.py
-pod/classes/__pycache__
-pod/eonpod/pod/__pycache__
-pod/eonpod/pod/dbmodels/.env
+# media/*
+# models/*
+# pod/tests/testdata
+# db.sqlite3
+# pod/classes/DBOffloader.py
+# pod/classes/__pycache__
+# pod/eonpod/pod/__pycache__
+# pod/eonpod/pod/dbmodels/.env
