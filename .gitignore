@@ -1,21 +1,33 @@
-pod/eonpod/logs/pod.log
-pod/eonpod/media/*
-# Ignore compiled Python files
+# Ignore media files
+chat_project/media/*
+
+# Ignore processed files (MP4, MP3, Transcripts, Summaries, Quizzes)
+chat_project/media/processed_files/*
+
+# Ignore model files
+pod/eonpod/models/*.bin
+
+# Ignore MP4 files
+chat_project/media/mp4s/*.mp4
+
+# Ignore all Python bytecode files
 *.pyc
+*.pyo
 __pycache__/
 
-# Ignore log files
+# Ignore environment and configuration files
+.env
+*.env
+*.local
 *.log
 
-# Ignore environment files (if needed)
-.env
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
 
-# Ignore compiled Python files
-**/*.pyc
-__pycache__/
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
 
-# Ignore all log files
-**/*.log
-
-# Ignore .env files (if needed)
-.env
+# Ignore any other files or directories you don't want to track
+*.bak
+*.swp
