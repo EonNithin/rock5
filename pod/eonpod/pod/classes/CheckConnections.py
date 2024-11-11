@@ -4,9 +4,11 @@ import cv2
 import pyaudio
 import logging
 from dotenv import load_dotenv
+import os 
+import time
+
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
-import os 
 
 class CheckConnections:
     def __init__(self):
@@ -26,9 +28,12 @@ class CheckConnections:
         return None
 
     def get_pyaudio_device_index(self, device_name):
+        time.sleep(2)
         p = pyaudio.PyAudio()
         hw_pattern = re.compile(r'\(hw:\d+,\d+\)')  # Pattern to find (hw:X,Y)
         
+        logger.debug(f"device name passed to pyaudio function is :{device_name}")
+
         for i in range(p.get_device_count()):
             info = p.get_device_info_by_index(i)
             
@@ -40,7 +45,13 @@ class CheckConnections:
                 hw_value = hw_match.group() if hw_match else None
                 logger.info(f"Found audio device: {info['name']} with index {i} and hw value {hw_value}")
                 return i, hw_value  # Return index and hw value
-        logger.warning("No matching audio device with hw value found in PyAudio.")
+        
+        # If no match was found, list all available devices
+        logger.warning(f"No device found matching '{device_name}'. Listing available devices:")
+        for i in range(p.get_device_count()):
+            info = p.get_device_info_by_index(i)
+            logger.info(f"Device index {i}: {info['name']}")
+
         return None, None
 
 
