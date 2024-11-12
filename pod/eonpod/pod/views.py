@@ -21,6 +21,7 @@ import time
 import cv2
 import numpy
 from pod.classes.CheckConnections import CheckConnections
+from pod.classes.SensorMonitor import SensorMonitor
 import logging
 from django.shortcuts import render
 from uuid import UUID
@@ -49,6 +50,8 @@ db_offloader = DBOffloader()
 
 # initialize the check device connections
 connection_obj = CheckConnections()
+
+SensorMonitor_obj = SensorMonitor()
 
 school_id = settings.SCHOOL_NAME
 

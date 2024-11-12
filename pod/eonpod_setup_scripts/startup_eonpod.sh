@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navigate to the Django project directory
-cd "$HOME/eonpod/pod/eonpod" || exit
+cd "$HOME/eonpod-ai/pod/eonpod" || exit
 
 # Check if port 8000 is in use (Django server running)
 if ! lsof -i :8000; then
