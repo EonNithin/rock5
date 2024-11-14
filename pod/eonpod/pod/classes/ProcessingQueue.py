@@ -1,3 +1,4 @@
+import json
 import threading
 import time
 import os
@@ -19,14 +20,24 @@ class ProcessingQueue:
         self.processing_thread.daemon = True
         self.processing_thread.start()
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
-        self.s3_obj = S3UploadQueue()
-        # self.add_to_queue('04-11-2024_14-24-57_recorded_video.mp4', 
-        # '/home/software-tesing/Desktop/rock5/pod/eonpod/media/processed_files/CL9AMATHS/04-11-2024_14-24-57/04-11-2024_14-24-57_recorded_video.mp4', 
-        # 'Chemistry',
-        #  False)
-        logger.info("Initialized ProcessingQueue")
+        self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'queue_state.json')
 
-    def add_to_queue(self, file_name, file_path, subject, subject_name, class_no, is_language=False):
+        self.s3_obj = S3UploadQueue()
+        logger.info("Initialized ProcessingQueue")
+  
+  
+    def save_queue_to_json(self):
+        """Overwrite the JSON file with the current queue contents."""
+        with self.lock:
+            try:
+                with open(self.json_file_path, 'w') as json_file:
+                    json.dump(self.queue, json_file, indent=4)
+                logger.info(f"Queue saved to JSON file at {self.json_file_path}.")
+            except Exception as e:
+                logger.error(f"Error saving queue to JSON file: {str(e)}", exc_info=True)
+
+
+    def add_to_queue(self, file_name, file_path, subject, subject_name, class_no, is_language="False"):
         with self.lock:
             self.queue.append({
                 "file_name": file_name,
@@ -35,10 +46,12 @@ class ProcessingQueue:
                 "subject": subject,
                 "subject_name": subject_name,
                 "class_no":class_no,
-                "is_language": is_language
-                
+                "is_language": is_language      
             })
-        logger.info(f"Added to queue: {file_name} with path: {file_path}, subject: {subject}")
+            # add queue content to json file 
+            self.save_queue_to_json()  # Save the updated queue to JSON immediately
+        logger.info(f"Added to queue: {file_name} with path: {file_path}, subject: {subject}, is_language: {is_language}")
+
 
     def process_queue(self):
         while True:
@@ -57,7 +70,7 @@ class ProcessingQueue:
                 try:
                     logger.info(f"Processing file: {file_name}")
                     # Log the type of `is_language`
-                    logger.info(f"Type of is_language: {type(is_language)}: {is_language}")
+                    logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
 
                     if is_language == "False":
                         logger.info(f"Sending {file_name} to processor to process files")
