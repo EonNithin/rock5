@@ -14,46 +14,16 @@ logger = logging.getLogger('pod')
 
 class ProcessingQueue:
     def __init__(self):
+        self.queue=[]
         self.lock = threading.Lock()
         self.processing_thread = threading.Thread(target=self.process_queue)
         self.processing_thread.daemon = True
         self.processing_thread.start()
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
-        self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'queue_state.json')
-
-        # Initialize the queue from the JSON file
-        self.queue = self.load_queue_from_json()
 
         self.s3_obj = S3UploadQueue()
         logger.info("Initialized ProcessingQueue")
   
-    def load_queue_from_json(self):
-        """Load the queue state from the JSON file."""
-        if os.path.exists(self.json_file_path):
-            try:
-                with open(self.json_file_path, 'r') as json_file:
-                    # Load the data from the JSON file into the queue
-                    queue_data = json.load(json_file)
-                    logger.info(f"Loaded queue from JSON file: {self.json_file_path}")
-                    return queue_data
-            except Exception as e:
-                logger.error(f"Error loading queue from JSON file: {str(e)}", exc_info=True)
-                return []  # Return an empty queue if there's an error
-        else:
-            logger.info(f"Queue JSON file not found at {self.json_file_path}. Starting with an empty queue.")
-            return []  # Return an empty queue if the file doesn't exist
-
-  
-    def save_queue_to_json(self):
-        """Overwrite the JSON file with the current queue contents."""
-        with self.lock:
-            try:
-                with open(self.json_file_path, 'w') as json_file:
-                    json.dump(self.queue, json_file, indent=4)
-                logger.info(f"Queue saved to JSON file at {self.json_file_path}.")
-            except Exception as e:
-                logger.error(f"Error saving queue to JSON file: {str(e)}", exc_info=True)
-
 
     def add_to_queue(self, file_name, file_path, subject, subject_name, class_no, is_language="False"):
         with self.lock:
@@ -66,8 +36,7 @@ class ProcessingQueue:
                 "class_no":class_no,
                 "is_language": is_language      
             })
-            # add queue content to json file 
-            self.save_queue_to_json()  # Save the updated queue to JSON immediately
+            
         logger.info(f"Added to queue: {file_name} with path: {file_path}, subject: {subject}, is_language: {is_language}")
 
 
