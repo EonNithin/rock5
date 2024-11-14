@@ -33,18 +33,38 @@ body {
 }
 
 .card {
-    /* height: 120px;
-    width: 300px; */
-    cursor: pointer;
-    transition: transform 0.2s;
+    height: 150px;
+    /* Set a fixed height */
+    display: flex;
     border-radius: 15px;
-    /* Add border radius to the card */
-    overflow: hidden;
-    /* Ensures the rounded corners are applied properly */
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.card:hover {
-    transform: scale(1.05);
+.card-title,
+.card-text {
+    overflow: hidden;
+    /* Hide overflow text if the content is too long */
+    text-overflow: ellipsis;
+    /* Add ellipsis (...) for overflow text */
+    white-space: nowrap;
+    /* Prevent wrapping of text */
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card .card-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card .card-text {
+    font-size: 1rem;
 }
 
 /* Logo styles */
@@ -52,18 +72,6 @@ body {
     width: 40vw;
     height: auto;
     /* Adjust height as needed */
-}
-
-/* Additional styling for card body */
-.card-body {
-    padding: 20px;
-    /* Ensure padding is sufficient for spacing */
-}
-
-/* Optional: Set a shadow effect to enhance card appearance */
-.card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    /* Add shadow for depth */
 }
 
 #subject-cards-backButton {
