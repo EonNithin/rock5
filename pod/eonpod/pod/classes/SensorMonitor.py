@@ -56,7 +56,7 @@ class SensorMonitor:
                     f.write(f"\n=== {timestamp} ===\n")
                     f.write(data)
                     f.write("\n" + "=" * 50 + "\n")
-            self.logger.info(f"Appended sensor data at {timestamp}")
+            # self.logger.info(f"Appended sensor data at {timestamp}")
         except Exception as e:
             self.logger.error(f"Error writing to file {self.output_file}: {e}")
     

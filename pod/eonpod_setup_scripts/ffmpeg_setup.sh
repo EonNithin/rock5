@@ -20,6 +20,9 @@ sudo apt-get install -y cmake
 # Update package lists and install required packages
 echo_status "Updating package lists and installing build-essential, pkg-config, git"
 sudo apt-get update
+
+sudo apt-get install -y portaudio19-dev
+
 sudo apt-get install -y build-essential pkg-config git yasm libdrm-dev libudev-dev
 
 # Install git (in case it's not installed already)
