@@ -130,7 +130,7 @@ def start_recording_view(request):
 
             # Call both recording and screen grab concurrently
             
-            recorder.start_recording(selected_subject),
+            recorder.start_recording(selected_subject)
             recorder.start_screen_grab()
 
             return JsonResponse({"success": True, "message": "Recording started."})
