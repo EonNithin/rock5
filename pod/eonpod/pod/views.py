@@ -156,7 +156,7 @@ def stop_recording_view(request):
         logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
         
         # Call both recording and screen grab concurrently
-        recorder.stop_recording(),
+        recorder.stop_recording()
         recorder.stop_screen_grab()
 
         logger.info(f"Stopped recording for subject: {selected_subject}")
