@@ -118,6 +118,8 @@ class ProcessingQueue:
                         }
                         process_video_background(process_data)
                     logger.info(f"File processed and removed from queue: {file_name}")
+                    self.save_queue_to_json()
+                    logger.info("Updated processor queue state")
                 except Exception as e:
                     logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
                     # If processing fails, re-add to the queue with an error status
