@@ -14,16 +14,58 @@ logger = logging.getLogger('pod')
 
 class ProcessingQueue:
     def __init__(self):
-        self.queue=[]
+
+        self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
+        self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'processing_queue_state.json')  # For testing
+
+        # Initialize the queue from the JSON file
+        self.queue = self.load_queue_from_json()
+
         self.lock = threading.Lock()
         self.processing_thread = threading.Thread(target=self.process_queue)
         self.processing_thread.daemon = True
         self.processing_thread.start()
-        self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
 
         self.s3_obj = S3UploadQueue()
+
+        self.max_retries = 5
+
         logger.info("Initialized ProcessingQueue")
   
+
+    def load_queue_from_json(self):
+        """Load the queue state from the JSON file or create one if it doesn't exist."""
+        if os.path.exists(self.json_file_path):
+            try:
+                with open(self.json_file_path, 'r') as json_file:
+                    queue_data = json.load(json_file)
+                    logger.info(f"Loaded queue from JSON file: {self.json_file_path}")
+                    return queue_data
+            except Exception as e:
+                logger.error(f"Error loading queue from JSON file: {str(e)}", exc_info=True)
+                return []  # Return an empty queue if there's an error
+        else:
+            logger.info(f"Queue JSON file not found at {self.json_file_path}. Creating a new one.")
+            # If the file does not exist, create it with an empty list
+            try:
+                with open(self.json_file_path, 'w') as json_file:
+                    json.dump([], json_file, indent=4)  # Save an empty list
+                logger.info(f"Created a new empty JSON file at {self.json_file_path}.")
+                return []  # Return an empty queue after creating the file
+            except Exception as e:
+                logger.error(f"Error creating the queue JSON file: {str(e)}", exc_info=True)
+                return []  # Return an empty queue if the file can't be created
+
+
+    def save_queue_to_json(self):
+        """Overwrite the entire queue in the JSON file with the current queue contents."""
+        try:
+            with open(self.json_file_path, 'w') as json_file:
+                json.dump(self.queue, json_file, indent=4)  # Write the entire queue
+            logger.info(f"Queue saved to JSON file at {self.json_file_path}.")
+        except Exception as e:
+            logger.error(f"Error saving queue to JSON file: {str(e)}", exc_info=True)
+
 
     def add_to_queue(self, file_name, file_path, subject, subject_name, class_no, is_language="False"):
         with self.lock:
@@ -34,9 +76,12 @@ class ProcessingQueue:
                 "subject": subject,
                 "subject_name": subject_name,
                 "class_no":class_no,
-                "is_language": is_language      
+                "is_language": is_language,
+                "retry_count": 0      
             })
-            
+
+            self.save_queue_to_json()  # Save the updated queue to JSON immediately
+        
         logger.info(f"Added to queue: {file_name} with path: {file_path}, subject: {subject}, is_language: {is_language}")
 
 
@@ -53,6 +98,7 @@ class ProcessingQueue:
                 subject_name = item_to_process["subject_name"]
                 class_no = item_to_process["class_no"]
                 is_language = item_to_process["is_language"]
+                retry_count = item_to_process["retry_count"]
 
                 try:
                     logger.info(f"Processing file: {file_name}")
@@ -75,16 +121,20 @@ class ProcessingQueue:
                 except Exception as e:
                     logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
                     # If processing fails, re-add to the queue with an error status
-                    with self.lock:
-                        self.queue.append({
-                            "file_name": file_name,
-                            "file_path": file_path,
-                            "status": f"Error: {str(e)}",
-                            "is_language": is_language,
-                            "subject": subject,
-                            "subject_name": subject_name,
-                            "class_no": class_no
-                        })
+                    if retry_count < self.max_retries:
+                        retry_count += 1
+                        logger.info(f"Retrying processing for {file_path})")
+                        with self.lock:
+                            self.queue.append({
+                                "file_name": file_name,
+                                "file_path": file_path,
+                                "status": f"Error: {str(e)}",
+                                "is_language": is_language,
+                                "subject": subject,
+                                "subject_name": subject_name,
+                                "class_no": class_no,
+                                "retry_count": retry_count
+                            })
                 finally:
                     logger.info("Adding to S3 queue")
                     self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject,
