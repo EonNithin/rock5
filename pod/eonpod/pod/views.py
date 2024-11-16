@@ -233,7 +233,7 @@ def check_device_connections(request):
 
 def get_staff_subject_groups(pin, school_id):
     # API URL
-    url = "http://3.110.95.174:5001/get_staff_subject_groups"
+    url = "http://65.0.252.50:5001/get_staff_subject_groups"
     
     # Payload for the POST request
     payload = {
