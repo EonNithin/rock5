@@ -7,13 +7,13 @@ cd "$HOME/eonpod-ai/pod/eonpod" || exit
 if ! lsof -i :8000; then
     # Start the Django server in the background if not running
     exec python3 manage.py runserver 8000 &
-    sleep 3
+    sleep 10
 fi
 
 # Kill any existing Chromium instance in kiosk mode
 pkill -f "chromium-browser --kiosk" 2>/dev/null
 
-sleep 3 
+sleep 10
 
 # Open Chromium in kiosk mode pointing to localhost
 exec chromium-browser --kiosk "http://localhost:8000" --disable-pinch --overscroll-history-navigation=0
