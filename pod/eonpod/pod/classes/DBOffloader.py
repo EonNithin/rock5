@@ -11,7 +11,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Load environment variables
-load_dotenv()
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
+
 
 # Database connection details from environment variables
 SOURCE_DB_URL = os.getenv('SOURCE_DB_URL') 

@@ -5,7 +5,8 @@ from .logging_service import logger
 from dotenv import load_dotenv
 from datetime import datetime
 
-load_dotenv()  
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
 
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
 OPEN_AI_MODEL = os.getenv("OPEN_AI_MODEL")

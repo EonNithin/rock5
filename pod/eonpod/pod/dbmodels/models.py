@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 Base = declarative_base()
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
 
 # Accessing the variables
 DB_USERNAME = os.getenv('DB_USERNAME')

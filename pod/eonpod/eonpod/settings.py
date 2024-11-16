@@ -18,7 +18,11 @@ import socket
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 print(BASE_DIR)
-SCHOOL_NAME =  "386f53d9-d1e2-4728-8742-d6da331908a0"
+
+from dotenv import load_dotenv
+load_dotenv(dotenv_path="config.env", override=True)
+
+SCHOOL_NAME =  os.getenv('school_name')
 # "386f53d9-d1e2-4728-8742-d6da331908a0"
 # "be567583-fa55-406a-9000-fa6419537070"
 
