@@ -6,9 +6,9 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+
+# Get the logger instance for the 'pod' app
+logger = logging.getLogger('pod')
 
 # Load environment variables
 load_dotenv(dotenv_path="base.env")
