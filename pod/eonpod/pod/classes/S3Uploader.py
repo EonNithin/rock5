@@ -1,7 +1,6 @@
 import os
 import subprocess
 import boto3
-from django.conf import settings
 from tqdm import tqdm
 import threading
 import time
@@ -12,7 +11,7 @@ from dotenv import load_dotenv
 from multiprocessing import Process, Queue
 from queue import Empty
 import sys
-import json
+
 
 load_dotenv()
 
@@ -33,23 +32,8 @@ class S3UploadTask:
         self.retry_count = 0
         self.max_retries = 7
 
-    def to_dict(self):
-        return {
-            "file_path": self.file_path,
-            "school": self.school,
-            "subject": self.subject,
-            "timestamp": self.timestamp,
-            "retry_count" : self.retry_count
-        }
-
 class S3UploadQueue:
     def __init__(self):
-
-        self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'S3_queue_state.json')  # For testing
-
-        # Initialize the queue from the JSON file
-        self.queue = self.load_queue_from_json()
-
         self.upload_queue = Queue()
         self.process_lock = threading.Lock()
         self.shutdown_flag = False
@@ -79,39 +63,6 @@ class S3UploadQueue:
         except Exception as e:
             logger.error(f"Failed to initialize AWS clients: {str(e)}")
             raise
-    
-
-    def load_queue_from_json(self):
-        """Load the queue state from the JSON file or create one if it doesn't exist."""
-        if os.path.exists(self.json_file_path):
-            try:
-                with open(self.json_file_path, 'r') as json_file:
-                    queue_data = json.load(json_file)
-                    logger.info(f"Loaded queue from JSON file: {self.json_file_path}")
-                    return [S3UploadTask(**item) for item in queue_data]  # Recreate objects
-            except Exception as e:
-                logger.error(f"Error loading queue from JSON file: {str(e)}", exc_info=True)
-                return []  # Return an empty queue if there's an error
-        else:
-            logger.info(f"Queue JSON file not found at {self.json_file_path}. Creating a new one.")
-            try:
-                with open(self.json_file_path, 'w') as json_file:
-                    json.dump([], json_file, indent=4)  # Save an empty list
-                logger.info(f"Created a new empty JSON file at {self.json_file_path}.")
-                return []  # Return an empty queue after creating the file
-            except Exception as e:
-                logger.error(f"Error creating the queue JSON file: {str(e)}", exc_info=True)
-                return []
-
-
-    def save_queue_to_json(self):
-        """Overwrite the entire queue in the JSON file with the current queue contents."""
-        try:
-            with open(self.json_file_path, 'w') as json_file:
-                json.dump([task.to_dict() for task in self.queue], json_file, indent=4)
-            logger.info(f"Queue saved to JSON file at {self.json_file_path}.")
-        except Exception as e:
-            logger.error(f"Error saving queue to JSON file: {str(e)}", exc_info=True)
 
     def compress_mp4(self, input_file, output_file):
         """Compress an MP4 file using ffmpeg"""
@@ -205,9 +156,7 @@ class S3UploadQueue:
                     self.upload_queue.put(task)
                     file_count += 1
                     logger.info(f"Added to queue: {file_path} for {subject} with timestamp {timestamp}")
-                    self.save_queue_to_json()
-                    logger.info("updated s3_queue_state")
-
+            
             logger.info(f"Added {file_count} files to upload queue from {local_directory}")
         except Exception as e:
             logger.error(f"Error adding files to queue: {str(e)}")
@@ -357,4 +306,3 @@ class S3UploadQueue:
         except Exception as e:
             logger.error(f"Error getting queue size: {str(e)}")
             return 0
-
