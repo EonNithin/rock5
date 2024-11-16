@@ -86,7 +86,9 @@ class CheckConnections:
             p.terminate()
 
     def test_rtsp_connection(self):
-        load_dotenv()
+        load_dotenv(dotenv_path="base.env")
+        load_dotenv(dotenv_path="config.env", override=True)
+
         self.rtsp_url = os.getenv('camera_url')
         logger.info(f"Testing RTSP connection to {self.rtsp_url}")
         cap = cv2.VideoCapture(self.rtsp_url)

@@ -192,7 +192,9 @@ class Recorder:
             logger.info(f"Audio device index: {device_index}")
             logger.info(f"Audio device hw_value: {hw_value}")
 
-            load_dotenv()
+            load_dotenv(dotenv_path="base.env")
+            load_dotenv(dotenv_path="config.env", override=True)
+
             self.camera_url = os.getenv('camera_url')
             try:
                 self.process = subprocess.Popen(
