@@ -48,4 +48,4 @@ __pycache__/
 **/*.log
 
 # Ignore .env files (if needed)
-.env
+*.env
