@@ -13,7 +13,9 @@ from queue import Empty
 import sys
 
 
-load_dotenv()
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
+
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
