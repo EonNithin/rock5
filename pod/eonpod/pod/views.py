@@ -25,12 +25,15 @@ from pod.classes.SensorMonitor import SensorMonitor
 import logging
 from django.shortcuts import render
 from uuid import UUID
-
+from dotenv import load_dotenv
 from pod.dbmodels.models import DATABASE_URL, get_session
 from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
 from pod.classes.DBOffloader import DBOffloader
 # from pod.dbmodels.models.staff import Staff
 
+# Load environment variables
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
 
 # Get the logger instance for the 'pod' app
 logger = logging.getLogger('pod')
@@ -233,7 +236,8 @@ def check_device_connections(request):
 
 def get_staff_subject_groups(pin, school_id):
     # API URL
-    url = "http://65.0.252.50:5001/get_staff_subject_groups"
+    api_url = os.getenv('LOGIN_API')
+    url = api_url
     
     # Payload for the POST request
     payload = {
