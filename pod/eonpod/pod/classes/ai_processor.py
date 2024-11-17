@@ -18,9 +18,9 @@ def get_output_dir(file_path: str) -> str:
 
 
 class ProcessVideoService:
-    __whisper_model = whisper.load_model("base")
+    __whisper_model = whisper.load_model("small")
 
-    model = WhisperModel("base", device="cpu", compute_type="float32",cpu_threads=2)
+    model = WhisperModel("small", device="cpu", compute_type="float32",cpu_threads=2)
 
     def __init__(
         self,
@@ -198,8 +198,9 @@ class ProcessVideoService:
                 segments, info = ProcessVideoService.model.transcribe(
                     self.__audio_file_path,
                     task="translate",
-                    beam_size=5,
-                    word_timestamps=True
+                    beam_size=2,
+                    word_timestamps=True,
+                    language="en"
                 )
 
                 # Prepare transcription output data
