@@ -128,6 +128,11 @@ class ProcessingQueue:
                 is_language = item_to_process["is_language"]
                 retry_count = item_to_process["retry_count"]
 
+                # Check if the file path exists
+                if not os.path.exists(file_path):
+                    logger.error(f"File path does not exist: {file_path}. Skipping {file_name}.")
+                    continue
+
                 try:
                     logger.info(f"Processing file: {file_name}")
                     # Log the type of `is_language`
@@ -168,8 +173,10 @@ class ProcessingQueue:
                             })
                         # self.save_queue_to_json()
                         # logger.info("save queue updated after retrying")
+                
                 finally:
-                    logger.info("Adding to S3 queue")
+                    self.save_queue_to_json()
+                    logger.info("Processing queue updated and Adding to S3 queue")
                     self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject,
                                             local_directory=os.path.dirname(file_path))
 

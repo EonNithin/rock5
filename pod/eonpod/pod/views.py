@@ -192,19 +192,24 @@ def stop_recording_view(request):
             # Call your concatenation function here
             recorder.concat_screengrab_parts()
 
-        
-        file_info = recorder.get_file_info()
-        logger.info(f"File Info: {file_info}")
-        
+        if recorded_files:
+            file_info = recorder.get_file_info()
+            logger.info(f"File Info: {file_info}")
+            processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, subject_name, class_no, is_language)
 
-        processing_queue.add_to_queue(file_info['filename'], file_info['filepath'], selected_subject, subject_name, class_no, is_language)
-
+            return JsonResponse({
+                "success": True,
+                "message": "Recording stopped an sent to processing.",
+                "filename": file_info["filename"],
+                "filepath": file_info["filepath"]
+            })
+        
         return JsonResponse({
-            "success": True,
-            "message": "Recording stopped.",
-            "filename": file_info["filename"],
-            "filepath": file_info["filepath"]
-        })
+                "success": False,
+                "message": "No recored files found.",
+                "filename": None,
+                "filepath": None
+            })
         # except Exception as e:
         #     logger.error(f"Error stopping recording: {str(e)}")
         #     return JsonResponse({"success": False, "error": str(e)})
