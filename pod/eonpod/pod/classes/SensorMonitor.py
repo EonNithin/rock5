@@ -9,7 +9,7 @@ import pytz  # For timezone handling
 class SensorMonitor:
     def __init__(self, output_file="sensor_logs.txt"):
         # Initialize logger
-        self.logger = logging.getLogger('sensor_monitor')
+        # self.logger = logging.getLogger('sensor_monitor')
         
         # Timezone setup
         self.timezone = pytz.timezone('Asia/Kolkata')
@@ -28,7 +28,7 @@ class SensorMonitor:
         
         # Start the monitoring thread
         self.processing_thread.start()
-        self.logger.info(f"Initialized SensorMonitor processing thread, writing to {output_file}")
+        # self.logger.info(f"Initialized SensorMonitor processing thread, writing to {output_file}")
     
     def get_sensor_data(self):
         """Execute sensors command and return the output"""
@@ -39,10 +39,10 @@ class SensorMonitor:
                                   check=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
-            self.logger.error(f"Error running sensors command: {e}")
+            # self.logger.error(f"Error running sensors command: {e}")
             return f"Error reading sensors: {str(e)}"
         except Exception as e:
-            self.logger.error(f"Unexpected error getting sensor data: {e}")
+            # self.logger.error(f"Unexpected error getting sensor data: {e}")
             return f"Unexpected error: {str(e)}"
     
     def append_to_file(self, data):
@@ -58,7 +58,8 @@ class SensorMonitor:
                     f.write("\n" + "=" * 50 + "\n")
             # self.logger.info(f"Appended sensor data at {timestamp}")
         except Exception as e:
-            self.logger.error(f"Error writing to file {self.output_file}: {e}")
+            # self.logger.error(f"Error writing to file {self.output_file}: {e}")
+            pass
     
     def monitor_sensors(self):
         """Main monitoring loop that runs in the background thread"""
@@ -72,15 +73,15 @@ class SensorMonitor:
                     self.append_to_file(sensor_data)
                 
                 # Wait for 10 seconds
-                time.sleep(10)
+                time.sleep(180)
                 
             except Exception as e:
-                self.logger.error(f"Error in monitor_sensors loop: {e}")
+                # self.logger.error(f"Error in monitor_sensors loop: {e}")
                 time.sleep(10)  # Still sleep on error to prevent tight loop
     
     def stop(self):
         """Stop the monitoring thread"""
         self.is_running = False
         self.processing_thread.join()
-        self.logger.info("Stopped sensor monitoring")
+        # self.logger.info("Stopped sensor monitoring")
 
