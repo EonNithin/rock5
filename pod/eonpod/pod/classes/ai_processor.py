@@ -86,7 +86,12 @@ class ProcessVideoService:
         logger.info("process video: done")
 
     def __save_classified_speech_segments(self):
+        relevant_transcript = ""
         str = ""
+        self.transcription_text_file = os.path.join(
+            self.__output_dir,
+            f"{os.path.basename(self.__output_dir)}_transcript.txt"
+        )
         prev_end_time_sec = None
         for i, segment in enumerate(self.__classified_speech_segments):
             if prev_end_time_sec is None:
@@ -106,11 +111,15 @@ class ProcessVideoService:
                 segment.end_time_string,
                 segment.text
             )
+            if segment.is_relevant:
+                relevant_transcript += segment.text
 
         with open(
             os.path.join(self.__output_dir, "classified_speech_segments.txt"), "w"
         ) as f:
             f.write(str)
+        with open(self.transcription_text_file, "w") as txt_file:
+                    txt_file.write(relevant_transcript)
 
     def __render_final_video(self):
         vc = VideoCutter(
@@ -183,10 +192,6 @@ class ProcessVideoService:
             self.__output_dir,
             "whisper_transcription.json"
         )
-        self.transcription_text_file = os.path.join(
-            self.__output_dir,
-            f"{os.path.basename(self.__output_dir)}_transcript.txt"
-        )
 
         # Initialize transcription variable
         transcription = None
@@ -236,9 +241,6 @@ class ProcessVideoService:
                 # Save the transcription to JSON and text files
                 with open(self.__transcription_json_file_path, "w") as json_file:
                     json.dump(output_data, json_file, indent=4)
-
-                with open(self.transcription_text_file, "w") as txt_file:
-                    txt_file.write(output_data["text"])
 
             except Exception as e:
                 logger.error(f"Error during transcription: {self.__audio_file_path}\nError: {e}")
