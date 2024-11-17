@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'ui/bootstrap.min.css' %}">
@@ -19,7 +19,7 @@
     <div class="container-fluid">
         <div class="row justify-content-center align-items-center">
             <!-- Left Side: Numpad -->
-            <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center p-3">
+            <div class="col-12 col-lg-6 col-md-5 col-sm-3 d-flex justify-content-center align-items-center p-3">
                 <div class="keypad">
                     <div class="keypad-row">
                         <button type="button" class="key">1</button>
@@ -44,7 +44,7 @@
             </div>
 
             <!-- Right Side: PIN Input and Submit -->
-            <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center p-3">
+            <div class="col-12 col-lg-6 col-md-5 col-sm-3 d-flex justify-content-center align-items-center p-3">
                 <div class="home-screen text-center p-2">
                     <img src="{% static 'images/learneonlogo.png' %}" alt="learneonlogo" id="learneonlogo" />
                     {% if error_message %}

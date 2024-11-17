@@ -124,3 +124,67 @@ body {
     border-radius: 5px;
     /* Rounded corners */
 }
+
+/* Adjustments for smaller resolutions (below 1024x600) */
+@media (max-width: 1024px) and (max-height: 600px) {
+    .key {
+        font-size: 3rem;
+    }
+
+    .key-clear {
+        font-size: 3rem;
+    }
+
+    #learneonlogo {
+        width: 60%;
+    }
+
+    .pin-input {
+        font-size: 1.8rem;
+    }
+
+    .btn-primary {
+        font-size: 1.8rem;
+    }
+
+    .error {
+        font-size: 0.9rem;
+    }
+}
+
+/* Adjustments for extremely small resolutions (900x600 and below) */
+@media (max-width: 900px) and (max-height: 600px) {
+    .key {
+        font-size: 2.5rem;
+        padding: 5px;
+    }
+
+    .key-clear {
+        font-size: 2.5rem;
+        padding: 5px;
+    }
+
+    #learneonlogo {
+        width: 50%;
+    }
+
+    .pin-input {
+        font-size: 1.5rem;
+        padding: 5px;
+    }
+
+    .btn-primary {
+        font-size: 1.5rem;
+        padding: 5px;
+    }
+
+    .error {
+        font-size: 0.8rem;
+    }
+
+    .container-fluid {
+        padding: 10px;
+        border-radius: 30px;
+    }
+}
+
