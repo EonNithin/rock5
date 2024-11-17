@@ -1,20 +1,32 @@
 #!/bin/bash
 
 # Navigate to the Django project directory
-cd "$HOME/eonpod-ai/pod/eonpod" || exit
+cd "$HOME/eonpod-ai/pod/eonpod" || exit 1
 
-# Check if port 8000 is in use (Django server running)
-if ! lsof -i :8000; then
-    # Start the Django server in the background if not running
-    exec python3 manage.py runserver 8000 &
-    sleep 10
+# Check if the Django server is running
+if ! lsof -i :8000 | grep LISTEN; then
+    echo "Starting Django server..."
+    python3 manage.py runserver 8000 &
+    SERVER_PID=$!
+else
+    echo "Django server already running."
 fi
 
-# Kill any existing Chromium instance in kiosk mode
-pkill -f "chromium-browser --kiosk" 2>/dev/null
+# Serve a simple loading page until the server is ready
+echo "Displaying loading page..."
+chromium-browser --kiosk "file://$HOME/eonpod-ai/pod/eonpod_setup_scripts/loading.html" --disable-pinch --disable-zoom --overscroll-history-navigation=0 &
+CHROMIUM_PID=$!
 
-sleep 10
+# Wait for the Django server to become accessible
+until curl -s http://localhost:8000 > /dev/null; do
+    echo "Waiting for server to start..."
+    sleep 1
+done
 
-# Open Chromium in kiosk mode pointing to localhost
-exec chromium-browser --kiosk "http://localhost:8000" --disable-pinch --overscroll-history-navigation=0
+# Kill the loading page Chromium instance
+echo "Killing loading page..."
+kill "$CHROMIUM_PID" 2>/dev/null
 
+
+# Open the Django app in Chromium in kiosk mode
+chromium-browser --kiosk "http://localhost:8000" --disable-pinch --disable-zoom --overscroll-history-navigation=0 &
