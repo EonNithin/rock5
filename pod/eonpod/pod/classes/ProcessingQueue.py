@@ -29,6 +29,7 @@ class ProcessingQueue:
         self.processing_thread.daemon = True
         self.processing_thread.start()
         self.s3_obj = S3UploadQueue()
+        self.delete_job = DeletionJob()
 
         self.max_retries = 5
 
