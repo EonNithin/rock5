@@ -21,7 +21,7 @@ class DeletionJob:
         self.s3 = S3UploadQueue()
         self.current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
         self.json_obj = JsonBuilder()
-        self.days_threshold = 0.5
+        self.days_threshold = 7
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.base_folder = os.path.join(self.current_dir, '../../media/processed_files')
         logger.info(f"Initialized DeletionJob with base folder: {self.base_folder}")
@@ -100,16 +100,16 @@ class DeletionJob:
         Run the deletion job at 5 PM daily.
         """
         logger.info("Deletion Job is set to run daily at 6 PM.")
-        # while self.keep_running:
-            # now = datetime.now(pytz.timezone('Asia/Kolkata'))
-            # target_time = now.replace(hour=17, minute=0, second=0, microsecond=0)
-            # if now >= target_time:
-            #     target_time += timedelta(days=1)
+        while self.keep_running:
+            now = datetime.now(pytz.timezone('Asia/Kolkata'))
+            target_time = now.replace(hour=17, minute=0, second=0, microsecond=0)
+            if now >= target_time:
+                target_time += timedelta(days=1)
 
-            # sleep_duration = (target_time - now).total_seconds()
-            # logger.info(f"Sleeping for {sleep_duration/60} minutes until deletion job.")
-            # time.sleep(sleep_duration)
+            sleep_duration = (target_time - now).total_seconds()
+            logger.info(f"Sleeping for {sleep_duration/60} minutes until deletion job.")
+            time.sleep(sleep_duration)
 
-            # logger.info("Running deletion job...")
-        self.delete_old_files()
-            # logger.info("Deletion job completed.")
+            logger.info("Running deletion job...")
+            self.delete_old_files()
+            logger.info("Deletion job completed.")
