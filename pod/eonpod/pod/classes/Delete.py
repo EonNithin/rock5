@@ -99,7 +99,7 @@ class DeletionJob:
         """
         Run the deletion job at 5 PM daily.
         """
-        logger.info("Deletion Job is set to run daily at 6 PM.")
+        logger.info("Deletion Job is set to run daily at 5 PM.")
         while self.keep_running:
             now = datetime.now(pytz.timezone('Asia/Kolkata'))
             target_time = now.replace(hour=17, minute=0, second=0, microsecond=0)
