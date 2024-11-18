@@ -21,7 +21,7 @@ class DeletionJob:
         self.s3 = S3UploadQueue()
         self.current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
         self.json_obj = JsonBuilder()
-        self.days_threshold = 7
+        self.days_threshold = 5
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.base_folder = os.path.join(self.current_dir, '../../media/processed_files')
         logger.info(f"Initialized DeletionJob with base folder: {self.base_folder}")
