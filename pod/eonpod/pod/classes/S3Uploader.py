@@ -343,6 +343,7 @@ class S3UploadQueue:
                             with self.process_lock:
                                 self.upload_queue.append(current_item)
                                 self.save_queue_to_json()
+                            time.sleep(300)
                         else:
                             logger.error(f"Failed to upload {current_item['file_path']} after {self.max_retries} attempts")
                             with self.process_lock:
@@ -353,10 +354,10 @@ class S3UploadQueue:
                             self.save_queue_to_json()
                     
                     # Small delay between processing files
-                    time.sleep(1)
+                    time.sleep(30)
                 else:
                     # Longer delay when queue is empty
-                    time.sleep(3)
+                    time.sleep(300)
 
             except Exception as e:
                 logger.error(f"Error in queue processor: {str(e)}", exc_info=True)
