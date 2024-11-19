@@ -22,7 +22,7 @@ class ProcessingQueue:
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'processing_queue_state.json')  # For testing
 
-        self.queue_buffer = 2
+        self.queue_buffer = 3600
 
         # Initialize the queue from the JSON file
         self.queue = self.load_queue_from_json()
@@ -169,7 +169,7 @@ class ProcessingQueue:
                     current_timestamp = datetime.now()
                     # Subtract the timestamps
                     time_difference = current_timestamp - folder_timestamp
-                    if time_difference.days < self.queue_buffer:
+                    if time_difference.total_seconds() < self.queue_buffer:
                         logger.info(f"Retrying processing for {file_path})")
                         with self.lock:
                             self.queue.append({

@@ -33,7 +33,7 @@ class S3UploadQueue:
         # Use Manager Lock for process-safe locking
         self.process_lock = self.manager.Lock()
         
-        self.queue_buffer = 2
+        self.queue_buffer = 3600
 
         self.shutdown_flag = self.manager.Value('b', False)
         self.json_info = JsonBuilder()
@@ -357,7 +357,7 @@ class S3UploadQueue:
                         # Subtract the timestamps
                         time_difference = current_timestamp - file_timestamp
 
-                        if time_difference.days < self.queue_buffer:
+                        if time_difference.total_seconds() < self.queue_buffer:
                             logger.info(f"Retrying upload for {current_item['file_path']} ")
                             # Re-add to queue with proper locking
                             with self.process_lock:
