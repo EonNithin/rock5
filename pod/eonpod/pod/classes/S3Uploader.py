@@ -192,23 +192,36 @@ class S3UploadQueue:
             for root, _, files in os.walk(local_directory):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    if not os.path.exists(file_path):
+                    # if not os.path.exists(file_path):
+                    #     continue
+                    if os.path.exists(file_path):
+                        # Get file size and store it alongside the file path
+                        file_size = os.path.getsize(file_path)
+                        files_to_add.append((file_size, file_path))
+                    else:
+                        logger.warning(f"File no longer exists: {file_path}")
                         continue
-                        
-                    timestamp = os.path.basename(root)
-                    task = {
-                        "file_path": file_path,
-                        "school": school,
-                        "subject": subject,
-                        "timestamp": timestamp,
-                        "retry_count": 0
-                    }
-                    files_to_add.append(task)
+
+            # Sort files by size in descending order
+            files_to_add.sort(reverse=True, key=lambda x: x[0])
+
+            # Create tasks from sorted files
+            tasks_to_add = []
+            for file_size, file_path in files_to_add:
+                timestamp = os.path.basename(os.path.dirname(file_path))  # Get parent folder name
+                task = {
+                    "file_path": file_path,
+                    "school": school,
+                    "subject": subject,
+                    "timestamp": timestamp,
+                    "retry_count": 0
+                }
+                tasks_to_add.append(task)
 
             # Add all files under a single lock
             with self.process_lock:
                 original_size = len(self.upload_queue)
-                for task in files_to_add:
+                for task in tasks_to_add:
                     self.upload_queue.append(task)
                     logger.info(f"Added to queue: {task['file_path']}")
                 
@@ -220,6 +233,7 @@ class S3UploadQueue:
 
         except Exception as e:
             logger.error(f"Error adding files to queue: {str(e)}", exc_info=True)
+
 
     def _upload_single_file(self, task):
         """Handle the upload of a single file with retries"""
