@@ -33,7 +33,7 @@ class S3UploadQueue:
         # Use Manager Lock for process-safe locking
         self.process_lock = self.manager.Lock()
         
-        self.queue_buffer = 3600
+        self.queue_buffer = 300
 
         self.shutdown_flag = self.manager.Value('b', False)
         self.json_info = JsonBuilder()
@@ -347,31 +347,38 @@ class S3UploadQueue:
                     if not os.path.exists(current_item['file_path']):
                         logger.info(f"File no longer exists: {current_item['file_path']}")
                         continue
+                    
+                    # Convert the string to a datetime object
+                    folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
+                    # Current timestamp
+                    current_timestamp = datetime.now()
+                    # Subtract the timestamps
+                    time_difference = current_timestamp - folder_timestamp
+                    if time_difference.total_seconds() < self.queue_buffer:
+                        success = self._upload_single_file(current_item)
 
-                    success = self._upload_single_file(current_item)
+                        if not success:
+                            current_timestamp = datetime.now()
+                            file_timestamp = current_item['timestamp']
+                            file_timestamp = datetime.strptime(file_timestamp, "%d-%m-%Y_%H-%M-%S")
+                            # Subtract the timestamps
+                            time_difference = current_timestamp - file_timestamp
 
-                    if not success:
-                        current_timestamp = datetime.now()
-                        file_timestamp = current_item['timestamp']
-                        file_timestamp = datetime.strptime(file_timestamp, "%d-%m-%Y_%H-%M-%S")
-                        # Subtract the timestamps
-                        time_difference = current_timestamp - file_timestamp
-
-                        if time_difference.total_seconds() < self.queue_buffer:
-                            logger.info(f"Retrying upload for {current_item['file_path']} ")
-                            # Re-add to queue with proper locking
-                            with self.process_lock:
-                                self.upload_queue.append(current_item)
-                                self.save_queue_to_json()
-                            time.sleep(300)
+                            if time_difference.total_seconds() < self.queue_buffer:
+                                logger.info(f"Retrying upload for {current_item['file_path']} ")
+                                # Re-add to queue with proper locking
+                                with self.process_lock:
+                                    self.upload_queue.append(current_item)
+                                    self.save_queue_to_json()
+                                time.sleep(300)
+                            else:
+                                logger.error(f"Failed to upload {current_item['file_path']}")
+                                with self.process_lock:
+                                    self.save_queue_to_json()
                         else:
-                            logger.error(f"Failed to upload {current_item['file_path']}")
+                            logger.info(f"Successfully processed: {current_item['file_path']}")
                             with self.process_lock:
                                 self.save_queue_to_json()
-                    else:
-                        logger.info(f"Successfully processed: {current_item['file_path']}")
-                        with self.process_lock:
-                            self.save_queue_to_json()
                     
                     # Small delay between processing files
                     time.sleep(30)

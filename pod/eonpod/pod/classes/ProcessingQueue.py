@@ -22,7 +22,7 @@ class ProcessingQueue:
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'processing_queue_state.json')  # For testing
 
-        self.queue_buffer = 3600
+        self.queue_buffer = 300
 
         # Initialize the queue from the JSON file
         self.queue = self.load_queue_from_json()
@@ -140,26 +140,33 @@ class ProcessingQueue:
                     continue
 
                 try:
-                    logger.info(f"Processing file: {file_name}")
-                    # Log the type of `is_language`
-                    logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
+                    # Convert the string to a datetime object
+                    folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
+                    # Current timestamp
+                    current_timestamp = datetime.now()
+                    # Subtract the timestamps
+                    time_difference = current_timestamp - folder_timestamp
+                    if time_difference.total_seconds() < self.queue_buffer:
+                        logger.info(f"Processing file: {file_name}")
+                        # Log the type of `is_language`
+                        logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
 
-                    if is_language == "False":
-                        logger.info(f"Sending {file_name} to processor to process files")
-                        process_data = {
-                            "file_path": file_path,
-                            "class_no": class_no,
-                            "subject": subject,
-                            "subject_name": subject_name,
-                            "use_gpt": True,
-                            "render_final_video": True,
-                            "syllabus": "CBSE"
-                        }
-                        self.generate_thumbnail(file_path)
-                        process_video_background(process_data)
-                    logger.info(f"File processed and removed from queue: {file_name}")
-                    self.save_queue_to_json()
-                    logger.info("process queue state updated")
+                        if is_language == "False":
+                            logger.info(f"Sending {file_name} to processor to process files")
+                            process_data = {
+                                "file_path": file_path,
+                                "class_no": class_no,
+                                "subject": subject,
+                                "subject_name": subject_name,
+                                "use_gpt": True,
+                                "render_final_video": True,
+                                "syllabus": "CBSE"
+                            }
+                            self.generate_thumbnail(file_path)
+                            process_video_background(process_data)
+                        logger.info(f"File processed and removed from queue: {file_name}")
+                        self.save_queue_to_json()
+                        logger.info("process queue state updated")
                 except Exception as e:
                     logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
                     # If processing fails, re-add to the queue with an error status
