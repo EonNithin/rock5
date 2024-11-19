@@ -348,12 +348,12 @@ class S3UploadQueue:
                         logger.info(f"File no longer exists: {current_item['file_path']}")
                         continue
                     
-                    # Convert the string to a datetime object
-                    folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
-                    # Current timestamp
                     current_timestamp = datetime.now()
+                    file_timestamp = current_item['timestamp']
+                    file_timestamp = datetime.strptime(file_timestamp, "%d-%m-%Y_%H-%M-%S")
                     # Subtract the timestamps
-                    time_difference = current_timestamp - folder_timestamp
+                    time_difference = current_timestamp - file_timestamp
+
                     if time_difference.total_seconds() < self.queue_buffer:
                         success = self._upload_single_file(current_item)
 
