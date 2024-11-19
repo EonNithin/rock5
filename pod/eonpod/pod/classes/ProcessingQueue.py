@@ -22,7 +22,7 @@ class ProcessingQueue:
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'processing_queue_state.json')  # For testing
 
-        self.queue_buffer = 300
+        self.queue_buffer = 120
 
         # Initialize the queue from the JSON file
         self.queue = self.load_queue_from_json()
