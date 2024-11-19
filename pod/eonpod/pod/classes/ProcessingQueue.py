@@ -31,7 +31,7 @@ class ProcessingQueue:
         self.s3_obj = S3UploadQueue()
         self.delete_job = DeletionJob()
 
-        self.max_retries = 5
+        self.max_retries = 10
 
         logger.info("Initialized ProcessingQueue")
 
@@ -128,7 +128,7 @@ class ProcessingQueue:
                 class_no = item_to_process["class_no"]
                 is_language = item_to_process["is_language"]
                 retry_count = item_to_process["retry_count"]
-
+                
                 # Check if the file path exists
                 if not os.path.exists(file_path):
                     logger.error(f"File path does not exist: {file_path}. Skipping {file_name}.")
@@ -172,6 +172,7 @@ class ProcessingQueue:
                                 "class_no": class_no,
                                 "retry_count": retry_count
                             })
+                        time.sleep(300)
                         # self.save_queue_to_json()
                         # logger.info("save queue updated after retrying")
                 
@@ -181,5 +182,5 @@ class ProcessingQueue:
                     self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject,
                                             local_directory=os.path.dirname(file_path))
 
-            time.sleep(5) 
+            time.sleep(60) 
 

@@ -22,6 +22,7 @@ import cv2
 import numpy
 from pod.classes.CheckConnections import CheckConnections
 from pod.classes.SensorMonitor import SensorMonitor
+from django.views.decorators.cache import cache_control
 import logging
 from django.shortcuts import render
 from uuid import UUID
@@ -217,6 +218,7 @@ def stop_recording_view(request):
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
 
+@cache_control(no_store=True, no_cache=True, must_revalidate=True)
 @csrf_exempt
 def check_device_connections(request):
 
