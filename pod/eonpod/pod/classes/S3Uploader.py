@@ -372,14 +372,15 @@ class S3UploadQueue:
                                     self.save_queue_to_json()
                                 time.sleep(300)
                             else:
-                                logger.error(f"Failed to upload {current_item['file_path']}")
+                                logger.error(f"Failed to upload {current_item['file_path']} as buffer size exceeded")
                                 with self.process_lock:
                                     self.save_queue_to_json()
                         else:
                             logger.info(f"Successfully processed: {current_item['file_path']}")
                             with self.process_lock:
                                 self.save_queue_to_json()
-                    
+                    else:
+                        logger.info("Not uploading as buffer size exceeded")
                     # Small delay between processing files
                     time.sleep(30)
                 else:

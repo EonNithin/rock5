@@ -167,6 +167,8 @@ class ProcessingQueue:
                         logger.info(f"File processed and removed from queue: {file_name}")
                         self.save_queue_to_json()
                         logger.info("process queue state updated")
+                    else:
+                        logger.info("Not Processing as buffer size exceeded")
                 except Exception as e:
                     logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
                     # If processing fails, re-add to the queue with an error status
@@ -192,7 +194,8 @@ class ProcessingQueue:
                         time.sleep(300)
                         # self.save_queue_to_json()
                         # logger.info("save queue updated after retrying")
-                
+                    else:
+                        logger.info("Not Processing as buffer size exceeded")
                 finally:
                     self.save_queue_to_json()
                     logger.info("Processing queue updated and Adding to S3 queue")
