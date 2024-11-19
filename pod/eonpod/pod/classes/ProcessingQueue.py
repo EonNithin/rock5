@@ -9,6 +9,7 @@ from pod.classes.FallbackFileProcessor import FallbackFileProcessor
 from pod.classes.S3Uploader import S3UploadQueue
 from pod.classes.video_processor import process_video_background
 import logging
+from datetime import datetime
 
 
 # Get the logger instance for the 'pod' app
@@ -21,6 +22,8 @@ class ProcessingQueue:
         self.media_folderpath = os.path.join(settings.BASE_DIR, 'media', 'processed_files')
         self.json_file_path = os.path.join(settings.BASE_DIR, 'media', 'processing_queue_state.json')  # For testing
 
+        self.queue_buffer = 2
+
         # Initialize the queue from the JSON file
         self.queue = self.load_queue_from_json()
 
@@ -30,8 +33,6 @@ class ProcessingQueue:
         self.processing_thread.start()
         self.s3_obj = S3UploadQueue()
         self.delete_job = DeletionJob()
-
-        self.max_retries = 10
 
         logger.info("Initialized ProcessingQueue")
 
@@ -70,6 +71,10 @@ class ProcessingQueue:
             logger.error(f"Error saving queue to JSON file: {str(e)}", exc_info=True)
 
     def add_to_queue(self, file_name, file_path, subject, subject_name, class_no, is_language="False"):
+        
+        # Get the parent directory of the file
+        parent_directory = os.path.basename(os.path.dirname(file_path))
+
         with self.lock:
             self.queue.append({
                 "file_name": file_name,
@@ -79,7 +84,7 @@ class ProcessingQueue:
                 "subject_name": subject_name,
                 "class_no":class_no,
                 "is_language": is_language,
-                "retry_count": 0     
+                "folder_timestamp": parent_directory   
             })
             self.save_queue_to_json()  # Save the updated queue to JSON immediately  
         logger.info(f"Added to queue: {file_name} with path: {file_path}, subject: {subject}, is_language: {is_language}")
@@ -127,7 +132,7 @@ class ProcessingQueue:
                 subject_name = item_to_process["subject_name"]
                 class_no = item_to_process["class_no"]
                 is_language = item_to_process["is_language"]
-                retry_count = item_to_process["retry_count"]
+                folder_timestamp = item_to_process["folder_timestamp"]
                 
                 # Check if the file path exists
                 if not os.path.exists(file_path):
@@ -158,8 +163,13 @@ class ProcessingQueue:
                 except Exception as e:
                     logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
                     # If processing fails, re-add to the queue with an error status
-                    if retry_count < self.max_retries:
-                        retry_count += 1
+                    # Convert the string to a datetime object
+                    folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
+                    # Current timestamp
+                    current_timestamp = datetime.now()
+                    # Subtract the timestamps
+                    time_difference = current_timestamp - folder_timestamp
+                    if time_difference.days < self.queue_buffer:
                         logger.info(f"Retrying processing for {file_path})")
                         with self.lock:
                             self.queue.append({
@@ -170,7 +180,7 @@ class ProcessingQueue:
                                 "subject": subject,
                                 "subject_name": subject_name,
                                 "class_no": class_no,
-                                "retry_count": retry_count
+                                "folder_timestamp": folder_timestamp
                             })
                         time.sleep(300)
                         # self.save_queue_to_json()

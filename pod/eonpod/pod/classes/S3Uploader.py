@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import subprocess
 import boto3
@@ -32,10 +33,11 @@ class S3UploadQueue:
         # Use Manager Lock for process-safe locking
         self.process_lock = self.manager.Lock()
         
+        self.queue_buffer = 2
+
         self.shutdown_flag = self.manager.Value('b', False)
         self.json_info = JsonBuilder()
         self.s3_bucket_name = s3_bucket_name
-        self.max_retries = 7
         
         # Load existing queue
         self._load_existing_queue()
@@ -213,8 +215,7 @@ class S3UploadQueue:
                     "file_path": file_path,
                     "school": school,
                     "subject": subject,
-                    "timestamp": timestamp,
-                    "retry_count": 0
+                    "timestamp": timestamp
                 }
                 tasks_to_add.append(task)
 
@@ -350,16 +351,21 @@ class S3UploadQueue:
                     success = self._upload_single_file(current_item)
 
                     if not success:
-                        if current_item['retry_count'] < self.max_retries:
-                            current_item['retry_count'] += 1
-                            logger.info(f"Retrying upload for {current_item['file_path']} (attempt {current_item['retry_count']})")
+                        current_timestamp = datetime.now()
+                        file_timestamp = current_item['timestamp']
+                        file_timestamp = datetime.strptime(file_timestamp, "%d-%m-%Y_%H-%M-%S")
+                        # Subtract the timestamps
+                        time_difference = current_timestamp - file_timestamp
+
+                        if time_difference.days < self.queue_buffer:
+                            logger.info(f"Retrying upload for {current_item['file_path']} ")
                             # Re-add to queue with proper locking
                             with self.process_lock:
                                 self.upload_queue.append(current_item)
                                 self.save_queue_to_json()
                             time.sleep(300)
                         else:
-                            logger.error(f"Failed to upload {current_item['file_path']} after {self.max_retries} attempts")
+                            logger.error(f"Failed to upload {current_item['file_path']}")
                             with self.process_lock:
                                 self.save_queue_to_json()
                     else:
