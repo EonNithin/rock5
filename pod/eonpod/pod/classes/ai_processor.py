@@ -47,6 +47,10 @@ class ProcessVideoService:
         self.__speech_segments = None
         self.__classified_speech_segments = None
         self.__syllabus = syllabus
+        self.transcription_text_file = os.path.join(
+            self.__output_dir,
+            f"{os.path.basename(self.__output_dir)}_transcript.txt"
+        )
 
     def process(self):
         logger.info(f"start processing video path: {self.__input_video_path}")
@@ -241,6 +245,9 @@ class ProcessVideoService:
                 # Save the transcription to JSON and text files
                 with open(self.__transcription_json_file_path, "w") as json_file:
                     json.dump(output_data, json_file, indent=4)
+
+                with open(self.transcription_text_file, "w") as txt_file:
+                    txt_file.write(text)
 
             except Exception as e:
                 logger.error(f"Error during transcription: {self.__audio_file_path}\nError: {e}")
