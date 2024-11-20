@@ -159,7 +159,7 @@ class ProcessingQueue:
 
                     # Check buffer size
                     time_difference = datetime.now() - folder_timestamp
-                    if time_difference.days < self.queue_buffer:
+                    if time_difference.days > self.queue_buffer:
                         logger.info(f"Skipping {file_name} as buffer size exceeded.")
                         continue
 
