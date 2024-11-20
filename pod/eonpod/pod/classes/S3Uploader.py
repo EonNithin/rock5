@@ -167,9 +167,10 @@ class S3UploadQueue:
             return False, None
             
         if "_recorded_video.mp4" in base_name and "recorded.mp4" in all_files:
-            replacement_path = os.path.join(directory, "recorded.mp4")
-            if os.path.exists(replacement_path):
-                return True, replacement_path
+            return False, None
+            # replacement_path = os.path.join(directory, "recorded.mp4")
+            # if os.path.exists(replacement_path):
+            #     return True, replacement_path
         elif "_screen_grab.mp4" in base_name and "ai_screen_grab.mp4" in all_files:
             replacement_path = os.path.join(directory, "ai_screen_grab.mp4")
             if os.path.exists(replacement_path):
@@ -276,16 +277,16 @@ class S3UploadQueue:
                 upload_path = replacement_path
                 logger.info(f"Using edited file {replacement_path} instead of {task['file_path']}")
                 
-                if "_recorded_video.mp4" in original_file_name:
-                    compressed_path = os.path.join(
-                        os.path.dirname(task['file_path']),
-                        f"{task['timestamp']}_compressed_file.mp4"
-                    )
-                    if not self.compress_mp4(upload_path, compressed_path):
-                        logger.error(f"Failed to compress {upload_path}")
-                        return False
-                    upload_path = compressed_path
-                    logger.info(f"Using compressed file {compressed_path}")
+            if "_recorded_video.mp4" in original_file_name:
+                compressed_path = os.path.join(
+                    os.path.dirname(task['file_path']),
+                    f"{task['timestamp']}_compressed_file.mp4"
+                )
+                if not self.compress_mp4(upload_path, compressed_path):
+                    logger.error(f"Failed to compress {upload_path}")
+                    return False
+                upload_path = compressed_path
+                logger.info(f"Using compressed file {compressed_path}")
 
             if not os.path.exists(upload_path):
                 logger.error(f"Final upload file does not exist: {upload_path}")
