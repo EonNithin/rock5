@@ -175,7 +175,7 @@ class S3UploadQueue:
 
     def _is_excluded(self, file_name):
         """Check if file should be excluded from processing"""
-        excluded_list = ["segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
+        excluded_list = ["grab_segment", "recorded_segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
         for ex in excluded_list:
             if ex in file_name:
                 return True
