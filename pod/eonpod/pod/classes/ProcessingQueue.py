@@ -139,64 +139,71 @@ class ProcessingQueue:
                     if not os.path.exists(file_path):
                         logger.error(f"File path does not exist: {file_path}. Skipping {file_name}.")
                         continue
+                    
+                    # Ensure timestamp is in correct format before proceeding
+                    folder_timestamp = folder_timestamp
+                    
+                    if isinstance(folder_timestamp, str):
+                        try:
+                            folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
+                        except ValueError as ve:
+                            logger.error(f"Invalid timestamp format for {item_to_process['file_path']}: {folder_timestamp}")
+                            continue  # Skip this item if the timestamp is invalid
+                    elif isinstance(folder_timestamp, datetime):
+                        # If it's already a datetime object, no conversion is needed
+                        folder_timestamp = folder_timestamp
+                    else:
+                        logger.error(f"Invalid timestamp type for {item_to_process['file_path']}: {type(folder_timestamp)}. Expected str or datetime.")
+                        continue  # Skip this item if the type is not str or datetime
+                    
+
+                    # Check buffer size
+                    time_difference = datetime.now() - folder_timestamp
+                    if time_difference.days < self.queue_buffer:
+                        logger.info(f"Skipping {file_name} as buffer size exceeded.")
+                        continue
 
                     try:
-                        # Convert the string to a datetime object
-                        folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
-                        # Current timestamp
-                        current_timestamp = datetime.now()
-                        # Subtract the timestamps
-                        time_difference = current_timestamp - folder_timestamp
-                        if time_difference.days < self.queue_buffer:
-                            logger.info(f"Processing file: {file_name}")
-                            # Log the type of `is_language`
-                            logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
-                    
-                            if is_language == "False":
-                                logger.info(f"Sending {file_name} to processor to process files")
-                                process_data = {
-                                    "file_path": file_path,
-                                    "class_no": class_no,
-                                    "subject": subject,
-                                    "subject_name": subject_name,
-                                    "use_gpt": True,
-                                    "render_final_video": True,
-                                    "syllabus": "CBSE"
-                                }
-                                self.generate_thumbnail(file_path)
-                                process_video_background(process_data)
-                            logger.info(f"File processed and removed from queue: {file_name}")
-                            self.save_queue_to_json()
-                            logger.info("process queue state updated")
-                        else:
-                            logger.info("Not Processing as buffer size exceeded")
+                        logger.info(f"Processing file: {file_name}")
+                        # Log the type of `is_language`
+                        logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
+                
+                        if is_language == "False":
+                            logger.info(f"Sending {file_name} to processor to process files")
+                            process_data = {
+                                "file_path": file_path,
+                                "class_no": class_no,
+                                "subject": subject,
+                                "subject_name": subject_name,
+                                "use_gpt": True,
+                                "render_final_video": True,
+                                "syllabus": "CBSE"
+                            }
+                            self.generate_thumbnail(file_path)
+                            process_video_background(process_data)
+                        logger.info(f"File processed and removed from queue: {file_name}")
+                        self.save_queue_to_json()
+                        logger.info("process queue state updated")
+
                     except Exception as e:
                         logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
                         # If processing fails, re-add to the queue with an error status
-                        # Convert the string to a datetime object
-                        folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
-                        # Current timestamp
-                        current_timestamp = datetime.now()
-                        # Subtract the timestamps
-                        time_difference = current_timestamp - folder_timestamp
-                        if time_difference.days < self.queue_buffer:
-                            logger.info(f"Retrying processing for {file_path})")
-                            with self.lock:
-                                self.queue.append({
-                                    "file_name": file_name,
-                                    "file_path": file_path,
-                                    "status": f"Error: {str(e)}",
-                                    "is_language": is_language,
-                                    "subject": subject,
-                                    "subject_name": subject_name,
-                                    "class_no": class_no,
-                                    "folder_timestamp": folder_timestamp
-                                })
-                            time.sleep(300)
-                            # self.save_queue_to_json()
-                            # logger.info("save queue updated after retrying")
-                        else:
-                            logger.info("Not Processing as buffer size exceeded")
+                        logger.info(f"Retrying processing for {file_path})")
+                        with self.lock:
+                            self.queue.append({
+                                "file_name": file_name,
+                                "file_path": file_path,
+                                "status": f"Error: {str(e)}",
+                                "is_language": is_language,
+                                "subject": subject,
+                                "subject_name": subject_name,
+                                "class_no": class_no,
+                                "folder_timestamp": folder_timestamp
+                            })
+                        logger.info(f"Retrying file processing after 5 minutes: {file_name}")
+                        time.sleep(300)
+
+                        
                     finally:
                         self.save_queue_to_json()
                         logger.info("Processing queue updated and Adding to S3 queue")

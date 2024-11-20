@@ -352,39 +352,46 @@ class S3UploadQueue:
                         logger.info(f"File no longer exists: {current_item['file_path']}")
                         continue
                     
-                    current_timestamp = datetime.now()
+                    # Ensure timestamp is in correct format before proceeding
                     file_timestamp = current_item['timestamp']
-                    file_timestamp = datetime.strptime(file_timestamp, "%d-%m-%Y_%H-%M-%S")
-                    # Subtract the timestamps
-                    time_difference = current_timestamp - file_timestamp
 
-                    if time_difference.days < self.queue_buffer:
-                        success = self._upload_single_file(current_item)
-
-                        if not success:
-                            current_timestamp = datetime.now()
-                            file_timestamp = current_item['timestamp']
+                    if isinstance(file_timestamp, str):
+                        try:
                             file_timestamp = datetime.strptime(file_timestamp, "%d-%m-%Y_%H-%M-%S")
-                            # Subtract the timestamps
-                            time_difference = current_timestamp - file_timestamp
-
-                            if time_difference.days < self.queue_buffer:
-                                logger.info(f"Retrying upload for {current_item['file_path']} ")
-                                # Re-add to queue with proper locking
-                                with self.process_lock:
-                                    self.upload_queue.append(current_item)
-                                    self.save_queue_to_json()
-                                time.sleep(300)
-                            else:
-                                logger.error(f"Failed to upload {current_item['file_path']} as buffer size exceeded")
-                                with self.process_lock:
-                                    self.save_queue_to_json()
-                        else:
-                            logger.info(f"Successfully processed: {current_item['file_path']}")
-                            with self.process_lock:
-                                self.save_queue_to_json()
+                        except ValueError as ve:
+                            logger.error(f"Invalid timestamp format for {current_item['file_path']}: {file_timestamp}")
+                            continue  # Skip this item if the timestamp is invalid
+                    elif isinstance(file_timestamp, datetime):
+                        # If it's already a datetime object, no conversion is needed
+                        file_timestamp = file_timestamp
                     else:
-                        logger.info("Not uploading as buffer size exceeded")
+                        logger.error(f"Invalid timestamp type for {current_item['file_path']}: {type(file_timestamp)}. Expected str or datetime.")
+                        continue  # Skip this item if the type is not str or datetime
+                    
+                    # Check buffer size
+                    time_difference = datetime.now() - file_timestamp
+                    if time_difference.days < self.queue_buffer:
+                        logger.info(f"Skipping {current_item['file_name']} as buffer size exceeded.")
+                        continue
+
+                    success = self._upload_single_file(current_item)
+
+                    if not success:
+
+                        logger.info(f"Retrying upload for {current_item['file_path']} ")
+                        # Re-add to queue with proper locking
+                        with self.process_lock:
+                            self.upload_queue.append(current_item)
+                            self.save_queue_to_json()
+                        time.sleep(300)
+
+                        with self.process_lock:
+                            self.save_queue_to_json()
+                    else:
+                        logger.info(f"Successfully processed: {current_item['file_path']}")
+                        with self.process_lock:
+                            self.save_queue_to_json()
+
                     # Small delay between processing files
                     time.sleep(30)
                 else:
