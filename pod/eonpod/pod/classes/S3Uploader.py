@@ -113,6 +113,10 @@ class S3UploadQueue:
         if not os.path.exists(input_file):
             logger.error(f"Input file does not exist: {input_file}")
             return False
+        
+        if os.path.exists(output_file):
+            logger.info(f"Compressed file already exists. Skipping processing: {output_file}")
+            return True
             
         try:
             command = [
