@@ -31,7 +31,7 @@ from pod.dbmodels.models import DATABASE_URL, get_session
 from pod.dbmodels.queries import get_staff_by_rfid, get_staff_by_pin, get_teacher_subject_groups_by_staff
 from pod.classes.DBOffloader import DBOffloader
 # from pod.dbmodels.models.staff import Staff
-
+from pod.classes.RecordingDurationMonitor import RecordingDurationMonitor
 # Load environment variables
 load_dotenv(dotenv_path="base.env")
 load_dotenv(dotenv_path="config.env", override=True)
@@ -58,6 +58,9 @@ connection_obj = CheckConnections()
 SensorMonitor_obj = SensorMonitor()
 
 school_id = settings.SCHOOL_NAME
+
+recording_monitor = RecordingDurationMonitor()
+recording_monitor.start_monitor()
 
 
 # Global variables to hold device statuses
@@ -133,7 +136,7 @@ def start_recording_view(request):
             logger.info(f"Is language: {is_language}")
 
             # Call both recording and screen grab concurrently
-            
+            recording_monitor.set_recording_start(data) 
             recorder.start_recording(selected_subject)
             recorder.start_screen_grab()
 
@@ -158,7 +161,7 @@ def stop_recording_view(request):
         is_language = data.get('isLanguage', '') 
         logger.info(f"Is language: {is_language}")
         logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
-        
+        recording_monitor.clear_recording_data()
         # Call both recording and screen grab concurrently
         recorder.stop_recording()
         recorder.stop_screen_grab()
