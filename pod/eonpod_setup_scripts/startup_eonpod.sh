@@ -5,7 +5,7 @@ cd "$HOME/eonpod-ai"
 
 # Perform a git pull to update the repository
 echo "Pulling the latest changes from Git..."
-if git pull; then
+if git pull origin eonpod-ai-prod; then
     echo "Successfully pulled the latest changes."
 else
     echo "Git pull failed. Continuing with the existing codebase."
