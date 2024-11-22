@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Navigate to the base directory (eonpod-ai)
+cd "$HOME/eonpod-ai"
+
+# Perform a git pull to update the repository
+echo "Pulling the latest changes from Git..."
+if git pull; then
+    echo "Successfully pulled the latest changes."
+else
+    echo "Git pull failed. Continuing with the existing codebase."
+fi
+
 # Navigate to the Django project directory
 cd "$HOME/eonpod-ai/pod/eonpod" || exit 1
 
