@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Serve a simple loading page until the server is ready
+echo "Displaying loading page..."
+chromium-browser --kiosk "file://$HOME/eonpod-ai/pod/eonpod_setup_scripts/loading.html" --disable-pinch --disable-zoom --overscroll-history-navigation=0 &
+CHROMIUM_PID=$!
+
 # Navigate to the base directory (eonpod-ai)
 cd "$HOME/eonpod-ai"
 
@@ -22,11 +27,6 @@ if ! lsof -i :8000 | grep LISTEN; then
 else
     echo "Django server already running."
 fi
-
-# Serve a simple loading page until the server is ready
-echo "Displaying loading page..."
-chromium-browser --kiosk "file://$HOME/eonpod-ai/pod/eonpod_setup_scripts/loading.html" --disable-pinch --disable-zoom --overscroll-history-navigation=0 &
-CHROMIUM_PID=$!
 
 # Wait for the Django server to become accessible
 until curl -s http://localhost:8000 > /dev/null; do
