@@ -266,16 +266,16 @@ class S3UploadQueue:
                     return True
 
             # Check for edited videos and get replacement path if available
-            has_edited_files, replacement_path = self.check_edited_video(task['file_path'])
+            # has_edited_files, replacement_path = self.check_edited_video(task['file_path'])
             
             upload_path = task['file_path']
-            if has_edited_files and replacement_path:
-                if not os.path.exists(replacement_path):
-                    logger.error(f"Replacement file does not exist: {replacement_path}")
-                    return False
-                    
-                upload_path = replacement_path
-                logger.info(f"Using edited file {replacement_path} instead of {task['file_path']}")
+            # if has_edited_files and replacement_path:
+            #     if not os.path.exists(replacement_path):
+            #         logger.error(f"Replacement file does not exist: {replacement_path}")
+            #         return False
+            #
+            #     upload_path = replacement_path
+            #     logger.info(f"Using edited file {replacement_path} instead of {task['file_path']}")
                 
             if "_recorded_video.mp4" in original_file_name:
                 compressed_path = os.path.join(
