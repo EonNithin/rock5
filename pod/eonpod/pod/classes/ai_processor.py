@@ -18,9 +18,9 @@ def get_output_dir(file_path: str) -> str:
 
 
 class ProcessVideoService:
-    __whisper_model = whisper.load_model("small")
+    __whisper_model = whisper.load_model("base")
 
-    model = WhisperModel("small", device="cpu", compute_type="float32",cpu_threads=2)
+    model = WhisperModel("base", device="cpu", compute_type="float32",cpu_threads=2)
 
     def __init__(
         self,
@@ -86,8 +86,51 @@ class ProcessVideoService:
         else:
             logger.info("write final video: skipped")
 
+        self.rename_files()
+        logger.info("Rename completed")
         # completed
         logger.info("process video: done")
+
+    def rename_files(self):
+        try:
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if "_recorded_video.mp4" in file and "recorded.mp4" in files:
+                    # Rename *_recorded_video.mp4 to *_raw_video.mp4
+                    if file.endswith("_recorded_video.mp4"):
+                        new_name = file.replace("_recorded_video.mp4", "_raw_video.mp4")
+                        os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                        print(f"Renamed: {file} -> {new_name}")
+                    # Rename recorded.mp4 to *_recorded_video.mp4
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if file == "recorded.mp4":
+                    for f in files:
+                        if f.endswith("_raw_video.mp4"):
+                            new_name = f.replace("_raw_video.mp4", "_recorded_video.mp4")
+                            os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                            print(f"Renamed: {file} -> {new_name}")
+            # Rename *_screen_grab.mp4 to *_raw_screen_grab.mp4 and ai_screen_grab.mp4 to *_screen_grab.mp4
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if "_screen_grab.mp4" in file and "ai_screen_grab.mp4" != file and "ai_screen_grab.mp4" in files:
+                    # Rename *_screen_grab.mp4 to *_raw_screen_grab.mp4
+                    if file.endswith("_screen_grab.mp4"):
+                        new_name = file.replace("_screen_grab.mp4", "_raw_screen_grab.mp4")
+                        os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                        print(f"Renamed: {file} -> {new_name}")
+                    # Rename ai_screen_grab.mp4 to *_screen_grab.mp4
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if file == "ai_screen_grab.mp4":
+                    for f in files:
+                        if f.endswith("_raw_screen_grab.mp4"):
+                            new_name = f.replace("_raw_screen_grab.mp4", "_screen_grab.mp4")
+                            os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                            print(f"Renamed: {file} -> {new_name}")
+            print("Renaming process complete.")
+        except Exception as e:
+            pass
 
     def __save_classified_speech_segments(self):
         relevant_transcript = ""

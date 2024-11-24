@@ -38,7 +38,7 @@ class VideoCutter:
         concat_list = ""
         i =0
         timestamp = os.path.basename(self.__output_dir)
-        base = f'ffmpeg -hwaccel rkmpp -i "{video_file}"'
+        base = f'ffmpeg -hwaccel rkmpp -accurate_seek -i "{video_file}"'
         for segment in self.__speech_segments:
             segment_path = os.path.join(self.__output_dir, f"{timestamp}_ai_{message}_{i}.mp4")
             if not segment.is_relevant:
@@ -46,7 +46,7 @@ class VideoCutter:
             print(f'SEGMENT {i}: {segment.start_time_sec} - {segment.end_time_sec}')
             start = round(segment.start_time_sec, 1)
             end = round(segment.end_time_sec, 1)
-            cmd = base + f' -y -ss {start} -to {end} -c copy "{segment_path}"'
+            cmd = base + f' -y  -ss {start} -to {end} -c:v hevc_rkmpp -c:a aac "{segment_path}"'
             i += 1
             subprocess.run(cmd, shell=True, check=True)
             concat_list += f"file {os.path.abspath(segment_path)} \n"
@@ -56,6 +56,19 @@ class VideoCutter:
                 f.write(concat_list)
             concat_cmd = f"ffmpeg -y -f concat -safe 0 -i {os.path.abspath(concat_list_text_file)} -c copy {os.path.join(self.__output_dir, message.replace('_segment', '') + '.mp4')}"
             subprocess.run(concat_cmd, shell=True, check=True)
+            try:
+                with open(concat_list_text_file, "r") as file:
+                    for line in file:
+                        if line.startswith("file "):  # Each line starts with 'file '
+                            file_path = line.split("file ")[1].strip()  # Extract the file path        
+                            if os.path.exists(file_path):
+                                os.remove(file_path)  # Delete the file
+                                print(f"Deleted: {file_path}")
+                            else:
+                                print(f"File not found: {file_path}")
+            except Exception as e:
+                print(f"Error deleting {file_path}: {e}")
+            print("Deleting segments process complete.")
 
     def __cut_ffmpeg(self) -> None:
         TRANSITION_EFFECT = 'fade'
