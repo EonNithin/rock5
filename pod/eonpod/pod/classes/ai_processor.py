@@ -73,22 +73,22 @@ class ProcessVideoService:
             print(f"{segment.is_relevant}: {segment.text}")
         logger.info("extract transcription from audio: done")
 
-        logger.info("classify speech segments: started")
-        self.__classified_speech_segments = self.__classify_speech_segments()
-        self.__save_classified_speech_segments()
-        logger.info("classify speech segments: done")
-
-        # write final video
-        if self.__write_final_video:
-            logger.info("write final video: started")
-            self.__render_final_video()
-            logger.info("write final video: done")
-        else:
-            logger.info("write final video: skipped")
-
-        self.rename_files()
-        logger.info("Rename completed")
-        # completed
+        # logger.info("classify speech segments: started")
+        # self.__classified_speech_segments = self.__classify_speech_segments()
+        # self.__save_classified_speech_segments()
+        # logger.info("classify speech segments: done")
+        #
+        # # write final video
+        # if self.__write_final_video:
+        #     logger.info("write final video: started")
+        #     self.__render_final_video()
+        #     logger.info("write final video: done")
+        # else:
+        #     logger.info("write final video: skipped")
+        #
+        # self.rename_files()
+        # logger.info("Rename completed")
+        # # completed
         logger.info("process video: done")
 
     def rename_files(self):
