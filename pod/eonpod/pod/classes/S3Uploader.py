@@ -183,7 +183,7 @@ class S3UploadQueue:
         excluded_list = ["grab_segment", "recorded_segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
         for ex in excluded_list:
             if ex in file_name:
-                return True
+                return False
         return False
 
     def add_to_queue(self, school, subject, local_directory):
@@ -277,16 +277,16 @@ class S3UploadQueue:
             #     upload_path = replacement_path
             #     logger.info(f"Using edited file {replacement_path} instead of {task['file_path']}")
                 
-            if "_recorded_video.mp4" in original_file_name:
-                compressed_path = os.path.join(
-                    os.path.dirname(task['file_path']),
-                    f"{task['timestamp']}_compressed_file.mp4"
-                )
-                if not self.compress_mp4(upload_path, compressed_path):
-                    logger.error(f"Failed to compress {upload_path}")
-                    return False
-                upload_path = compressed_path
-                logger.info(f"Using compressed file {compressed_path}")
+            # if "_recorded_video.mp4" in original_file_name:
+            #     compressed_path = os.path.join(
+            #         os.path.dirname(task['file_path']),
+            #         f"{task['timestamp']}_compressed_file.mp4"
+            #     )
+            #     if not self.compress_mp4(upload_path, compressed_path):
+            #         logger.error(f"Failed to compress {upload_path}")
+            #         return False
+            #     upload_path = compressed_path
+            #     logger.info(f"Using compressed file {compressed_path}")
 
             if not os.path.exists(upload_path):
                 logger.error(f"Final upload file does not exist: {upload_path}")
