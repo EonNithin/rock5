@@ -46,7 +46,7 @@ class VideoCutter:
             print(f'SEGMENT {i}: {segment.start_time_sec} - {segment.end_time_sec}')
             start = round(segment.start_time_sec, 1)
             end = round(segment.end_time_sec, 1)
-            cmd = base + f' -y  -ss {start} -to {end} -c:v hevc_rkmpp -c:a aac "{segment_path}"'
+            cmd = base + f' -y  -ss {start} -to {end} -c:v h264_rkmpp -c:a aac "{segment_path}"'
             i += 1
             subprocess.run(cmd, shell=True, check=True)
             concat_list += f"file {os.path.abspath(segment_path)} \n"
