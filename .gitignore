@@ -49,3 +49,5 @@ __pycache__/
 
 # Ignore .env files (if needed)
 *.env
+
+venv/
