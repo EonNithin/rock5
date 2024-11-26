@@ -18,9 +18,9 @@ def get_output_dir(file_path: str) -> str:
 
 
 class ProcessVideoService:
-    __whisper_model = whisper.load_model("base")
+    __whisper_model = whisper.load_model("small")
 
-    model = WhisperModel("base", device="cpu", compute_type="float32",cpu_threads=2)
+    model = WhisperModel("small", device="cpu", compute_type="float32",cpu_threads=4)
 
     def __init__(
         self,
