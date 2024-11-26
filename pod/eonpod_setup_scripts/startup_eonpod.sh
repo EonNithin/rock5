@@ -8,9 +8,17 @@ CHROMIUM_PID=$!
 # Navigate to the base directory (eonpod-ai)
 cd "$HOME/eonpod-ai"
 
+# Stash any local changes
+echo "Stashing local changes..."
+if git stash; then
+    echo "Successfully stashed local changes."
+else
+    echo "No local changes to stash, or stash operation failed."
+fi
+
 # Perform a git pull to update the repository
 echo "Pulling the latest changes from Git..."
-if git pull origin eonpod-ai-prod; then
+if git pull origin eonpod-ai-prod-small; then
     echo "Successfully pulled the latest changes."
 else
     echo "Git pull failed. Continuing with the existing codebase."
