@@ -9,6 +9,7 @@ echo_status() {
 echo_status "Removing any existing FFmpeg installation"
 sudo apt-get remove --purge -y ffmpeg
 
+
 # Clean up after removal
 sudo apt-get autoremove -y
 sudo apt-get autoclean

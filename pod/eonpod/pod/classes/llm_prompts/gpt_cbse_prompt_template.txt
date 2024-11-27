@@ -4,6 +4,10 @@ group_number: text
 Please do the following:
 - Read the transcript
 - Classify teach group per CBSE classification. I.e. I need to know the Chapter and Topic (per CBSE classification) of the subject is being talked about.
+- Classify the speech per {@syllabus} classification. I.e. I need to know with Chapter (per {@syllabus}) of the subject is being talked about.
+- Find all off-topic sentences, i.e. the sentences that don't relate to the Subject or other student education process
+- Classify relevant examples/real-life scenarios as relevant
+- Classify same subject topic, and examples from same subject as relevant
 - Return the results in the following json format:
 {
     "groups": [

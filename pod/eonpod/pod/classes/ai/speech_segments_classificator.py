@@ -8,7 +8,7 @@ from pod.classes.ai.logging_service import logger
 
 SILENCE_THRESHOLD_SEC = 10
 MIN_DURATION_SEC = 10
-RELEVANCE_THRESHOLD = 0.5
+RELEVANCE_THRESHOLD = 0.0
 
 SemanticCluster = namedtuple("SemanticCluster", ["id", "text", "relevance_score"])
 
@@ -70,8 +70,8 @@ class SpeechSegmentsClassificator:
         # set segments relevancy based on the average similarity
         for segment in self.__speech_segments:
             segment.is_relevant = (
-                segment.relevance_score > RELEVANCE_THRESHOLD
-                or segment.cluster_relevance_score > RELEVANCE_THRESHOLD
+                segment.relevance_score >= RELEVANCE_THRESHOLD
+                or segment.cluster_relevance_score >= RELEVANCE_THRESHOLD
             )
 
         merged_speech_segments = self.__merge_speech_segments()
@@ -84,7 +84,7 @@ class SpeechSegmentsClassificator:
             self.__speech_segments, self.__class_number, self.__subject_name, self.__syllabus
         )
         for segment in self.__speech_segments:
-            segment.is_relevant = segment.relevance_score_gpt > RELEVANCE_THRESHOLD
+            segment.is_relevant = segment.relevance_score_gpt >= RELEVANCE_THRESHOLD
 
     def __classify_per_syllabus(self, speech_segments: list):
         logger.info("Classifying per syllabus...")
