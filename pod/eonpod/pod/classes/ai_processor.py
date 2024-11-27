@@ -15,8 +15,8 @@ load_dotenv(dotenv_path="base.env")
 load_dotenv(dotenv_path="config.env", override=True)
 
 model_name = os.getenv('model_name')
-beam_size = os.getenv('beam_size')
-cpu_threads = os.getenv('cpu_threads')
+beam_size = int(os.getenv('beam_size'))
+cpu_threads = int(os.getenv('cpu_threads'))
 
 
 def get_file_name_wo_extension(file_name: str) -> str:

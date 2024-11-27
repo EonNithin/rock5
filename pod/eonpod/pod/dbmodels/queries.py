@@ -2,12 +2,22 @@
 from pod.dbmodels.models import DATABASE_URL, Staff, SubjectGroup, Teacher_Subject_Groups, get_session
 
 
-def get_staff_by_rfid(session, rfid, school_id):
-    staff = session.query(Staff).filter_by(rfid=rfid, school_id=school_id).first()
-    return staff
+# def get_staff_by_rfid(session, rfid, school_id):
+#     staff = session.query(Staff).filter_by(rfid=rfid, school_id=school_id).first()
+#     return staff
     
-def get_staff_by_pin(session, pin, school_id):
-    staff = session.query(Staff).filter_by(pin=pin, school_id=school_id).first()
+# def get_staff_by_pin(session, pin, school_id):
+#     staff = session.query(Staff).filter_by(pin=pin, school_id=school_id).first()
+#     return staff
+
+def get_staff_by_rfid_or_pin(session, value, school_id):
+    """
+    Retrieve a staff member by RFID or PIN in a single query.
+    """
+    staff = session.query(Staff).filter(
+        (Staff.rfid == value) | (Staff.pin == value),  # Check either RFID or PIN
+        Staff.school_id == school_id                  # Match the school_id
+    ).first()
     return staff
 
     
