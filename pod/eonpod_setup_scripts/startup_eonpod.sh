@@ -18,7 +18,7 @@ fi
 
 # Perform a git pull to update the repository
 echo "Pulling the latest changes from Git..."
-if git pull origin eonpod-ai-prod-small; then
+if git pull; then
     echo "Successfully pulled the latest changes."
 else
     echo "Git pull failed. Continuing with the existing codebase."
