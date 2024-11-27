@@ -223,10 +223,15 @@ class ProcessingQueue:
 
                         
                     finally:
-                        self.save_queue_to_json()
-                        logger.info("Processing queue updated and Adding to S3 queue")
                         self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject,
                                                 local_directory=os.path.dirname(file_path))
+                        try:
+                            self.save_queue_to_json()
+                        except Exception as e :
+                            logger.debug(f"error in save queue to json in finally: {str(e)}")
+                        logger.info("Processing queue updated and Adding to S3 queue")
+
+
             except Exception as e:
                 logger.error(f"Unexpected error in process_queue: {str(e)}", exc_info=True)
             finally:
