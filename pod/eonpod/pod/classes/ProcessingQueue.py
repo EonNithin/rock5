@@ -192,31 +192,32 @@ class ProcessingQueue:
                     except Exception as e:
                         logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
 
-                        try:
-                            # Ensure folder_timestamp is in the correct format string 
-                            if isinstance(folder_timestamp, datetime):
-                                folder_timestamp = folder_timestamp.strftime("%d-%m-%Y_%H-%M-%S")
-                            elif isinstance(folder_timestamp, str):
-                                folder_timestamp = folder_timestamp
-                            else:
-                                raise TypeError(f"Invalid folder_timestamp type: {type(folder_timestamp)}")
-                        except Exception as e:
-                            logger.error(f"Error processing folder_timestamp for file {file_path}: {str(e)}. Skipping re-queue.")
-                            continue  # Skip re-queue if any exception occurs
+                        # try:
+                        #     # Ensure folder_timestamp is in the correct format string 
+                        #     if isinstance(folder_timestamp, datetime):
+                        #         folder_timestamp = folder_timestamp.strftime("%d-%m-%Y_%H-%M-%S")
+                        #     elif isinstance(folder_timestamp, str):
+                        #         folder_timestamp = folder_timestamp
+                        #     else:
+                        #         raise TypeError(f"Invalid folder_timestamp type: {type(folder_timestamp)}")
+                        # except Exception as e:
+                        #     logger.error(f"Error processing folder_timestamp for file {file_path}: {str(e)}. Skipping re-queue.")
+                        #     continue  # Skip re-queue if any exception occurs
 
                         # If processing fails, re-add to the queue with an error status
                         logger.info(f"Retrying processing for {file_path})")
                         with self.lock:
-                            self.queue.append({
-                                "file_name": file_name,
-                                "file_path": file_path,
-                                "status": f"Error: {str(e)}",
-                                "is_language": is_language,
-                                "subject": subject,
-                                "subject_name": subject_name,
-                                "class_no": class_no,
-                                "folder_timestamp": folder_timestamp
-                            })
+                            self.queue.append(item_to_process)
+                            # self.queue.append({
+                            #     "file_name": file_name,
+                            #     "file_path": file_path,
+                            #     "status": f"Error: {str(e)}",
+                            #     "is_language": is_language,
+                            #     "subject": subject,
+                            #     "subject_name": subject_name,
+                            #     "class_no": class_no,
+                            #     "folder_timestamp": folder_timestamp
+                            # })
                         logger.info(f"Retrying file processing after 5 minutes: {file_name}")
                         time.sleep(300)
 
