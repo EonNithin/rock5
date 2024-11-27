@@ -18,7 +18,7 @@ CREATE_STAFF_TABLE="CREATE TABLE IF NOT EXISTS staff (
     user_role VARCHAR(50) DEFAULT 'TEACHER',
     mobile_no VARCHAR(20),
     email VARCHAR(255),
-    employee_id BIGINT,  
+    employee_id VARCHAR(255),  
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     rfid VARCHAR(50),
