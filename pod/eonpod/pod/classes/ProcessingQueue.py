@@ -143,25 +143,29 @@ class ProcessingQueue:
                     # Ensure timestamp is in correct format before proceeding
                     folder_timestamp = folder_timestamp
                     
-                    if isinstance(folder_timestamp, str):
-                        try:
-                            folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
-                        except ValueError as ve:
-                            logger.error(f"Invalid timestamp format for {item_to_process['file_path']}: {folder_timestamp}")
-                            continue  # Skip this item if the timestamp is invalid
-                    elif isinstance(folder_timestamp, datetime):
-                        # If it's already a datetime object, no conversion is needed
-                        folder_timestamp = folder_timestamp
-                    else:
-                        logger.error(f"Invalid timestamp type for {item_to_process['file_path']}: {type(folder_timestamp)}. Expected str or datetime.")
-                        continue  # Skip this item if the type is not str or datetime
-                    
+                    try:
+                        if isinstance(folder_timestamp, str):
+                            try:
+                                folder_timestamp = datetime.strptime(folder_timestamp, "%d-%m-%Y_%H-%M-%S")
+                            except ValueError as ve:
+                                logger.error(f"Invalid timestamp format for {item_to_process['file_path']}: {folder_timestamp}. Error: {str(ve)}")
+                                continue  # Skip this item if the timestamp is invalid
+                        elif isinstance(folder_timestamp, datetime):
+                            # If it's already a datetime object, no conversion is needed
+                            folder_timestamp = folder_timestamp
+                        else:
+                            logger.error(f"Invalid timestamp type for {item_to_process['file_path']}: {type(folder_timestamp)}. Expected str or datetime.")
+                            continue  # Skip this item if the type is not str or datetime
 
-                    # Check buffer size
-                    time_difference = datetime.now() - folder_timestamp
-                    if time_difference.days > self.queue_buffer:
-                        logger.info(f"Skipping {file_name} as buffer size exceeded.")
-                        continue
+                        # Check buffer size
+                        time_difference = datetime.now() - folder_timestamp
+                        if time_difference.days > self.queue_buffer:
+                            logger.info(f"Skipping {file_name} as buffer size exceeded.")
+                            continue
+                    except Exception as e:
+                        logger.error(f"Error while processing folder_timestamp or buffer size for file {file_name}. Error: {str(e)}")
+                        continue  # Skip processing if any exception occurs
+
 
                     try:
                         logger.info(f"Processing file: {file_name}")
@@ -187,28 +191,47 @@ class ProcessingQueue:
 
                     except Exception as e:
                         logger.error(f"Error processing file {file_name}: {str(e)}", exc_info=True)
+
+                        # try:
+                        #     # Ensure folder_timestamp is in the correct format string 
+                        #     if isinstance(folder_timestamp, datetime):
+                        #         folder_timestamp = folder_timestamp.strftime("%d-%m-%Y_%H-%M-%S")
+                        #     elif isinstance(folder_timestamp, str):
+                        #         folder_timestamp = folder_timestamp
+                        #     else:
+                        #         raise TypeError(f"Invalid folder_timestamp type: {type(folder_timestamp)}")
+                        # except Exception as e:
+                        #     logger.error(f"Error processing folder_timestamp for file {file_path}: {str(e)}. Skipping re-queue.")
+                        #     continue  # Skip re-queue if any exception occurs
+
                         # If processing fails, re-add to the queue with an error status
                         logger.info(f"Retrying processing for {file_path})")
                         with self.lock:
-                            self.queue.append({
-                                "file_name": file_name,
-                                "file_path": file_path,
-                                "status": f"Error: {str(e)}",
-                                "is_language": is_language,
-                                "subject": subject,
-                                "subject_name": subject_name,
-                                "class_no": class_no,
-                                "folder_timestamp": folder_timestamp
-                            })
+                            self.queue.append(item_to_process)
+                            # self.queue.append({
+                            #     "file_name": file_name,
+                            #     "file_path": file_path,
+                            #     "status": f"Error: {str(e)}",
+                            #     "is_language": is_language,
+                            #     "subject": subject,
+                            #     "subject_name": subject_name,
+                            #     "class_no": class_no,
+                            #     "folder_timestamp": folder_timestamp
+                            # })
                         logger.info(f"Retrying file processing after 5 minutes: {file_name}")
                         time.sleep(300)
 
                         
                     finally:
-                        self.save_queue_to_json()
-                        logger.info("Processing queue updated and Adding to S3 queue")
                         self.s3_obj.add_to_queue(school=settings.SCHOOL_NAME, subject=subject,
                                                 local_directory=os.path.dirname(file_path))
+                        try:
+                            self.save_queue_to_json()
+                        except Exception as e :
+                            logger.debug(f"error in save queue to json in finally: {str(e)}")
+                        logger.info("Processing queue updated and Adding to S3 queue")
+
+
             except Exception as e:
                 logger.error(f"Unexpected error in process_queue: {str(e)}", exc_info=True)
             finally:

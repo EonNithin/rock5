@@ -1,5 +1,6 @@
 import os
 import json
+from dotenv import load_dotenv
 import moviepy.editor as mp
 import whisper_timestamped as whisper
 # from whisper_cpp_python import whisper
@@ -8,6 +9,15 @@ from pod.classes.ai.speech_segments_classificator import SpeechSegmentsClassific
 from pod.classes.ai.video_cutter import VideoCutter
 from pod.classes.ai.logging_service import logger
 from faster_whisper import WhisperModel
+
+
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
+
+model_name = os.getenv('model_name')
+beam_size = int(os.getenv('beam_size'))
+cpu_threads = int(os.getenv('cpu_threads'))
+
 
 def get_file_name_wo_extension(file_name: str) -> str:
     return os.path.splitext(file_name)[0]
@@ -18,9 +28,9 @@ def get_output_dir(file_path: str) -> str:
 
 
 class ProcessVideoService:
-    __whisper_model = whisper.load_model("small")
+    __whisper_model = whisper.load_model(model_name)
 
-    model = WhisperModel("small", device="cpu", compute_type="float32",cpu_threads=4)
+    model = WhisperModel(model_name, device="cpu", compute_type="float32",cpu_threads=cpu_threads)
 
     def __init__(
         self,
@@ -250,7 +260,7 @@ class ProcessVideoService:
                 segments, info = ProcessVideoService.model.transcribe(
                     self.__audio_file_path,
                     task="translate",
-                    beam_size=2,
+                    beam_size=beam_size,
                     word_timestamps=True,
                     language="en"
                 )

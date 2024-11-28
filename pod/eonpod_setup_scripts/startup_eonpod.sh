@@ -18,7 +18,7 @@ fi
 
 # Perform a git pull to update the repository
 echo "Pulling the latest changes from Git..."
-if git pull origin recorded-updates; then
+if git pull; then
     echo "Successfully pulled the latest changes."
 else
     echo "Git pull failed. Continuing with the existing codebase."
