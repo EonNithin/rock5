@@ -171,7 +171,7 @@ class ProcessingQueue:
                         logger.info(f"Processing file: {file_name}")
                         # Log the type of `is_language`
                         logger.info(f"Type of is_language: {type(is_language)}: value : {is_language}")
-                
+                        self.generate_thumbnail(file_path)
                         if is_language == "False":
                             logger.info(f"Sending {file_name} to processor to process files")
                             process_data = {
@@ -183,7 +183,6 @@ class ProcessingQueue:
                                 "render_final_video": True,
                                 "syllabus": "CBSE"
                             }
-                            self.generate_thumbnail(file_path)
                             process_video_background(process_data)
                         logger.info(f"File processed and removed from queue: {file_name}")
                         self.save_queue_to_json()
