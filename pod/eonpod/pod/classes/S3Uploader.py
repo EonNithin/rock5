@@ -1,6 +1,5 @@
 from datetime import datetime
 import os
-import re
 import subprocess
 import boto3
 from django.conf import settings
@@ -180,19 +179,11 @@ class S3UploadQueue:
         return True, None
 
     def _is_excluded(self, file_name):
-            # """Check if file should be excluded from processing"""
-        # excluded_list = ["grab_segment", "recorded_segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
-        # for ex in excluded_list:
-        #     if ex in file_name:
-        #         return False
-        """Check if the file should be excluded from processing."""
-        # Regex to match excluded patterns
-        exclude_pattern = re.compile(r'_((recorded_video|screen_grab)_\d+)')
-        
-        # Match against regex
-        if exclude_pattern.search(file_name):
-            logger.info(f"File {file_name} matches exclusion pattern.")
-            return True
+        """Check if file should be excluded from processing"""
+        excluded_list = ["grab_segment", "recorded_segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
+        for ex in excluded_list:
+            if ex in file_name:
+                return False
         return False
 
     def add_to_queue(self, school, subject, local_directory):
@@ -277,16 +268,6 @@ class S3UploadQueue:
             # Check for edited videos and get replacement path if available
             # has_edited_files, replacement_path = self.check_edited_video(task['file_path'])
             
-            # Check for specific file names and compress them
-            substrings = [
-                "_raw_video.mp4",
-                "_raw_screen_grab.mp4",
-                "_recorded_video.mp4",
-                "_screen_grab.mp4"
-            ]
-            temp_folder = os.path.join(os.path.dirname(task['file_path']), "compressed_files")
-            os.makedirs(temp_folder, exist_ok=True)  # Create the compressed_files folder if it doesn't exist
-
             upload_path = task['file_path']
             # if has_edited_files and replacement_path:
             #     if not os.path.exists(replacement_path):
@@ -306,21 +287,9 @@ class S3UploadQueue:
             #         return False
             #     upload_path = compressed_path
             #     logger.info(f"Using compressed file {compressed_path}")
-            try:
-                if any(substring in original_file_name for substring in substrings):
-                    compressed_path = os.path.join(temp_folder, f"{original_file_name}")
-                    if not self.compress_mp4(upload_path, compressed_path):
-                        logger.error(f"Failed to compress {upload_path}")
-                        return False
-                    upload_path = compressed_path
-                    logger.info(f"Using compressed file {compressed_path} for upload")
 
-                if not os.path.exists(upload_path):
-                    logger.error(f"Final upload file does not exist: {upload_path}")
-                    return False
-                
-            except Exception as e:
-                logger.error(f"An error occurred: {str(e)}")
+            if not os.path.exists(upload_path):
+                logger.error(f"Final upload file does not exist: {upload_path}")
                 return False
 
             try:
@@ -334,7 +303,6 @@ class S3UploadQueue:
                     Key=s3_object_key
                 )
                 logger.info(f"Successfully uploaded to S3: {s3_object_key}")
-
             except Exception as e:
                 logger.error(f"S3 upload failed for {upload_path}: {str(e)}")
                 return False
@@ -349,33 +317,11 @@ class S3UploadQueue:
             except Exception as e:
                 logger.error(f"Failed to update JSON info: {str(e)}")
             
-            # Delete the compressed file after successful upload
-            if any(substring in original_file_name for substring in substrings):
-                try:
-                    if temp_folder in upload_path:  # Ensure the file is inside the compressed_files folder
-                        os.remove(upload_path)
-                        logger.info(f"Deleted compressed file: {upload_path}")
-                    else:
-                        logger.warning(f"Skipped deletion as file is not in compressed folder: {upload_path}")
-                except Exception as e:
-                    logger.error(f"Failed to delete compressed file {upload_path}: {str(e)}")
-
-            # Delete the compressed_files folder if empty
-            try:
-                if os.path.abspath(temp_folder) == os.path.abspath(os.path.dirname(upload_path)):  # Ensure we are inside the temp folder
-                    if not os.listdir(temp_folder):  # Check if the folder is empty
-                        os.rmdir(temp_folder)
-                        logger.info(f"Deleted temporary folder: {temp_folder}")
-                else:
-                    logger.warning(f"Skipped folder deletion as current folder does not match compressed folder: {temp_folder}")
-            except Exception as e:
-                logger.error(f"Failed to delete temporary folder {temp_folder}: {str(e)}")
-                
             return True
+
         except Exception as e:
             logger.error(f"Error in _upload_single_file for {task['file_path']}: {str(e)}")
             return False
-
 
     def _process_queue(self):
         """Main queue processing loop with improved handling"""
