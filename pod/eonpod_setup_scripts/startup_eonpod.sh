@@ -16,7 +16,6 @@ if [ $? -eq 0 ]; then
     echo "PostgreSQL service started successfully."
 else
     echo "Failed to start PostgreSQL service. Exiting."
-    exit 1
 fi
 
 echo "enable PostgreSQL service..."
@@ -26,7 +25,6 @@ if [ $? -eq 0 ]; then
     echo "PostgreSQL service started successfully."
 else
     echo "Failed to start PostgreSQL service. Exiting."
-    exit 1
 fi
 
 
