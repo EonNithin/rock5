@@ -6,9 +6,9 @@ from pod.classes.ai.semantic_sentences_groupper import SemanticSentencesGroupper
 from pod.classes.ai.gpt_speech_segments_classificator import GPTSpeechSegmentsClassificator
 from pod.classes.ai.logging_service import logger
 
-SILENCE_THRESHOLD_SEC = 10
+SILENCE_THRESHOLD_SEC = 5
 MIN_DURATION_SEC = 10
-RELEVANCE_THRESHOLD = 0.0
+RELEVANCE_THRESHOLD = 0.5
 
 SemanticCluster = namedtuple("SemanticCluster", ["id", "text", "relevance_score"])
 
