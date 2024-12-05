@@ -1,9 +1,34 @@
 #!/bin/bash
 
+
 # Serve a simple loading page until the server is ready
 echo "Displaying loading page..."
 chromium-browser --kiosk "file://$HOME/eonpod-ai/pod/eonpod_setup_scripts/loading.html" --disable-pinch --disable-zoom --overscroll-history-navigation=0 &
 CHROMIUM_PID=$!
+
+
+PASSWORD="12345"
+
+echo "Starting PostgreSQL service..."
+echo $PASSWORD | sudo -S systemctl start postgresql
+
+if [ $? -eq 0 ]; then
+    echo "PostgreSQL service started successfully."
+else
+    echo "Failed to start PostgreSQL service. Exiting."
+    exit 1
+fi
+
+echo "enable PostgreSQL service..."
+echo $PASSWORD | sudo -S systemctl enable postgresql
+
+if [ $? -eq 0 ]; then
+    echo "PostgreSQL service started successfully."
+else
+    echo "Failed to start PostgreSQL service. Exiting."
+    exit 1
+fi
+
 
 # Navigate to the base directory (eonpod-ai)
 cd "$HOME/eonpod-ai"
@@ -24,31 +49,6 @@ else
     echo "Git pull failed. Continuing with the existing codebase."
 fi
 
-
-# Run PostgreSQL commands to drop specific tables
-echo "Running PostgreSQL commands..."
-psql postgresql://learneon_dev:12345@localhost:5432/local_eonpod_db <<EOF
-DROP TABLE IF EXISTS school CASCADE;
-DROP TABLE IF EXISTS staff CASCADE;
-DROP TABLE IF EXISTS subject_group CASCADE;
-DROP TABLE IF EXISTS teacher_subject_groups CASCADE;
-EOF
-
-if [ $? -eq 0 ]; then
-    echo "PostgreSQL commands executed successfully."
-else
-    echo "Failed to execute PostgreSQL commands. Check database connectivity and syntax. Continuing..."
-fi
-
-# Execute the shell script to set up the database
-echo "Executing database setup script..."
-DB_SETUP_SCRIPT="$HOME/eonpod-ai/pod/eonpod_setup_scripts/local DB Setup scripts/create_tables_in_DB.sh"
-if [ -f "$DB_SETUP_SCRIPT" ]; then
-    chmod +x "$DB_SETUP_SCRIPT"
-    "$DB_SETUP_SCRIPT" || echo "Database setup script execution failed. Continuing..."
-else
-    echo "Database setup script not found: $DB_SETUP_SCRIPT. Continuing..."
-fi
 
 
 # Navigate to the Django project directory
