@@ -22,7 +22,7 @@ echo "enable PostgreSQL service..."
 echo $PASSWORD | sudo -S systemctl enable postgresql
 
 if [ $? -eq 0 ]; then
-    echo "PostgreSQL service started successfully."
+    echo "PostgreSQL service enabled successfully."
 else
     echo "Failed to start PostgreSQL service. Exiting."
 fi
@@ -50,7 +50,7 @@ fi
 
 
 # Navigate to the Django project directory
-cd "$HOME/eonpod-ai/pod/eonpod" || exit 1
+cd "$HOME/eonpod-ai/pod/eonpod"
 
 # Check if the Django server is running
 if ! lsof -i :8000 | grep LISTEN; then

@@ -51,7 +51,6 @@ function execute_sql() {
     
     if [ $? -ne 0 ]; then
         echo "Error: Failed to execute SQL statement: $sql_statement"
-        exit 1
     fi
 }
 
