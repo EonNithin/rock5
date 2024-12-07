@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 import glob
+import socket
 import requests
 import json
 import os
@@ -238,7 +239,21 @@ def check_device_connections(request):
             return JsonResponse({'error': str(e)}, status=500)
 
 
+def is_internet_available():
+    try:
+        # Connect to a well-known public DNS server (Google's DNS)
+        socket.create_connection(("8.8.8.8", 53), timeout=2)
+        return True
+    except OSError:
+        return False
+
+
 def get_staff_subject_groups(pin, school_id):
+    if not is_internet_available():
+        # No internet; directly use local DB
+        logger.info("No internet connection. Falling back to local DB.")
+        return handle_local_db(pin, school_id)
+
     # API URL
     api_url = os.getenv('LOGIN_API')
     url = api_url
@@ -251,7 +266,7 @@ def get_staff_subject_groups(pin, school_id):
     
     try:
         # Sending the POST request
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout=5)  # Set a timeout to avoid excessive waiting
         
         # Check if the request was successful
         if response.status_code == 200:
@@ -267,6 +282,7 @@ def get_staff_subject_groups(pin, school_id):
         logger.info(f"Error during API call: {e}")
         # No internet connection, use local database instead
         return handle_local_db(pin, school_id)
+
 
 
 def handle_local_db(value, school_id):
