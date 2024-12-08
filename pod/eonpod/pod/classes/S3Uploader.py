@@ -33,7 +33,7 @@ class S3UploadQueue:
         # Use Manager Lock for process-safe locking
         self.process_lock = self.manager.Lock()
         
-        self.queue_buffer = 2
+        self.queue_buffer = 3
 
         self.shutdown_flag = self.manager.Value('b', False)
         self.json_info = JsonBuilder()
