@@ -49,7 +49,7 @@ class SpeechSegmentsClassificator:
                         f"{segment.is_relevant}: {segment.start_time_string}: {segment.end_time_string} {segment.text}\n"
                     )
                 
-                self.__classify_per_syllabus(merged_speech_segments)
+                # self.__classify_per_syllabus(merged_speech_segments)
 
                 return merged_speech_segments
         except Exception as e:
@@ -235,9 +235,17 @@ class SpeechSegmentsClassificator:
         new_segment.start_time_sec = segment1.start_time_sec
         new_segment.end_time_sec = segment2.end_time_sec
         new_segment.is_relevant = is_relevant
-        new_segment.relevance_score = (
-            (segment1.relevance_score or 0) + (segment2.relevance_score or 0)
-        ) / 2
+        # Calculate the weighted relevance score based on text length
+        length1 = len(segment1.text) if segment1.text else 0
+        length2 = len(segment2.text) if segment2.text else 0
+        total_length = length1 + length2
+        if total_length > 0:
+            new_segment.relevance_score = (((segment1.relevance_score or 0) * length1) + ((segment2.relevance_score or 0) * length2)) / total_length
+        else:
+            new_segment.relevance_score = 0
+        # new_segment.relevance_score = (
+        #     (segment1.relevance_score or 0) + (segment2.relevance_score or 0)
+        # ) / 2
         new_segment.cluster_relevance_score = max(
             segment1.cluster_relevance_score or 0, segment2.cluster_relevance_score or 0
         )
