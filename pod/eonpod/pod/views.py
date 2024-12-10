@@ -206,8 +206,8 @@ def stop_recording_view(request):
                 logger.error(f"Error adding to processing queue: {str(e)}")
                 return JsonResponse({"success": False, "message": "Error during file processing.", "error": str(e)})
 
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON decoding error: {str(e)}")
+        except Exception as e:
+            logger.error(f"error: {str(e)}")
             return JsonResponse({"success": False, "message": "Invalid JSON data.", "error": str(e)})
         except Exception as e:
             logger.error(f"Unexpected error: {str(e)}")
@@ -244,7 +244,7 @@ def is_internet_available():
         # Connect to a well-known public DNS server (Google's DNS)
         socket.create_connection(("8.8.8.8", 53), timeout=2)
         return True
-    except OSError:
+    except Exception:
         return False
 
 
@@ -266,7 +266,7 @@ def get_staff_subject_groups(pin, school_id):
     
     try:
         # Sending the POST request
-        response = requests.post(url, json=payload, timeout=5)  # Set a timeout to avoid excessive waiting
+        response = requests.post(url, json=payload, timeout=3)  # Set a timeout to avoid excessive waiting
         
         # Check if the request was successful
         if response.status_code == 200:
@@ -278,7 +278,7 @@ def get_staff_subject_groups(pin, school_id):
             # Fall back to local DB if the API fails
             logger.error(f"Failed to get data. Status code: {response.status_code}, \nTrying to hit local DB")
             return handle_local_db(pin, school_id)
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         logger.info(f"Error during API call: {e}")
         # No internet connection, use local database instead
         return handle_local_db(pin, school_id)
