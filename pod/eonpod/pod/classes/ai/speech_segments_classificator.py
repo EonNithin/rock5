@@ -49,7 +49,7 @@ class SpeechSegmentsClassificator:
                         f"{segment.is_relevant}: {segment.start_time_string}: {segment.end_time_string} {segment.text}\n"
                     )
                 
-                self.__classify_per_syllabus(merged_speech_segments)
+                # self.__classify_per_syllabus(merged_speech_segments)
 
                 return merged_speech_segments
         except Exception as e:
