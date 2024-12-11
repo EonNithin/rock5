@@ -372,7 +372,7 @@ class S3UploadQueue:
                     # Check buffer size
                     time_difference = datetime.now() - file_timestamp
                     if time_difference.days > self.queue_buffer:
-                        logger.info(f"Skipping {current_item['file_name']} as buffer size exceeded.")
+                        logger.info(f"Skipping {current_item['file_path']} as buffer size exceeded.")
                         continue
 
                     success = self._upload_single_file(current_item)
