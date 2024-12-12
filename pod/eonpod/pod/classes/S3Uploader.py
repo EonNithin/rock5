@@ -33,7 +33,7 @@ class S3UploadQueue:
         # Use Manager Lock for process-safe locking
         self.process_lock = self.manager.Lock()
         
-        self.queue_buffer = 2
+        self.queue_buffer = 3
 
         self.shutdown_flag = self.manager.Value('b', False)
         self.json_info = JsonBuilder()
@@ -183,7 +183,7 @@ class S3UploadQueue:
         excluded_list = ["grab_segment", "recorded_segment", "concat", "recorded_video_", "recorded.mp4", "ai_screen_grab.mp4", "screen_grab_"]
         for ex in excluded_list:
             if ex in file_name:
-                return True
+                return False
         return False
 
     def add_to_queue(self, school, subject, local_directory):
@@ -266,27 +266,27 @@ class S3UploadQueue:
                     return True
 
             # Check for edited videos and get replacement path if available
-            has_edited_files, replacement_path = self.check_edited_video(task['file_path'])
+            # has_edited_files, replacement_path = self.check_edited_video(task['file_path'])
             
             upload_path = task['file_path']
-            if has_edited_files and replacement_path:
-                if not os.path.exists(replacement_path):
-                    logger.error(f"Replacement file does not exist: {replacement_path}")
-                    return False
-                    
-                upload_path = replacement_path
-                logger.info(f"Using edited file {replacement_path} instead of {task['file_path']}")
+            # if has_edited_files and replacement_path:
+            #     if not os.path.exists(replacement_path):
+            #         logger.error(f"Replacement file does not exist: {replacement_path}")
+            #         return False
+            #
+            #     upload_path = replacement_path
+            #     logger.info(f"Using edited file {replacement_path} instead of {task['file_path']}")
                 
-            if "_recorded_video.mp4" in original_file_name:
-                compressed_path = os.path.join(
-                    os.path.dirname(task['file_path']),
-                    f"{task['timestamp']}_compressed_file.mp4"
-                )
-                if not self.compress_mp4(upload_path, compressed_path):
-                    logger.error(f"Failed to compress {upload_path}")
-                    return False
-                upload_path = compressed_path
-                logger.info(f"Using compressed file {compressed_path}")
+            # if "_recorded_video.mp4" in original_file_name:
+            #     compressed_path = os.path.join(
+            #         os.path.dirname(task['file_path']),
+            #         f"{task['timestamp']}_compressed_file.mp4"
+            #     )
+            #     if not self.compress_mp4(upload_path, compressed_path):
+            #         logger.error(f"Failed to compress {upload_path}")
+            #         return False
+            #     upload_path = compressed_path
+            #     logger.info(f"Using compressed file {compressed_path}")
 
             if not os.path.exists(upload_path):
                 logger.error(f"Final upload file does not exist: {upload_path}")
@@ -372,7 +372,7 @@ class S3UploadQueue:
                     # Check buffer size
                     time_difference = datetime.now() - file_timestamp
                     if time_difference.days > self.queue_buffer:
-                        logger.info(f"Skipping {current_item['file_name']} as buffer size exceeded.")
+                        logger.info(f"Skipping {current_item['file_path']} as buffer size exceeded.")
                         continue
 
                     success = self._upload_single_file(current_item)

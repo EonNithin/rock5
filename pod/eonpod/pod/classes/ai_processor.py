@@ -1,5 +1,6 @@
 import os
 import json
+from dotenv import load_dotenv
 import moviepy.editor as mp
 import whisper_timestamped as whisper
 # from whisper_cpp_python import whisper
@@ -8,6 +9,15 @@ from pod.classes.ai.speech_segments_classificator import SpeechSegmentsClassific
 from pod.classes.ai.video_cutter import VideoCutter
 from pod.classes.ai.logging_service import logger
 from faster_whisper import WhisperModel
+
+
+load_dotenv(dotenv_path="base.env")
+load_dotenv(dotenv_path="config.env", override=True)
+
+model_name = os.getenv('model_name')
+beam_size = int(os.getenv('beam_size'))
+cpu_threads = int(os.getenv('cpu_threads'))
+
 
 def get_file_name_wo_extension(file_name: str) -> str:
     return os.path.splitext(file_name)[0]
@@ -18,9 +28,9 @@ def get_output_dir(file_path: str) -> str:
 
 
 class ProcessVideoService:
-    __whisper_model = whisper.load_model("small")
+    __whisper_model = whisper.load_model(model_name)
 
-    model = WhisperModel("small", device="cpu", compute_type="float32",cpu_threads=2)
+    model = WhisperModel(model_name, device="cpu", compute_type="float32",cpu_threads=cpu_threads)
 
     def __init__(
         self,
@@ -86,8 +96,51 @@ class ProcessVideoService:
         else:
             logger.info("write final video: skipped")
 
+        self.rename_files()
+        logger.info("Rename completed")
         # completed
         logger.info("process video: done")
+
+    def rename_files(self):
+        try:
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if "_recorded_video.mp4" in file and "recorded.mp4" in files:
+                    # Rename *_recorded_video.mp4 to *_raw_video.mp4
+                    if file.endswith("_recorded_video.mp4"):
+                        new_name = file.replace("_recorded_video.mp4", "_raw_video.mp4")
+                        os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                        print(f"Renamed: {file} -> {new_name}")
+                    # Rename recorded.mp4 to *_recorded_video.mp4
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if file == "recorded.mp4":
+                    for f in files:
+                        if f.endswith("_raw_video.mp4"):
+                            new_name = f.replace("_raw_video.mp4", "_recorded_video.mp4")
+                            os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                            print(f"Renamed: {file} -> {new_name}")
+            # Rename *_screen_grab.mp4 to *_raw_screen_grab.mp4 and ai_screen_grab.mp4 to *_screen_grab.mp4
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if "_screen_grab.mp4" in file and "ai_screen_grab.mp4" != file and "ai_screen_grab.mp4" in files:
+                    # Rename *_screen_grab.mp4 to *_raw_screen_grab.mp4
+                    if file.endswith("_screen_grab.mp4"):
+                        new_name = file.replace("_screen_grab.mp4", "_raw_screen_grab.mp4")
+                        os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                        print(f"Renamed: {file} -> {new_name}")
+                    # Rename ai_screen_grab.mp4 to *_screen_grab.mp4
+            files = os.listdir(self.__output_dir)
+            for file in files:
+                if file == "ai_screen_grab.mp4":
+                    for f in files:
+                        if f.endswith("_raw_screen_grab.mp4"):
+                            new_name = f.replace("_raw_screen_grab.mp4", "_screen_grab.mp4")
+                            os.rename(os.path.join(self.__output_dir, file), os.path.join(self.__output_dir, new_name))
+                            print(f"Renamed: {file} -> {new_name}")
+            print("Renaming process complete.")
+        except Exception as e:
+            pass
 
     def __save_classified_speech_segments(self):
         relevant_transcript = ""
@@ -207,7 +260,7 @@ class ProcessVideoService:
                 segments, info = ProcessVideoService.model.transcribe(
                     self.__audio_file_path,
                     task="translate",
-                    beam_size=2,
+                    beam_size=beam_size,
                     word_timestamps=True,
                     language="en"
                 )

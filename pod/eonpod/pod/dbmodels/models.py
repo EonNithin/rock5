@@ -45,7 +45,7 @@ class Staff(Base):
     user_role = Column(String)
     mobile_no = Column(String)
     email = Column(String)
-    employee_id = Column(BigInteger)
+    employee_id = Column(String)
     first_name = Column(String)
     last_name = Column(String)
     rfid = Column(String)
