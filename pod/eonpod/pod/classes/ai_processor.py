@@ -9,7 +9,7 @@ from pod.classes.ai.speech_segments_classificator import SpeechSegmentsClassific
 from pod.classes.ai.video_cutter import VideoCutter
 from pod.classes.ai.logging_service import logger
 from faster_whisper import WhisperModel
-
+from pydub import AudioSegment
 
 load_dotenv(dotenv_path="base.env")
 load_dotenv(dotenv_path="config.env", override=True)
@@ -30,7 +30,7 @@ def get_output_dir(file_path: str) -> str:
 class ProcessVideoService:
     __whisper_model = whisper.load_model(model_name)
 
-    model = WhisperModel(model_name, device="cpu", compute_type="float32",cpu_threads=cpu_threads)
+    model = WhisperModel(model_name, device="cpu", compute_type="float32", cpu_threads=cpu_threads)
 
     def __init__(
         self,
@@ -172,11 +172,11 @@ class ProcessVideoService:
                 relevant_transcript += segment.text
 
         with open(
-            os.path.join(self.__output_dir, "classified_speech_segments.txt"), "w"
+                os.path.join(self.__output_dir, "classified_speech_segments.txt"), "w"
         ) as f:
             f.write(str)
         with open(self.transcription_text_file, "w") as txt_file:
-                    txt_file.write(relevant_transcript)
+            txt_file.write(relevant_transcript)
 
     def __render_final_video(self):
         vc = VideoCutter(
@@ -244,74 +244,95 @@ class ProcessVideoService:
             logger.error("Audio file path not found.")
             raise FileNotFoundError("Audio file path not found.")
 
-        # Define output paths for JSON and text transcription files
-        self.__transcription_json_file_path = os.path.join(
-            self.__output_dir,
-            "whisper_transcription.json"
-        )
+        # Output paths for JSON and text transcription files
+        self.__transcription_json_file_path = os.path.join(self.__output_dir, "whisper_transcription.json")
+        self.transcription_text_file = os.path.join(self.__output_dir, "whisper_transcription.txt")
 
-        # Initialize transcription variable
         transcription = None
+        all_segments = []
+        current_end_time = 0  # Track the end time for the previous chunk
+
+        def split_audio(audio_file_path, output_dir, chunk_duration_minutes=5):
+            """
+            Splits the audio file into chunks of specified duration.
+            """
+            audio = AudioSegment.from_mp3(audio_file_path)
+            chunk_duration_ms = chunk_duration_minutes * 60 * 1000  # Convert minutes to milliseconds
+            chunk_paths = []
+
+            for start_ms in range(0, len(audio), chunk_duration_ms):
+                chunk = audio[start_ms:start_ms + chunk_duration_ms]
+                chunk_file_path = os.path.join(output_dir, f"chunk_{start_ms}.mp3")
+                chunk.export(chunk_file_path, format="mp3")
+                chunk_paths.append(chunk_file_path)
+
+            return chunk_paths
 
         # Only regenerate transcription if required
         if self.__regenerate_transcription or not os.path.exists(self.__transcription_json_file_path):
             try:
-                # Perform transcription
-                segments, info = ProcessVideoService.model.transcribe(
-                    self.__audio_file_path,
-                    task="translate",
-                    beam_size=beam_size,
-                    word_timestamps=True,
-                    language="en"
-                )
+                # Split audio into chunks
+                chunk_paths = split_audio(self.__audio_file_path, self.__output_dir, chunk_duration_minutes=5)
 
-                # Prepare transcription output data
-                output_data = {"segments": [], "text": ""}
-                text = ""
+                for chunk_path in chunk_paths:
+                    # Perform transcription for each chunk
+                    segments, info = ProcessVideoService.model.transcribe(
+                        chunk_path,
+                        task="translate",
+                        beam_size=beam_size,
+                        word_timestamps=True,
+                        language="en"
+                    )
+                    segments = list(segments)
+                    # Adjust segment timestamps and append to all_segments
+                    for i, segment in enumerate(segments):
+                        segment_data = {
+                            "id": len(all_segments) + i,  # Ensure IDs are sequential
+                            "seek": segment.seek,
+                            "start": segment.start + current_end_time,
+                            "end": segment.end + current_end_time,
+                            "text": segment.text,
+                            "tokens": segment.tokens,
+                            "temperature": segment.temperature,
+                            "avg_logprob": segment.avg_logprob,
+                            "compression_ratio": segment.compression_ratio,
+                            "no_speech_prob": segment.no_speech_prob,
+                            "words": [
+                                {
+                                    "word": word.word,
+                                    "start": word.start + current_end_time,
+                                    "end": word.end + current_end_time,
+                                    "probability": word.probability
+                                } for word in segment.words
+                            ]
+                        }
+                        all_segments.append(segment_data)
 
-                for i, segment in enumerate(segments):
-                    text += segment.text
-                    segment_data = {
-                        "id": i,
-                        "seek": segment.seek,
-                        "start": segment.start,
-                        "end": segment.end,
-                        "text": segment.text,
-                        "tokens": segment.tokens,
-                        "temperature": segment.temperature,
-                        "avg_logprob": segment.avg_logprob,
-                        "compression_ratio": segment.compression_ratio,
-                        "no_speech_prob": segment.no_speech_prob,
-                        "words": [
-                            {
-                                "word": word.word,
-                                "start": word.start,
-                                "end": word.end,
-                                "probability": word.probability
-                            } for word in segment.words
-                        ]
-                    }
-                    output_data["segments"].append(segment_data)
+                    # Update current_end_time for the next chunk
+                    current_end_time += segments[-1].end
 
-                output_data["text"] = text
+                # Prepare final transcription data
+                output_data = {
+                    "segments": all_segments,
+                    "text": " ".join([segment['text'] for segment in all_segments])
+                }
 
-                # Save the transcription to JSON and text files
+                # Save transcription to JSON and text files
                 with open(self.__transcription_json_file_path, "w") as json_file:
                     json.dump(output_data, json_file, indent=4)
 
                 with open(self.transcription_text_file, "w") as txt_file:
-                    txt_file.write(text)
+                    txt_file.write(output_data["text"])
 
             except Exception as e:
                 logger.error(f"Error during transcription: {self.__audio_file_path}\nError: {e}")
                 raise RuntimeError(f"Transcription failed for {self.__audio_file_path}") from e
-
         else:
             logger.debug(
                 f"Transcription file already exists: {self.__transcription_json_file_path}\nSkipping transcription extraction."
             )
 
-        # Load the transcription data from JSON file
+        # Load transcription data from JSON file
         with open(self.__transcription_json_file_path) as json_file:
             transcription = json.load(json_file)
 
