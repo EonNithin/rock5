@@ -17,7 +17,7 @@ load_dotenv(dotenv_path="config.env", override=True)
 model_name = os.getenv('model_name')
 beam_size = int(os.getenv('beam_size'))
 cpu_threads = int(os.getenv('cpu_threads'))
-chunk_duration_minutes = int(os.getenv('chunk_duration_minutes'))
+chunk_duration_minutes = int(os.getenv('chunk_duration_minutes', 20))
 
 def get_file_name_wo_extension(file_name: str) -> str:
     return os.path.splitext(file_name)[0]

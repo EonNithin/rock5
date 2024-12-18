@@ -47,7 +47,7 @@ else
     echo "Git pull failed. Continuing with the existing codebase."
 fi
 
-
+pip install pydub || true
 
 # Navigate to the Django project directory
 cd "$HOME/eonpod-ai/pod/eonpod"
