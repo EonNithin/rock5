@@ -17,7 +17,7 @@ load_dotenv(dotenv_path="config.env", override=True)
 model_name = os.getenv('model_name')
 beam_size = int(os.getenv('beam_size'))
 cpu_threads = int(os.getenv('cpu_threads'))
-
+chunk_duration_minutes = int(os.getenv('chunk_duration_minutes'))
 
 def get_file_name_wo_extension(file_name: str) -> str:
     return os.path.splitext(file_name)[0]
@@ -252,7 +252,7 @@ class ProcessVideoService:
         all_segments = []
         current_end_time = 0  # Track the end time for the previous chunk
 
-        def split_audio(audio_file_path, output_dir, chunk_duration_minutes=5):
+        def split_audio(audio_file_path, output_dir, chunk_duration_minutes):
             """
             Splits the audio file into chunks of specified duration.
             """
@@ -272,7 +272,7 @@ class ProcessVideoService:
         if self.__regenerate_transcription or not os.path.exists(self.__transcription_json_file_path):
             try:
                 # Split audio into chunks
-                chunk_paths = split_audio(self.__audio_file_path, self.__output_dir, chunk_duration_minutes=5)
+                chunk_paths = split_audio(self.__audio_file_path, self.__output_dir, chunk_duration_minutes=chunk_duration_minutes)
 
                 for chunk_path in chunk_paths:
                     # Perform transcription for each chunk
@@ -309,7 +309,8 @@ class ProcessVideoService:
                         all_segments.append(segment_data)
 
                     # Update current_end_time for the next chunk
-                    current_end_time += segments[-1].end
+                    if segments:
+                        current_end_time += segments[-1].end
 
                 # Prepare final transcription data
                 output_data = {
