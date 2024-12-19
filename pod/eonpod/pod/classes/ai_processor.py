@@ -246,7 +246,7 @@ class ProcessVideoService:
 
         # Output paths for JSON and text transcription files
         self.__transcription_json_file_path = os.path.join(self.__output_dir, "whisper_transcription.json")
-        self.transcription_text_file = os.path.join(self.__output_dir, "whisper_transcription.txt")
+        self.transcription_text_file = os.path.join(self.__output_dir, f"{os.path.basename(self.__output_dir)}_transcript.txt")
 
         transcription = None
         all_segments = []
