@@ -29,21 +29,36 @@ class SensorMonitor:
         # Start the monitoring thread
         self.processing_thread.start()
         # self.logger.info(f"Initialized SensorMonitor processing thread, writing to {output_file}")
-    
-    def get_sensor_data(self):
-        """Execute sensors command and return the output"""
+
+    def get_sensor_and_memory_data(self):
+        """Execute sensors and free commands, and return the combined output"""
         try:
-            result = subprocess.run(['sensors'], 
-                                  capture_output=True, 
-                                  text=True, 
-                                  check=True)
-            return result.stdout
+            # Run the `sensors` command
+            sensors_result = subprocess.run(['sensors'],
+                                            capture_output=True,
+                                            text=True,
+                                            check=True)
+            sensors_output = sensors_result.stdout
         except subprocess.CalledProcessError as e:
-            # self.logger.error(f"Error running sensors command: {e}")
-            return f"Error reading sensors: {str(e)}"
+            sensors_output = f"Error reading sensors: {str(e)}"
         except Exception as e:
-            # self.logger.error(f"Unexpected error getting sensor data: {e}")
-            return f"Unexpected error: {str(e)}"
+            sensors_output = f"Unexpected error: {str(e)}"
+
+        try:
+            # Run the `free` command
+            free_result = subprocess.run(['free', '-h'],  # Use '-h' for human-readable format
+                                         capture_output=True,
+                                         text=True,
+                                         check=True)
+            free_output = free_result.stdout
+        except subprocess.CalledProcessError as e:
+            free_output = f"Error reading memory data: {str(e)}"
+        except Exception as e:
+            free_output = f"Unexpected error: {str(e)}"
+
+        # Combine outputs
+        combined_output = f"Sensors Data:\n{sensors_output}\nMemory Data:\n{free_output}"
+        return combined_output
     
     def append_to_file(self, data):
         # Get the current time in the specified timezone
@@ -66,7 +81,7 @@ class SensorMonitor:
         while self.is_running:
             try:
                 # Get sensor data
-                sensor_data = self.get_sensor_data()
+                sensor_data = self.get_sensor_and_memory_data()
                 
                 # Append to file
                 if sensor_data:
