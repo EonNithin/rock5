@@ -86,6 +86,7 @@ class SpeechSegmentsClassificator:
         for segment in self.__speech_segments:
             segment.is_relevant = segment.relevance_score_gpt >= RELEVANCE_THRESHOLD
 
+
     def __classify_per_syllabus(self, speech_segments: list):
         logger.info("Classifying per syllabus...")
         logger.info("Currently CBSE is supported only")
